@@ -1,0 +1,28 @@
+{
+  "env": {
+    "node": true
+  },
+  "rules": {
+    "block-scoped-var": 2,
+    "brace-style": 1,
+    "consistent-this": [0, "self"],
+    "curly": [2, "multi-line"],
+    "complexity": [0, 11],
+    "dot-notation": 0,
+    "indent": 2,
+    "max-depth": [2, 6],
+    "max-len": [1, 120, 4],
+    "max-nested-callbacks": [2, 4],
+    "max-params": [2, 3],
+    "no-empty": 0,
+    "no-loop-func": 0,
+    "no-undef": 2,
+    "no-underscore-dangle": 0,
+    "no-use-before-define": 0,
+    "quotes": [2, "single"],
+    "radix": 2,
+    "space-unary-ops": 0,
+    "strict": 2,
+    "valid-jsdoc": 0
+  }
+}
