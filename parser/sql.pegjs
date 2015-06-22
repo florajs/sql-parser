@@ -1,5 +1,4 @@
 {
-  var util = require('util');
   var reservedMap = require(__dirname + '/parser/keywords');
 
   function createUnaryExpr(op, e) {
@@ -59,25 +58,15 @@
     'n': true
   };
 
-  // used for store refered parmas
-  var params = [];
-
   // used for dependency analysis
   var varList = [];
 }
 
 start 
-  = &{ params = []; return true; } ast:(union_stmt  / update_stmt / replace_insert_stmt) {
-      return {
-        ast: ast,
-        param: params
-      };
-    } 
-  / ast:proc_stmts {
-      return {
-        ast: ast  
-      };
-    }
+  = union_stmt
+  / update_stmt
+  / replace_insert_stmt
+  / proc_stmts
 
 union_stmt
   = head:select_stmt tail:(__ KW_UNION __ select_stmt)* {
@@ -104,7 +93,7 @@ select_stmt_nake
     w:where_clause?     __  
     g:group_by_clause?  __  
     o:order_by_clause?  __
-    l:limit_clause?  {
+    l:limit_clause? {
       var stmt = {
         type: 'select',
         distinct: d,
@@ -143,19 +132,14 @@ query_option
     ) { return option; }
 
 column_clause
-  = (KW_ALL / (STAR !ident_start)) {
-      return '*';
-    }
+  = (KW_ALL / (STAR !ident_start)) { return '*'; }
   / head:column_list_item tail:(__ COMMA __ column_list_item)* {
       return createList(head, tail);
     }
 
 column_list_item
   = e:expr __ alias:alias_clause? {
-      return {
-        expr: e,
-        as: alias
-      };
+      return { expr: e, as: alias };
     }
 
 alias_clause 
@@ -166,7 +150,7 @@ from_clause
 
 table_ref_list
   = head:table_base 
-    tail:table_ref*  {
+    tail:table_ref* {
       tail.unshift(head);
       return tail;
     }
@@ -183,7 +167,7 @@ table_join
       return t;
     } 
  
-//NOTE that ,the table assigned to `var` shouldn't write in `table_join`
+//NOTE that, the table assigned to `var` shouldn't write in `table_join`
 table_base 
   = t:table_name __ KW_AS? __ alias:ident? {
       if (t.type === 'var') {
@@ -204,10 +188,7 @@ join_op
 
 table_name 
   = dt:ident tail:(__ DOT __ ident_name)? {
-      var obj = {
-        db: null,
-        table: dt
-      };
+      var obj = { db: null, table: dt };
       if (tail !== null) {
         obj.db = dt;
         obj.table = tail[3];
@@ -259,14 +240,8 @@ number_or_param
 limit_clause
   = KW_LIMIT __ i1:(number_or_param) __ tail:(COMMA __ number_or_param)? {
       var res = [i1];
-      if (tail === null) {
-        res.unshift({
-          type: 'number',
-          value: 0
-        });  
-      } else {
-        res.push(tail[2]);
-      }
+      if (tail === null) res.unshift({ type: 'number', value: 0 });
+      else res.push(tail[2]);
       return res;
     }
 
@@ -286,7 +261,7 @@ update_stmt
     }
 
 set_list
-  = head:set_item tail:(__ COMMA __ set_item)*  {
+  = head:set_item tail:(__ COMMA __ set_item)* {
       return createList(head, tail);
     }
 
@@ -297,10 +272,7 @@ set_list
  */
 set_item
   = c:column_name __ '=' __ v:additive_expr {
-      return {
-        column: c,
-        value: v
-      };
+      return { column: c, value: v };
     }
 
 replace_insert_stmt
@@ -308,7 +280,7 @@ replace_insert_stmt
     KW_INTO                 __ 
     t:table_name  __ LPAREN __ 
     c:column_list  __ RPAREN __
-    v:value_clause             {
+    v:value_clause {
       return {
         type: ri,  
         db: t.db,
@@ -366,10 +338,7 @@ case_when_then
   }
 
 case_else = KW_ELSE __ result:expr {
-    return {
-      type: 'else',
-      result: result
-    };
+    return { type: 'else', result: result };
   }
 
 /** 
@@ -408,11 +377,9 @@ not_expr
 
 comparison_expr
   = left:additive_expr __ rh:comparison_op_right? {
-      if (rh === null) {
-        return left;  
-      } else {
-        return rh.type === 'arithmetic' ? createBinaryExprChain(left, rh.tail): createBinaryExpr(rh.op, left, rh.right);
-      }
+      if (rh === null) return left;
+      else if (rh.type === 'arithmetic') return createBinaryExprChain(left, rh.tail);
+      else return createBinaryExpr(rh.op, left, rh.right);
     }
 
 comparison_op_right
@@ -424,10 +391,7 @@ comparison_op_right
 
 arithmetic_op_right
   = l:(__ arithmetic_comparison_operator __ additive_expr)+ {
-      return {
-        type: 'arithmetic',
-        tail: l
-      };
+      return { type: 'arithmetic', tail: l };
     } 
 
 arithmetic_comparison_operator
@@ -435,10 +399,7 @@ arithmetic_comparison_operator
 
 is_op_right
   = op:KW_IS __ right:additive_expr {
-      return {
-        op: op,   
-        right: right
-      };
+      return { op: op,  right: right };
     }
 
 between_op_right
@@ -462,24 +423,15 @@ in_op
 
 like_op_right
   = op:like_op __ right:comparison_expr {
-      return {
-        op: op,
-        right: right
-      };
+      return { op: op, right: right };
     }
 
 in_op_right
   = op:in_op __ LPAREN  __ l:expr_list __ RPAREN {
-      return {
-        op: op,  
-        right: l
-      };
+      return { op: op, right: l };
     }
   / op:in_op __ e:var_decl {
-      return {
-        op: op,  
-        right: e
-      };
+      return { op: op, right: e };
     }
 
 additive_expr
@@ -558,9 +510,7 @@ backticks_quoted_ident
   = "`" chars:[^`]+ "`" { return chars.join(''); }
 
 column
-  = name:column_name !{ return reservedMap[name.toUpperCase()] === true; } {
-      return name;
-    }
+  = name:column_name !{ return reservedMap[name.toUpperCase()] === true; } { return name; }
   / quoted_ident
 
 column_name 
@@ -578,14 +528,7 @@ column_part  = [A-Za-z0-9_:]
 
 param 
   = l:(':' ident_name) { 
-      var p = {
-        type: 'param',
-        value: l[1]
-      };
-      //var key = 'L' + line + 'C' + column;
-      //params[key] = p;
-      params.push(p);
-      return p;
+      return { type: 'param', value: l[1] };
     }
 
 aggr_func
@@ -616,25 +559,11 @@ aggr_fun_count
     }
 
 count_arg 
-  = e:star_expr {
-      return {
-        expr: e 
-      };
-    }
-  / d:KW_DISTINCT? __ c:column_ref {
-      return {
-        distinct: d, 
-        expr: c
-      };
-    }
+  = e:star_expr { return { expr: e }; }
+  / d:KW_DISTINCT? __ c:column_ref { return { distinct: d, expr: c }; }
 
 star_expr 
-  = "*" {
-      return {
-        type: 'star',
-        value: '*'
-      };
-    }
+  = "*" { return { type: 'star', value: '*' }; }
 
 func_call
   = name:ident __ LPAREN __ l:expr_list? __ RPAREN {
@@ -677,29 +606,20 @@ literal_list
 
 literal_null
   = KW_NULL {
-      return {
-        type: 'null',
-        value: null
-      };  
+      return { type: 'null', value: null };
     }
 
 literal_bool 
   = KW_TRUE { 
-      return {
-        type: 'bool',
-        value: true
-      };  
+      return { type: 'bool', value: true };
     }
   / KW_FALSE { 
-      return {
-        type: 'bool',
-        value: false
-      };  
+      return { type: 'bool', value: false };
     }
 
 literal_string 
   = ca:( ('"' double_char* '"') 
-        /("'" single_char* "'")) !{ return reservedMap[ca[1].join('').toUpperCase()] === true; }{
+        /("'" single_char* "'")) !{ return reservedMap[ca[1].join('').toUpperCase()] === true; } {
       return {
         type: 'string',
         value: ca[1].join('')
@@ -733,23 +653,20 @@ line_terminator
 
 literal_numeric
   = n:number {
-      return {
-        type: 'number',
-        value: n 
-      };
+      return { type: 'number', value: n };
     }
 
 number
   = int_:int frac:frac exp:exp __ { return parseFloat(int_ + frac + exp); }
-  / int_:int frac:frac __         { return parseFloat(int_ + frac);       }
-  / int_:int exp:exp __           { return parseFloat(int_ + exp);        }
-  / int_:int __                   { return parseFloat(int_);              }
+  / int_:int frac:frac __         { return parseFloat(int_ + frac); }
+  / int_:int exp:exp __           { return parseFloat(int_ + exp); }
+  / int_:int __                   { return parseFloat(int_); }
 
 int
-  = digit19:digit19 digits:digits     { return digit19 + digits;       }
+  = digit19:digit19 digits:digits { return digit19 + digits; }
   / digit:digit
   / op:("-" / "+" ) digit19:digit19 digits:digits { return "-" + digit19 + digits; }
-  / op:("-" / "+" ) digit:digit                   { return "-" + digit;            }
+  / op:("-" / "+" ) digit:digit { return "-" + digit; }
 
 frac
   = "." digits:digits { return "." + digits; }
@@ -809,26 +726,26 @@ KW_HAVING   = "HAVING"i   !ident_start
 
 KW_LIMIT    = "LIMIT"i    !ident_start
 
-KW_ASC      = "ASC"i      !ident_start    { return 'ASC';     }
-KW_DESC     = "DESC"i     !ident_start    { return 'DESC';    }
+KW_ASC      = "ASC"i      !ident_start { return 'ASC'; }
+KW_DESC     = "DESC"i     !ident_start { return 'DESC'; }
 
-KW_ALL      = "ALL"i      !ident_start    { return 'ALL';     }
-KW_DISTINCT = "DISTINCT"i !ident_start    { return 'DISTINCT';}   
+KW_ALL      = "ALL"i      !ident_start { return 'ALL'; }
+KW_DISTINCT = "DISTINCT"i !ident_start { return 'DISTINCT';}
 
-KW_BETWEEN  = "BETWEEN"i  !ident_start    { return 'BETWEEN'; }
-KW_IN       = "IN"i       !ident_start    { return 'IN';      }
-KW_IS       = "IS"i       !ident_start    { return 'IS';      }
-KW_LIKE     = "LIKE"i     !ident_start    { return 'LIKE';    }
+KW_BETWEEN  = "BETWEEN"i  !ident_start { return 'BETWEEN'; }
+KW_IN       = "IN"i       !ident_start { return 'IN'; }
+KW_IS       = "IS"i       !ident_start { return 'IS'; }
+KW_LIKE     = "LIKE"i     !ident_start { return 'LIKE'; }
 
-KW_NOT      = "NOT"i      !ident_start    { return 'NOT';     }
-KW_AND      = "AND"i      !ident_start    { return 'AND';     }
-KW_OR       = "OR"i       !ident_start    { return 'OR';      }
+KW_NOT      = "NOT"i      !ident_start { return 'NOT'; }
+KW_AND      = "AND"i      !ident_start { return 'AND'; }
+KW_OR       = "OR"i       !ident_start { return 'OR'; }
 
-KW_COUNT    = "COUNT"i    !ident_start    { return 'COUNT';   }      
-KW_MAX      = "MAX"i      !ident_start    { return 'MAX';     }  
-KW_MIN      = "MIN"i      !ident_start    { return 'MIN';     }
-KW_SUM      = "SUM"i      !ident_start    { return 'SUM';     }
-KW_AVG      = "AVG"i      !ident_start    { return 'AVG';     }
+KW_COUNT    = "COUNT"i    !ident_start { return 'COUNT'; }
+KW_MAX      = "MAX"i      !ident_start { return 'MAX'; }
+KW_MIN      = "MIN"i      !ident_start { return 'MIN'; }
+KW_SUM      = "SUM"i      !ident_start { return 'SUM'; }
+KW_AVG      = "AVG"i      !ident_start { return 'AVG'; }
 
 KW_CASE     = "CASE"i     !ident_start
 KW_WHEN     = "WHEN"i     !ident_start
@@ -838,18 +755,18 @@ KW_END      = "END"i      !ident_start
 
 KW_CAST     = "CAST"i     !ident_start
 
-KW_CHAR     = "CHAR"i     !ident_start    { return 'CHAR';      }
-KW_VARCHAR  = "VARCHAR"i  !ident_start    { return 'VARCHAR';   }
-KW_NUMERIC  = "NUMERIC"i  !ident_start    { return 'NUMERIC';   }
-KW_DECIMAL  = "DECIMAL"i  !ident_start    { return 'DECIMAL';   }
-KW_SIGNED   = "SIGNED"i   !ident_start    { return 'SIGNED';    }
-KW_UNSIGNED = "UNSIGNED"i !ident_start    { return 'UNSIGNED';  }
-KW_INT      = "INT"i      !ident_start    { return 'INT';       }
-KW_INTEGER  = "INTEGER"i  !ident_start    { return 'INTEGER';   }
-KW_SMALLINT = "SMALLINT"i !ident_start    { return 'SMALLINT';  }
-KW_DATE     = "DATE"i     !ident_start    { return 'DATE';      }
-KW_TIME     = "TIME"      !ident_start    { return 'TIME';      }
-KW_TIMESTAMP= "TIMESTAMP" !ident_start    { return 'TIMESTAMP'; }
+KW_CHAR     = "CHAR"i     !ident_start { return 'CHAR'; }
+KW_VARCHAR  = "VARCHAR"i  !ident_start { return 'VARCHAR';}
+KW_NUMERIC  = "NUMERIC"i  !ident_start { return 'NUMERIC'; }
+KW_DECIMAL  = "DECIMAL"i  !ident_start { return 'DECIMAL'; }
+KW_SIGNED   = "SIGNED"i   !ident_start { return 'SIGNED'; }
+KW_UNSIGNED = "UNSIGNED"i !ident_start { return 'UNSIGNED'; }
+KW_INT      = "INT"i      !ident_start { return 'INT'; }
+KW_INTEGER  = "INTEGER"i  !ident_start { return 'INTEGER'; }
+KW_SMALLINT = "SMALLINT"i !ident_start { return 'SMALLINT'; }
+KW_DATE     = "DATE"i     !ident_start { return 'DATE'; }
+KW_TIME     = "TIME"      !ident_start { return 'TIME'; }
+KW_TIMESTAMP= "TIMESTAMP" !ident_start { return 'TIMESTAMP'; }
 
 KW_VAR_PRE = '$'
 KW_RETURN = 'return'i
@@ -904,10 +821,7 @@ proc_stmts
 
 proc_stmt 
   = &{ varList = []; return true; } __ s:(assign_stmt / return_stmt) {
-      return {
-        stmt: s,
-        vars: varList
-      };
+      return { stmt: s, vars: varList };
     }
 
 assign_stmt 
@@ -921,10 +835,7 @@ assign_stmt
 
 return_stmt 
   = KW_RETURN __ e:proc_expr {
-      return {
-        type: 'return',
-        expr: e
-      };
+      return { type: 'return', expr: e };
     }
 
 proc_expr 
@@ -986,10 +897,7 @@ proc_primary_list
 
 proc_array = 
   LBRAKE __ l:proc_primary_list __ RBRAKE {
-    return {
-      type: 'array',
-      value: l
-    };
+    return { type: 'array', value: l };
   }
 
 var_decl 
@@ -1019,10 +927,7 @@ data_type
 
 character_string_type
   = t:(KW_CHAR / KW_VARCHAR) __ LPAREN __ l:[0-9]+ __ RPAREN __ {
-    return {
-        dataType: t,
-        length: parseInt(l.join(''), 10)
-    };
+    return { dataType: t, length: parseInt(l.join(''), 10) };
   }
   / t:KW_CHAR { return { dataType: t }; }
   / t:KW_VARCHAR { return { dataType: t }; }
