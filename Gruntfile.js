@@ -45,6 +45,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('default', ['lint', 'test']);
     grunt.registerTask('test', ['create-parser', 'mochaTest:test']);
+    grunt.registerTask('test-bamboo', ['create-parser', 'mochaTest:bamboo']);
     grunt.registerTask('lint', ['eslint']);
     grunt.registerTask('create-parser', 'newer');
 };
