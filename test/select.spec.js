@@ -10,6 +10,7 @@ describe('select', function () {
     it('should be null if empty', function () {
         ast = parser.parse('SELECT a');
 
+        expect(ast.options).to.be.null;
         expect(ast.distinct).to.be.null;
         expect(ast.from).to.be.null;
         expect(ast.where).to.be.null;
@@ -19,8 +20,9 @@ describe('select', function () {
     });
 
     it('should have appropriate types', function () {
-        ast = parser.parse('SELECT DISTINCT a FROM b WHERE c = 0 GROUP BY d ORDER BY e limit 3');
+        ast = parser.parse('SELECT SQL_NO_CACHE DISTINCT a FROM b WHERE c = 0 GROUP BY d ORDER BY e limit 3');
 
+        expect(ast.options).to.be.an('array');
         expect(ast.distinct).to.equal('DISTINCT');
         expect(ast.from).to.be.an('array');
         expect(ast.where).to.be.an('object');

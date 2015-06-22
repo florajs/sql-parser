@@ -85,17 +85,18 @@ select_stmt
     }
 
 select_stmt_nake
-  = KW_SELECT           __ 
-    d:KW_DISTINCT?      __
+  = KW_SELECT           __
     opts:option_clause? __
+    d:KW_DISTINCT?      __
     c:column_clause     __  
     f:from_clause?      __
     w:where_clause?     __  
     g:group_by_clause?  __  
     o:order_by_clause?  __
     l:limit_clause? {
-      var stmt = {
+      return {
         type: 'select',
+        options: opts,
         distinct: d,
         columns: c,
         from: f,
@@ -104,12 +105,6 @@ select_stmt_nake
         orderby: o,
         limit: l
       };
-
-      if (opts) {
-        stmt.options = opts;
-      }
-
-      return stmt;
   }
 
 // MySQL extensions to standard SQL
