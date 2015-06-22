@@ -48,8 +48,10 @@
     "grunt-cli": "^0.1.13",
     "grunt-eslint": "^15.0.0",
     "grunt-exec": "^0.4.6",
+    "grunt-mocha-istanbul": "^2.4.0",
     "grunt-mocha-test": "^0.12.7",
     "grunt-newer-explicit": "^0.9.4",
+    "istanbul": "^0.3.15",
     "load-grunt-tasks": "^3.2.0",
     "mocha": "^2.2.5",
     "mocha-bamboo-reporter": "^1.1.0"

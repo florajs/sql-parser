@@ -24,6 +24,16 @@ module.exports = function (grunt) {
             }
         },
 
+        'mocha_istanbul': {
+            coverage: {
+                src: 'test',
+                options: {
+                    coverageFolder: 'build',
+                    reportFormats: ['clover', 'lcov']
+                }
+            }
+        },
+
         exec: {
             createParser: {
                 cmd: './node_modules/.bin/pegjs parser/sql.pegjs pegjs-parser.js'
@@ -46,6 +56,7 @@ module.exports = function (grunt) {
     grunt.registerTask('default', ['lint', 'test']);
     grunt.registerTask('test', ['create-parser', 'mochaTest:test']);
     grunt.registerTask('test-bamboo', ['create-parser', 'mochaTest:bamboo']);
+    grunt.registerTask('test-cov', ['create-parser', 'mocha_istanbul:coverage']);
     grunt.registerTask('lint', ['eslint']);
     grunt.registerTask('create-parser', 'newer');
 };
