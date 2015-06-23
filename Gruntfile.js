@@ -28,6 +28,7 @@ module.exports = function (grunt) {
             coverage: {
                 src: 'test',
                 options: {
+                    excludes: ['pegjs-parser.js'],
                     coverageFolder: 'build',
                     reportFormats: ['clover', 'lcov']
                 }
