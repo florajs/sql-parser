@@ -137,6 +137,34 @@ describe('AST',function () {
                 });
             });
 
+            var operatorMap = { '=': 'IN', '!=': 'NOT IN' };
+            Object.keys(operatorMap).forEach(function (operator) {
+                var astOperator = operatorMap[operator];
+
+                it('should convert "' + operator + '" to ' + astOperator + ' operator for array values', function () {
+                    var ast = {
+                        type: 'select',
+                        options: null,
+                        distinct: null,
+                        columns: [{ expr: { type: 'column_ref', table: null, column: 'a' }, as: null }],
+                        from: [{ db: null, table: 't', as: null }],
+                        where: {
+                            type: 'binary_expr',
+                            operator: operator,
+                            left: { type: 'column_ref', table: null, column: 'id' },
+                            right: {
+                                type: 'expr_list',
+                                value: [{ type: 'number', value: 1 }, { type: 'number', value: 2 }]
+                            }
+                        },
+                        groupby: null,
+                        limit: null
+                    };
+
+                    expect(util.astToSQL(ast)).to.equal('SELECT a FROM t WHERE id ' + astOperator + ' (1, 2)');
+                });
+            });
+
             ['IN', 'NOT IN'].forEach(function (operator) {
                 it('should support ' + operator + ' operator', function () {
                     sql = 'SELECT a FROM t WHERE id ' + operator.toLowerCase() + ' (1, 2, 3)';
