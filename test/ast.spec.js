@@ -112,6 +112,21 @@ describe('AST',function () {
                 sql = 'SELECT a FROM t1 LEFT JOIN t2 ON t1.t2id = t2.t1id INNER JOIN t3 ON t1.t3id = t3.t1id';
                 expect(getParsedSql(sql)).to.equal(sql);
             });
+
+            it('should support alias for base table', function () {
+                sql = 'SELECT col1 FROM awesome_table t';
+                expect(getParsedSql(sql)).to.equal('SELECT col1 FROM awesome_table AS t');
+            });
+
+            it('should support joins with tables from other databases', function () {
+                sql = 'SELECT col1 FROM t JOIN otherdb.awesome_table at ON t.id = at.tid';
+                expect(getParsedSql(sql)).to.equal('SELECT col1 FROM t INNER JOIN otherdb.awesome_table AS at ON t.id = at.tid');
+            });
+
+            it('should support aliases in joins', function () {
+                sql = 'SELECT col1 FROM t1 LEFT JOIN awesome_table AS t2 ON t1.id = t2.t1id';
+                expect(getParsedSql(sql)).to.equal(sql);
+            });
         });
 
         describe('where clause', function () {
