@@ -139,9 +139,9 @@ describe('AST',function () {
 
             var operatorMap = { '=': 'IN', '!=': 'NOT IN' };
             Object.keys(operatorMap).forEach(function (operator) {
-                var astOperator = operatorMap[operator];
+                var sqlOperator = operatorMap[operator];
 
-                it('should convert "' + operator + '" to ' + astOperator + ' operator for array values', function () {
+                it('should convert "' + operator + '" to ' + sqlOperator + ' operator for array values', function () {
                     var ast = {
                         type: 'select',
                         options: null,
@@ -161,7 +161,7 @@ describe('AST',function () {
                         limit: null
                     };
 
-                    expect(util.astToSQL(ast)).to.equal('SELECT a FROM t WHERE id ' + astOperator + ' (1, 2)');
+                    expect(util.astToSQL(ast)).to.equal('SELECT a FROM t WHERE id ' + sqlOperator + ' (1, 2)');
                 });
             });
 
