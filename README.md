@@ -1,9 +1,17 @@
-Flora SQL parser
+Flora SQL Parser
 ================
+
+[![Build Status](https://travis-ci.org/godmodelabs/flora-sql-parser.svg?branch=master)](https://travis-ci.org/godmodelabs/flora-sql-parser)
+[![NPM version](https://badge.fury.io/js/flora-sql-parser.svg)](https://www.npmjs.com/package/flora-sql-parser)
 
 Parse simple SQL statements into an abstract syntax tree (AST) and convert it back to SQL.
 
-Create AST for SQL statement:
+
+Usage
+-----
+
+#### Create AST for SQL statement:
+
 ```javascript
 var Parser = require('flora-sql-parser').Parser;
 var parser = new Parser();
@@ -12,7 +20,8 @@ var ast = parser.parse('SELECT * FROM t');
 console.log(ast);
 ```
 
-Convert AST back to SQL:
+#### Convert AST back to SQL:
+
 ```javascript
 var Parser = require('flora-sql-parser').Parser;
 var ast = (new Parser()).parse('SELECT * FROM t');
@@ -20,3 +29,9 @@ var toSQL = require('flora-sql-parser').util.astToSQL;
 
 console.log(toSQL(ast));
 ```
+
+
+License
+-------
+
+[MIT](LICENSE)
