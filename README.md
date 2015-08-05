@@ -3,6 +3,7 @@ Flora SQL Parser
 
 [![Build Status](https://travis-ci.org/godmodelabs/flora-sql-parser.svg?branch=master)](https://travis-ci.org/godmodelabs/flora-sql-parser)
 [![NPM version](https://badge.fury.io/js/flora-sql-parser.svg)](https://www.npmjs.com/package/flora-sql-parser)
+[![Dependencies](https://img.shields.io/david/godmodelabs/flora-sql-parser.svg)](https://david-dm.org/godmodelabs/flora-sql-parser)
 
 Parse simple SQL statements into an abstract syntax tree (AST) and convert it back to SQL.
 
