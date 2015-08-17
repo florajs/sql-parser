@@ -184,7 +184,14 @@ table_base
           as: alias
         };
       }
-    } 
+    }
+  / LPAREN __ stmt:union_stmt __ RPAREN __ KW_AS? __ alias:ident {
+      stmt.parentheses = true;
+      return {
+        expr: stmt,
+        as: alias
+      };
+    }
 
 join_op
   = KW_LEFT __ KW_JOIN { return 'LEFT JOIN'; } 

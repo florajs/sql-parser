@@ -95,6 +95,26 @@ describe('select', function () {
             expect(ast.from).to.eql([{ db: null, table: 't', as: null }]);
         });
 
+        it('should parse subselect', function () {
+            ast = parser.parse('SELECT * FROM (SELECT id FROM t1) someAlias');
+
+            expect(ast.from).to.eql([{
+                expr: {
+                    type: 'select',
+                    options: null,
+                    distinct: null,
+                    from: [{ db: null, table: 't1', as: null }],
+                    columns: [{ expr: { type: 'column_ref', table: null, column: 'id' }, as: null }],
+                    where: null,
+                    groupby: null,
+                    orderby: null,
+                    limit: null,
+                    parentheses: true
+                },
+                as: 'someAlias'
+            }]);
+        });
+
         it('should parse implicit joins', function () {
             ast = parser.parse('SELECT * FROM t, a.b b, c.d as cd');
 
@@ -137,7 +157,7 @@ describe('select', function () {
             ]);
         });
 
-        it('should parse joined subquery', function () {
+        it('should parse joined subselect', function () {
             ast = parser.parse('SELECT * FROM t1 JOIN (SELECT id, col1 FROM t2) someAlias ON t1.id = someAlias.id');
 
             expect(ast.from).to.eql([

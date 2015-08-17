@@ -86,9 +86,14 @@ describe('AST',function () {
                 expect(getParsedSql(sql)).to.equal(sql);
             });
 
-            it('should support sub-selects', function () {
+            it('should support subselects', function () {
                 sql = 'SELECT \'string\', (SELECT col FROM t2) subSelect FROM t1';
                 expect(getParsedSql(sql)).to.equal('SELECT \'string\', (SELECT col FROM t2) AS subSelect FROM t1');
+            });
+
+            it('should support subselects in FROM clause', function () {
+                sql = 'SELECT * FROM (SELECT id FROM t1) AS someAlias';
+                expect(getParsedSql(sql)).to.equal(sql);
             });
         });
 
