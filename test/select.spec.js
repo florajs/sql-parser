@@ -136,6 +136,39 @@ describe('select', function () {
                 }
             ]);
         });
+
+        it('should parse joined subquery', function () {
+            ast = parser.parse('SELECT * FROM t1 JOIN (SELECT id, col1 FROM t2) someAlias ON t1.id = someAlias.id');
+
+            expect(ast.from).to.eql([
+                { db: null, table: 't1', as: null },
+                {
+                    expr: {
+                        type: 'select',
+                        options: null,
+                        distinct: null,
+                        from: [{ db: null, table: 't2', as: null }],
+                        columns: [
+                            { expr: { type: 'column_ref', table: null, 'column': 'id' }, as: null },
+                            { expr: { type: 'column_ref', table: null, 'column': 'col1' }, as: null }
+                        ],
+                        where: null,
+                        groupby: null,
+                        orderby: null,
+                        limit: null,
+                        parentheses: true
+                    },
+                    as: 'someAlias',
+                    join: 'INNER JOIN',
+                    on: {
+                        type: 'binary_expr',
+                        operator: '=',
+                        left: { type: 'column_ref', table: 't1', column: 'id' },
+                        right: { type: 'column_ref', table: 'someAlias', column: 'id' }
+                    }
+                }
+            ]);
+        });
     });
 
     describe('where clause', function () {

@@ -160,7 +160,16 @@ table_join
       t.join = op;
       t.on   = expr;
       return t;
-    } 
+    }
+  / op:join_op __ LPAREN __ stmt:union_stmt __ RPAREN __ KW_AS? __ alias:ident __ expr:on_clause? {
+    stmt.parentheses = true;
+    return {
+      expr: stmt,
+      as: alias,
+      join: op,
+      on: expr
+    };
+  }
  
 //NOTE that, the table assigned to `var` shouldn't write in `table_join`
 table_base 
@@ -169,7 +178,7 @@ table_base
         t.as = alias;
         return t;
       } else {
-        return  {
+        return {
           db: t.db,
           table: t.table,
           as: alias

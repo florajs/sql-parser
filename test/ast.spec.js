@@ -127,6 +127,11 @@ describe('AST',function () {
                 sql = 'SELECT col1 FROM t1 LEFT JOIN awesome_table AS t2 ON t1.id = t2.t1id';
                 expect(getParsedSql(sql)).to.equal(sql);
             });
+
+            it('should support joined subquery', function () {
+                sql = 'SELECT * FROM t1 LEFT JOIN (SELECT id, col1 FROM t2) AS someAlias ON t1.id = someAlias.id';
+                expect(getParsedSql(sql)).to.equal(sql);
+            });
         });
 
         describe('where clause', function () {
