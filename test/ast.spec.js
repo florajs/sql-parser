@@ -3,6 +3,7 @@
 var expect = require('chai').expect;
 var Parser = require('../lib/parser');
 var util   = require('../lib/util');
+var ImplementationError = require('flora-errors').ImplementationError;
 
 describe('AST',function () {
     var sql, parser = new Parser();
@@ -94,6 +95,18 @@ describe('AST',function () {
             it('should support subselects in FROM clause', function () {
                 sql = 'SELECT * FROM (SELECT id FROM t1) AS someAlias';
                 expect(getParsedSql(sql)).to.equal(sql);
+            });
+
+            it('should throw an exception for undefined values', function () {
+                // flora-mysql uses plain values instead of equivalent expressions, so expressions
+                // have to be created by SQL parser
+                expect(function () {
+                    util.createBinaryExpr(
+                        '=',
+                        { type: 'column_ref', table: null, column: 'id' },
+                        undefined
+                    );
+                }).to.throw(ImplementationError)
             });
         });
 
