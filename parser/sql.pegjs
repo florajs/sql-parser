@@ -91,7 +91,8 @@ select_stmt_nake
     c:column_clause     __  
     f:from_clause?      __
     w:where_clause?     __  
-    g:group_by_clause?  __  
+    g:group_by_clause?  __
+    h:having_clause?    __
     o:order_by_clause?  __
     l:limit_clause? {
       return {
@@ -102,6 +103,7 @@ select_stmt_nake
         from: f,
         where: w,
         groupby: g,
+        having: h,
         orderby: o,
         limit: l
       };
@@ -227,7 +229,7 @@ column_ref_list
     }
 
 having_clause
-  = KW_HAVING e:expr { return e; }
+  = KW_HAVING __ e:expr { return e; }
 
 order_by_clause
   = KW_ORDER __ KW_BY __ l:order_by_list { return l; }

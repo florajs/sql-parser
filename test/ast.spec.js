@@ -233,6 +233,18 @@ describe('AST',function () {
             });
         });
 
+        describe('having clause', function () {
+            it('should support simple expressions', function () {
+                sql = 'SELECT a FROM t GROUP BY t.b having COUNT(*) > 1';
+                expect(getParsedSql(sql)).to.equal('SELECT a FROM t GROUP BY t.b HAVING COUNT(*) > 1')
+            });
+
+            it('should support complex expressions', function () {
+                sql = 'SELECT a FROM t GROUP BY t.b HAVING COUNT(*) > (SELECT 10)';
+                expect(getParsedSql(sql)).to.equal(sql)
+            });
+        });
+
         describe('order clause', function () {
             it('should support implicit sort order', function () {
                 sql = 'SELECT a FROM t order by id';
