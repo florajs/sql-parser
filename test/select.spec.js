@@ -230,6 +230,30 @@ describe('select', function () {
                 }
             });
         });
+
+        ['exists', 'not exists'].forEach(function (operator) {
+            it('should parse ' + operator.toUpperCase() + ' condition', function () {
+                ast = parser.parse('SELECT * FROM t WHERE ' + operator + ' (SELECT 1)');
+
+                expect(ast.where).to.eql({
+                    type: 'unary_expr',
+                    operator: operator.toUpperCase(),
+                    expr: {
+                        type: 'select',
+                        options: null,
+                        distinct: null,
+                        columns: [{ expr: { type: 'number', value: 1 }, as: null }],
+                        from: null,
+                        where: null,
+                        groupby: null,
+                        having: null,
+                        orderby: null,
+                        limit: null,
+                        parentheses: true
+                    }
+                });
+            });
+        });
     });
 
     describe('limit clause', function () {

@@ -219,6 +219,13 @@ describe('AST',function () {
                 sql = 'SELECT col1 FROM t WHERE col2 IN (1, 3, 5, 7)';
                 expect(getParsedSql(sql)).to.equal(sql);
             });
+
+            ['EXISTS', 'NOT EXISTS'].forEach(function (operator) {
+                it('should support ' + operator + ' operator', function () {
+                    sql = 'SELECT a FROM t WHERE ' + operator + ' (SELECT 1)';
+                    expect(getParsedSql(sql)).to.equal(sql);
+                });
+            });
         });
 
         describe('group clause', function () {

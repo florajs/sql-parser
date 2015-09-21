@@ -383,10 +383,11 @@ and_expr
 
 //here we should use `NOT` instead of `comparision_expr` to support chain-expr
 not_expr
-  = (KW_NOT / "!" !"=") __ expr:not_expr {
+  = comparison_expr
+  / exists_expr
+  / (KW_NOT / "!" !"=") __ expr:not_expr {
       return createUnaryExpr('NOT', expr);
     }
-  / comparison_expr
 
 comparison_expr
   = left:additive_expr __ rh:comparison_op_right? {
@@ -394,6 +395,16 @@ comparison_expr
       else if (rh.type === 'arithmetic') return createBinaryExprChain(left, rh.tail);
       else return createBinaryExpr(rh.op, left, rh.right);
     }
+
+exists_expr
+  = op:exists_op __ LPAREN __ stmt:union_stmt __ RPAREN {
+    stmt.parentheses = true;
+    return createUnaryExpr(op, stmt);
+  }
+
+exists_op
+  = nk:(KW_NOT __ KW_EXISTS) { return nk[0] + ' ' + nk[2]; }
+  / KW_EXISTS
 
 comparison_op_right
   = arithmetic_op_right
@@ -728,8 +739,6 @@ KW_JOIN     = "JOIN"i     !ident_start
 KW_UNION    = "UNION"i    !ident_start
 KW_VALUES   = "VALUES"i   !ident_start
 
-KW_EXISTS   = "EXISTS"i   !ident_start
-
 KW_WHERE    = "WHERE"i    !ident_start
 
 KW_GROUP    = "GROUP"i    !ident_start
@@ -749,6 +758,7 @@ KW_BETWEEN  = "BETWEEN"i  !ident_start { return 'BETWEEN'; }
 KW_IN       = "IN"i       !ident_start { return 'IN'; }
 KW_IS       = "IS"i       !ident_start { return 'IS'; }
 KW_LIKE     = "LIKE"i     !ident_start { return 'LIKE'; }
+KW_EXISTS   = "EXISTS"i   !ident_start { return 'EXISTS'; }
 
 KW_NOT      = "NOT"i      !ident_start { return 'NOT'; }
 KW_AND      = "AND"i      !ident_start { return 'AND'; }
