@@ -31,6 +31,11 @@ var toSQL = require('flora-sql-parser').util.astToSQL;
 console.log(toSQL(ast));
 ```
 
+The generated SQL is ANSI SQL compliant. To run those queries on MySQL, make sure you set correct SQL mode
+```sql
+SET SESSION sql_mode = 'ANSI';
+```
+before running any query.
 
 License
 -------
