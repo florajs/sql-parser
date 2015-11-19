@@ -24,6 +24,11 @@ describe('AST',function () {
                 expect(getParsedSql('SELECT * FROM t')).to.equal('SELECT * FROM "t"');
             });
 
+            it('should parse multiple expressions', function () {
+                sql = 'SELECT col1 AS a, col2 AS b FROM t';
+                expect(getParsedSql(sql)).to.equal('SELECT "col1" AS "a", "col2" AS "b" FROM "t"');
+            });
+
             it('should escape reserved keywords', function () {
                 expect(getParsedSql('SELECT col."select" FROM t'))
                     .to.equal('SELECT "col"."select" FROM "t"');
@@ -52,8 +57,8 @@ describe('AST',function () {
             });
 
             it('should support string values', function () {
-                sql = 'SELECT \'foo\' AS "bar"';
-                expect(getParsedSql(sql)).to.equal(sql);
+                sql = 'SELECT \'foo\' AS bar';
+                expect(getParsedSql(sql)).to.equal('SELECT \'foo\' AS "bar"');
             });
 
             it('should support null values', function () {
@@ -106,6 +111,11 @@ describe('AST',function () {
                         undefined
                     );
                 }).to.throw(ImplementationError)
+            });
+
+            it('should parse ANSI SQL compliant statements', function () {
+                sql = 'SELECT "id", \'foo\' AS "type" FROM "table"';
+                expect(getParsedSql(sql)).to.equal(sql);
             });
         });
 
@@ -298,12 +308,12 @@ describe('AST',function () {
     describe('control flow', function () {
         describe('case operator', function () {
             it('should support case-when', function () {
-                sql = 'select case when 1 then "one" when 2 then "two" END';
+                sql = 'select case when 1 then \'one\' when 2 then \'two\' END';
                 expect(getParsedSql(sql)).to.equal('SELECT CASE WHEN 1 THEN \'one\' WHEN 2 THEN \'two\' END');
             });
 
             it('should support case-when-else', function () {
-                sql = 'select case FUNC(a) when 1 then "one" when 2 then "two" else "more" END FROM t';
+                sql = 'select case FUNC(a) when 1 then \'one\' when 2 then \'two\' else \'more\' END FROM t';
                 expect(getParsedSql(sql)).to.equal('SELECT CASE FUNC("a") WHEN 1 THEN \'one\' WHEN 2 THEN \'two\' ELSE \'more\' END FROM "t"');
             });
         });

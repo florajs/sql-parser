@@ -711,8 +711,7 @@ literal_bool
     }
 
 literal_string 
-  = ca:( ('"' double_char* '"') 
-        /("'" single_char* "'")) !{ return reservedMap[ca[1].join('').toUpperCase()] === true; } {
+  = ca:("'" single_char* "'") !{ return reservedMap[ca[1].join('').toUpperCase()] === true; } {
       return {
         type: 'string',
         value: ca[1].join('')
@@ -721,10 +720,6 @@ literal_string
 
 single_char
   = [^'\\\0-\x1F\x7f]
-  / escape_char
-
-double_char
-  = [^"\\\0-\x1F\x7f]
   / escape_char
 
 escape_char

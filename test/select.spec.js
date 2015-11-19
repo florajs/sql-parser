@@ -206,7 +206,7 @@ describe('select', function () {
         });
 
         it('should parse multiple conditions', function () {
-            ast = parser.parse('SELECT * FROM t where t.c between 1 and "t" AND Not true');
+            ast = parser.parse('SELECT * FROM t where t.c between 1 and \'t\' AND Not true');
 
             expect(ast.where).to.eql({
                 type: 'binary_expr',
