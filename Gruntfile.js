@@ -4,7 +4,7 @@ module.exports = function (grunt) {
 
     grunt.initConfig({
         eslint: {
-            target: ['lib/**/*.js', 'parser/**/*.js']
+            target: ['lib/**/*.js']
         },
 
         mochaTest: {
@@ -37,13 +37,13 @@ module.exports = function (grunt) {
 
         exec: {
             createParser: {
-                cmd: './node_modules/.bin/pegjs parser/sql.pegjs pegjs-parser.js'
+                cmd: './node_modules/.bin/pegjs sql.pegjs pegjs-parser.js'
             }
         },
 
         newer: { // only re-create parser if grammar file has changed
             grammarFile: {
-                src: 'parser/sql.pegjs',
+                src: 'sql.pegjs',
                 dest: 'pegjs-parser.js',
                 options: {
                     tasks: ['exec:createParser']
