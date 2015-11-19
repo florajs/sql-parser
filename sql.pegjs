@@ -54,10 +54,12 @@
     'SELECT': true,
     'SET': true,
     'SHOW': true,
+    'STATUS': true, // reserved (MySQL)
 
     'TABLE': true,
     'THEN': true,
     'TRUE': true,
+    'TYPE': true,   // reserved (MySQL)
 
     'UNION': true,
     'UPDATE': true,

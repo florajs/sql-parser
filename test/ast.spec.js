@@ -156,7 +156,7 @@ describe('AST',function () {
         describe('where clause', function () {
             ['<', '<=', '=', '!=', '>=', '>'].forEach(function (operator) {
                 it('should support simple "' + operator + '" comparison', function () {
-                    sql = 'SELECT a fRom db.t wHERE type ' + operator + ' 3';
+                    sql = 'SELECT a fRom db.t wHERE "type" ' + operator + ' 3';
                     expect(getParsedSql(sql)).to.equal('SELECT "a" FROM db."t" WHERE "type" ' + operator + ' 3');
                 });
             });
@@ -332,7 +332,7 @@ describe('AST',function () {
         });
 
         it('should replace multiple parameters', function () {
-            ast = parser.parse('SELECT col FROM t WHERE id = :id AND type = :type');
+            ast = parser.parse('SELECT col FROM t WHERE id = :id AND "type" = :type');
             ast = util.replaceParams(ast, { id: 1, type: 'foobar' });
 
             expect(ast.where).to.eql({
