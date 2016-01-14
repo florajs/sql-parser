@@ -37,6 +37,11 @@ SET SESSION sql_mode = 'ANSI';
 ```
 before running any query.
 
+Acknowledgment
+--------------
+
+This project is based on the SQL parser extracted from Alibaba's [nquery](https://github.com/alibaba/nquery) module.  
+
 License
 -------
 
