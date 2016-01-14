@@ -131,7 +131,7 @@
   var varList = [];
 }
 
-start 
+start
   = union_stmt
   / update_stmt
   / replace_insert_stmt
@@ -204,7 +204,17 @@ column_clause
     }
 
 column_list_item
-  = e:expr __ alias:alias_clause? {
+  = tbl:ident __ DOT __ STAR {
+      return {
+        expr: {
+          type: 'column_ref',
+          table: tbl,
+          column: '*'
+        },
+        as: null
+      };
+    }
+  / e:expr __ alias:alias_clause? {
       return { expr: e, as: alias };
     }
 
@@ -566,7 +576,7 @@ column_ref
         table: tbl, 
         column: col
       }; 
-    } 
+    }
   / col:column { 
       return {
         type: 'column_ref',

@@ -24,6 +24,10 @@ describe('AST',function () {
                 expect(getParsedSql('SELECT * FROM t')).to.equal('SELECT * FROM "t"');
             });
 
+            it('should support asterisk prefixed by table', function () {
+                expect(getParsedSql('SELECT t.* FROM t')).to.equal('SELECT "t".* FROM "t"');
+            });
+
             it('should parse multiple expressions', function () {
                 sql = 'SELECT col1 AS a, col2 AS b FROM t';
                 expect(getParsedSql(sql)).to.equal('SELECT "col1" AS "a", "col2" AS "b" FROM "t"');

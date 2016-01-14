@@ -37,6 +37,14 @@ describe('select', function () {
             expect(ast.columns).to.equal('*');
         });
 
+        it('should parse "table.*" column expressions', function () {
+            ast = parser.parse('SELECT t.* FROM t');
+
+            expect(ast.columns).to.eql([
+                { expr: { type: 'column_ref', 'table': 't', column: '*' }, as: null }
+            ]);
+        });
+
         it('should parse aliases w/o "AS" keyword', function () {
             ast = parser.parse('SELECT a aa FROM  t');
 
