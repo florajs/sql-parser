@@ -439,4 +439,16 @@ describe('select', function () {
             expect(ast.options).to.eql(['SQL_CALC_FOUND_ROWS', 'SQL_BIG_RESULT', 'SQL_BUFFER_RESULT']);
         });
     });
+
+    describe('strings', function () {
+        it('should parse single quoted strings', function () {
+            ast = parser.parse('SELECT \'string\'');
+            expect(ast.columns).to.eql([{ expr: { type: 'string', value: 'string' }, as: null }]);
+        });
+
+        it('should parse keywords in single quotes as string', function () {
+            ast = parser.parse('SELECT \'select\'');
+            expect(ast.columns).to.eql([{ expr: { type: 'string', value: 'select' }, as: null }]);
+        });
+    });
 });

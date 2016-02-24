@@ -123,7 +123,7 @@
     'L': true,
     'l': true,
     //for not
-    'N': true, 
+    'N': true,
     'n': true
   };
 
@@ -144,22 +144,22 @@ union_stmt
         cur._next = tail[i][3];
         cur = cur._next
       }
-      return head; 
-    } 
+      return head;
+    }
 
 select_stmt
   = select_stmt_nake
   / s:('(' __ select_stmt __ ')') {
-      return s[2]; 
+      return s[2];
     }
 
 select_stmt_nake
   = KW_SELECT           __
     opts:option_clause? __
     d:KW_DISTINCT?      __
-    c:column_clause     __  
+    c:column_clause     __
     f:from_clause?      __
-    w:where_clause?     __  
+    w:where_clause?     __
     g:group_by_clause?  __
     h:having_clause?    __
     o:order_by_clause?  __
@@ -218,25 +218,25 @@ column_list_item
       return { expr: e, as: alias };
     }
 
-alias_clause 
+alias_clause
   = KW_AS? __ i:ident { return i; }
 
 from_clause
   = KW_FROM __ l:table_ref_list { return l; }
 
 table_ref_list
-  = head:table_base 
+  = head:table_base
     tail:table_ref* {
       tail.unshift(head);
       return tail;
     }
 
-table_ref 
+table_ref
   = __ COMMA __ t:table_base { return t; }
-  / __ t:table_join { return t; } 
-  
-  
-table_join 
+  / __ t:table_join { return t; }
+
+
+table_join
   = op:join_op __ t:table_base __ expr:on_clause? {
       t.join = op;
       t.on   = expr;
@@ -251,9 +251,9 @@ table_join
       on: expr
     };
   }
- 
+
 //NOTE that, the table assigned to `var` shouldn't write in `table_join`
-table_base 
+table_base
   = t:table_name __ KW_AS? __ alias:ident? {
       if (t.type === 'var') {
         t.as = alias;
@@ -275,16 +275,16 @@ table_base
     }
 
 join_op
-  = KW_LEFT __ KW_JOIN { return 'LEFT JOIN'; } 
+  = KW_LEFT __ KW_JOIN { return 'LEFT JOIN'; }
   / (KW_INNER __)? KW_JOIN { return 'INNER JOIN'; }
 
-table_name 
+table_name
   = dt:ident tail:(__ DOT __ ident_name)? {
       var obj = { db: null, table: dt };
       if (tail !== null) {
         obj.db = dt;
         obj.table = tail[3];
-      } 
+      }
       return obj;
     }
   / v:var_decl {
@@ -293,10 +293,10 @@ table_name
       return v;
     }
 
-on_clause 
+on_clause
   = KW_ON __ e:expr { return e; }
 
-where_clause 
+where_clause
   = KW_WHERE __ e:expr { return e; }
 
 group_by_clause
@@ -338,13 +338,13 @@ limit_clause
     }
 
 update_stmt
-  = KW_UPDATE    __ 
-    t:table_name __ 
-    KW_SET       __     
-    l:set_list   __  
+  = KW_UPDATE    __
+    t:table_name __
+    KW_SET       __
+    l:set_list   __
     w:where_clause {
       return {
-        type: 'update',  
+        type: 'update',
         db: t.db,
         table: t.table,
         set: l,
@@ -368,13 +368,13 @@ set_item
     }
 
 replace_insert_stmt
-  = ri:replace_insert       __ 
-    KW_INTO                 __ 
-    t:table_name  __ LPAREN __ 
+  = ri:replace_insert       __
+    KW_INTO                 __
+    t:table_name  __ LPAREN __
     c:column_list  __ RPAREN __
     v:value_clause {
       return {
-        type: ri,  
+        type: ri,
         db: t.db,
         table: t.table,
         columns: c,
@@ -383,7 +383,7 @@ replace_insert_stmt
     }
 
 replace_insert
-  = KW_INSERT   { return 'insert'; } 
+  = KW_INSERT   { return 'insert'; }
   / KW_REPLACE  { return 'replace'; }
 
 value_clause
@@ -392,7 +392,7 @@ value_clause
 value_list
   = head:value_item tail:(__ COMMA __ value_item)* {
       return createList(head, tail);
-    } 
+    }
 
 value_item
   = LPAREN __ l:expr_list  __ RPAREN {
@@ -433,23 +433,23 @@ case_else = KW_ELSE __ result:expr {
     return { type: 'else', result: result };
   }
 
-/** 
- * Borrowed from PL/SQL ,the priority of below list IS ORDER BY DESC 
+/**
+ * Borrowed from PL/SQL ,the priority of below list IS ORDER BY DESC
  * ---------------------------------------------------------------------------------------------------
- * | +, -                                                     | identity, negation                   |     
+ * | +, -                                                     | identity, negation                   |
  * | *, /                                                     | multiplication, division             |
  * | +, -                                                     | addition, subtraction, concatenation |
  * | =, <, >, <=, >=, <>, !=, IS, LIKE, BETWEEN, IN           | comparion                            |
  * | !, NOT                                                   | logical negation                     |
  * | AND                                                      | conjunction                          |
- * | OR                                                       | inclusion                            |      
+ * | OR                                                       | inclusion                            |
  * ---------------------------------------------------------------------------------------------------
  */
 
 expr
   = or_expr
   / select_stmt
-    
+
 or_expr
   = head:and_expr tail:(__ KW_OR __ and_expr)* {
       return createBinaryExprChain(head, tail);
@@ -495,10 +495,10 @@ comparison_op_right
 arithmetic_op_right
   = l:(__ arithmetic_comparison_operator __ additive_expr)+ {
       return { type: 'arithmetic', tail: l };
-    } 
+    }
 
 arithmetic_comparison_operator
-  = ">=" / ">" / "<=" / "<>" / "<" / "=" / "!="  
+  = ">=" / ">" / "<=" / "<>" / "<" / "=" / "!="
 
 is_op_right
   = op:KW_IS __ right:additive_expr {
@@ -518,9 +518,9 @@ between_op_right
 
 like_op
   = nk:(KW_NOT __ KW_LIKE) { return nk[0] + ' ' + nk[2]; }
-  / KW_LIKE 
+  / KW_LIKE
 
-in_op 
+in_op
   = nk:(KW_NOT __ KW_IN) { return nk[0] + ' ' + nk[2]; }
   / KW_IN
 
@@ -555,29 +555,29 @@ multiplicative_expr
 multiplicative_operator
   = "*" / "/" / "%"
 
-primary 
+primary
   = literal
   / cast_expr
   / aggr_func
   / func_call
   / case_expr
-  / column_ref 
+  / column_ref
   / param
   / LPAREN __ e:expr __ RPAREN {
       e.parentheses = true;
-      return e; 
-    } 
+      return e;
+    }
   / var_decl
 
-column_ref 
-  = tbl:ident __ DOT __ col:column { 
+column_ref
+  = tbl:ident __ DOT __ col:column {
       return {
         type: 'column_ref',
-        table: tbl, 
+        table: tbl,
         column: col
-      }; 
+      };
     }
-  / col:column { 
+  / col:column {
       return {
         type: 'column_ref',
         table: null,
@@ -616,10 +616,10 @@ column
   = name:column_name !{ return reservedMap[name.toUpperCase()] === true; } { return name; }
   / quoted_ident
 
-column_name 
+column_name
   =  start:ident_start parts:column_part* { return start + parts.join(''); }
 
-ident_name  
+ident_name
   =  start:ident_start parts:ident_part* { return start + parts.join(''); }
 
 ident_start = [A-Za-z_]
@@ -629,8 +629,8 @@ ident_part  = [A-Za-z0-9_]
 // to support column name like `cf1:name` in hbase
 column_part  = [A-Za-z0-9_:]
 
-param 
-  = l:(':' ident_name) { 
+param
+  = l:(':' ident_name) {
       return { type: 'param', value: l[1] };
     }
 
@@ -638,41 +638,41 @@ aggr_func
   = aggr_fun_count
   / aggr_fun_smma
 
-aggr_fun_smma 
+aggr_fun_smma
   = name:KW_SUM_MAX_MIN_AVG  __ LPAREN __ e:additive_expr __ RPAREN {
       return {
         type: 'aggr_func',
         name: name,
         args: {
-          expr: e  
-        } 
+          expr: e
+        }
       };
     }
 
 KW_SUM_MAX_MIN_AVG
-  = KW_SUM / KW_MAX / KW_MIN / KW_AVG 
+  = KW_SUM / KW_MAX / KW_MIN / KW_AVG
 
-aggr_fun_count 
+aggr_fun_count
   = name:KW_COUNT __ LPAREN __ arg:count_arg __ RPAREN {
       return {
         type: 'aggr_func',
         name: name,
-        args: arg 
+        args: arg
       };
     }
 
-count_arg 
+count_arg
   = e:star_expr { return { expr: e }; }
   / d:KW_DISTINCT? __ c:column_ref { return { distinct: d, expr: c }; }
 
-star_expr 
+star_expr
   = "*" { return { type: 'star', value: '*' }; }
 
 func_call
   = name:ident __ LPAREN __ l:expr_list? __ RPAREN {
       return {
         type: 'function',
-        name: name, 
+        name: name,
         args: l ? l: { type: 'expr_list', value: [] }
       };
     }
@@ -699,12 +699,12 @@ signedness
   = KW_SIGNED
   / KW_UNSIGNED
 
-literal 
+literal
   = literal_string / literal_numeric / literal_bool / literal_null
 
 literal_list
   = head:literal tail:(__ COMMA __ literal)* {
-      return createList(head, tail); 
+      return createList(head, tail);
     }
 
 literal_null
@@ -712,16 +712,16 @@ literal_null
       return { type: 'null', value: null };
     }
 
-literal_bool 
-  = KW_TRUE { 
+literal_bool
+  = KW_TRUE {
       return { type: 'bool', value: true };
     }
-  / KW_FALSE { 
+  / KW_FALSE {
       return { type: 'bool', value: false };
     }
 
-literal_string 
-  = ca:("'" single_char* "'") !{ return reservedMap[ca[1].join('').toUpperCase()] === true; } {
+literal_string
+  = ca:("'" single_char* "'") {
       return {
         type: 'string',
         value: ca[1].join('')
@@ -785,13 +785,13 @@ e
   = e:[eE] sign:[+-]? { return e + (sign !== null ? sign: ''); }
 
 
-KW_NULL     = "NULL"i     !ident_start 
+KW_NULL     = "NULL"i     !ident_start
 KW_TRUE     = "TRUE"i     !ident_start
-KW_FALSE    = "FALSE"i    !ident_start 
+KW_FALSE    = "FALSE"i    !ident_start
 
 KW_SHOW     = "SHOW"i     !ident_start
 KW_DROP     = "DROP"i     !ident_start
-KW_SELECT   = "SELECT"i   !ident_start 
+KW_SELECT   = "SELECT"i   !ident_start
 KW_UPDATE   = "UPDATE"i   !ident_start
 KW_CREATE   = "CREATE"i   !ident_start
 KW_DELETE   = "DELETE"i   !ident_start
@@ -906,22 +906,22 @@ char = .
 whitespace =
   [ \t\n\r]
 
-EOL 
+EOL
   = EOF
   / [\n\r]+
-  
+
 EOF = !.
 
 //begin procedure extension
-proc_stmts 
-  = proc_stmt* 
+proc_stmts
+  = proc_stmt*
 
-proc_stmt 
+proc_stmt
   = &{ varList = []; return true; } __ s:(assign_stmt / return_stmt) {
       return { stmt: s, vars: varList };
     }
 
-assign_stmt 
+assign_stmt
   = va:var_decl __ KW_ASSIGN __ e:proc_expr {
     return {
       type: 'assign',
@@ -930,15 +930,15 @@ assign_stmt
     };
   }
 
-return_stmt 
+return_stmt
   = KW_RETURN __ e:proc_expr {
       return { type: 'return', expr: e };
     }
 
-proc_expr 
-  = select_stmt 
-  / proc_join 
-  / proc_additive_expr 
+proc_expr
+  = select_stmt
+  / proc_join
+  / proc_additive_expr
   / proc_array
 
 proc_additive_expr
@@ -957,29 +957,29 @@ proc_join
   = lt:var_decl __ op:join_op  __ rt:var_decl __ expr:on_clause {
       return {
         type: 'join',
-        ltable: lt, 
+        ltable: lt,
         rtable: rt,
         op: op,
         on: expr
       };
     }
 
-proc_primary 
+proc_primary
   = literal
   / var_decl
-  / proc_func_call 
+  / proc_func_call
   / param
-  / LPAREN __ e:proc_additive_expr __ RPAREN { 
+  / LPAREN __ e:proc_additive_expr __ RPAREN {
       e.parentheses = true;
-      return e; 
-    } 
+      return e;
+    }
 
 proc_func_call
   = name:ident __ LPAREN __ l:proc_primary_list __ RPAREN {
       //compatible with original func_call
       return {
         type: 'function',
-        name: name, 
+        name: name,
         args: {
           type: 'expr_list',
           value: l
@@ -987,17 +987,17 @@ proc_func_call
       };
     }
 
-proc_primary_list 
+proc_primary_list
   = head:proc_primary tail:(__ COMMA __ proc_primary)* {
       return createList(head, tail);
-    } 
+    }
 
-proc_array = 
+proc_array =
   LBRAKE __ l:proc_primary_list __ RBRAKE {
     return { type: 'array', value: l };
   }
 
-var_decl 
+var_decl
   = KW_VAR_PRE name:ident_name m:mem_chain {
     //push for analysis
     varList.push(name);
@@ -1006,13 +1006,13 @@ var_decl
       name: name,
       members: m
     };
-  } 
+  }
 
-mem_chain 
+mem_chain
   = l:('.' ident_name)* {
     var s = [];
     for (var i = 0; i < l.length; i++) {
-      s.push(l[i][1]); 
+      s.push(l[i][1]);
     }
     return s;
   }
