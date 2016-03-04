@@ -239,6 +239,19 @@ describe('select', function () {
             });
         });
 
+        ['is', 'is not'].forEach(function (operator) {
+            it('should parse  condition', function () {
+                ast = parser.parse('SELECT * FROM t WHERE "col" ' + operator + ' NULL');
+
+                expect(ast.where).to.eql({
+                    type: 'binary_expr',
+                    operator: operator.toUpperCase(),
+                    left: { type: 'column_ref', table: null, column: 'col' },
+                    right: { type: 'null', value: null }
+                });
+            });
+        });
+
         ['exists', 'not exists'].forEach(function (operator) {
             it('should parse ' + operator.toUpperCase() + ' condition', function () {
                 ast = parser.parse('SELECT * FROM t WHERE ' + operator + ' (SELECT 1)');

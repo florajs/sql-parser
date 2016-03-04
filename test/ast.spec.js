@@ -210,6 +210,13 @@ describe('AST',function () {
                 });
             });
 
+            ['IS', 'IS NOT'].forEach(function (operator) {
+                it('should support ' + operator + ' operator', function () {
+                    sql = 'SELECT a FROM t WHERE col ' + operator.toLowerCase() + ' NULL';
+                    expect(getParsedSql(sql)).to.equal('SELECT "a" FROM "t" WHERE "col" ' + operator + ' NULL');
+                });
+            });
+
             it('should support BETWEEN operator', function () {
                 sql = 'SELECT a FROM t WHERE id between \'1\' and 1337';
                 expect(getParsedSql(sql)).to.equal('SELECT "a" FROM "t" WHERE "id" BETWEEN \'1\' AND 1337');
