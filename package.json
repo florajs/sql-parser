@@ -40,7 +40,7 @@
     "node": ">=0.10.0"
   },
   "dependencies": {
-    "flora-errors": "^0.2.0",
+    "flora-errors": "^0.6.0",
     "pegjs": "^0.9.0"
   },
   "devDependencies": {
