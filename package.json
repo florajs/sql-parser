@@ -45,16 +45,16 @@
   },
   "devDependencies": {
     "chai": "^3.4.1",
-    "grunt": "^0.4.5",
+    "grunt": "^1.0.1",
     "grunt-cli": "^1.2.0",
-    "grunt-eslint": "^18.0.0",
-    "grunt-exec": "^0.4.6",
-    "grunt-mocha-istanbul": "^4.0.2",
+    "grunt-eslint": "^19.0.0",
+    "grunt-exec": "^1.0.0",
+    "grunt-mocha-istanbul": "^5.0.1",
     "grunt-mocha-test": "^0.12.7",
     "grunt-newer-explicit": "^0.9.4",
     "istanbul": "^0.4.2",
     "load-grunt-tasks": "^3.4.0",
-    "mocha": "^2.3.4",
+    "mocha": "^3.0.0",
     "mocha-bamboo-reporter": "^1.1.0"
   }
 }
