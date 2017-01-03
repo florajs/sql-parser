@@ -53,7 +53,6 @@
     "grunt-exec": "^1.0.0",
     "grunt-mocha-istanbul": "^5.0.1",
     "grunt-mocha-test": "^0.13.2",
-    "grunt-newer-explicit": "^0.9.4",
     "istanbul": "^0.4.2",
     "load-grunt-tasks": "^3.4.0",
     "mocha": "^3.0.0",

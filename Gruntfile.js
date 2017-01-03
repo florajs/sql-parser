@@ -40,16 +40,6 @@ module.exports = function (grunt) {
                 cmd: './node_modules/.bin/pegjs sql.pegjs pegjs-parser.js'
             }
         },
-
-        newer: { // only re-create parser if grammar file has changed
-            grammarFile: {
-                src: 'sql.pegjs',
-                dest: 'pegjs-parser.js',
-                options: {
-                    tasks: ['exec:createParser']
-                }
-            }
-        }
     });
 
     require('load-grunt-tasks')(grunt);
@@ -59,5 +49,5 @@ module.exports = function (grunt) {
     grunt.registerTask('test-bamboo', ['create-parser', 'mochaTest:bamboo']);
     grunt.registerTask('test-cov', ['create-parser', 'mocha_istanbul:coverage']);
     grunt.registerTask('lint', ['eslint']);
-    grunt.registerTask('create-parser', 'newer');
+    grunt.registerTask('create-parser', 'exec:createParser');
 };
