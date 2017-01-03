@@ -32,30 +32,27 @@
     }
   ],
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/godmodelabs/flora-sql-parser.git"
-  },
+  "repository": "godmodelabs/flora-sql-parser",
   "homepage": "https://github.com/godmodelabs/flora-sql-parser",
   "engines": {
     "node": ">=6"
   },
   "dependencies": {
-    "flora-errors": "^0.6.0",
+    "flora-errors": "^0.7.0",
     "has": "^1.0.1",
     "pegjs": "^0.9.0"
   },
   "devDependencies": {
     "chai": "^3.4.1",
     "eslint": "^3.11.1",
-    "eslint-config-airbnb-base": "^10.0.1",
+    "eslint-config-airbnb-base": "^11.0.0",
     "eslint-plugin-import": "^2.2.0",
-    "grunt": "^0.4.0",
+    "grunt": "^1.0.1",
     "grunt-cli": "^1.2.0",
     "grunt-eslint": "^19.0.0",
     "grunt-exec": "^1.0.0",
     "grunt-mocha-istanbul": "^5.0.1",
-    "grunt-mocha-test": "^0.12.7",
+    "grunt-mocha-test": "^0.13.2",
     "grunt-newer-explicit": "^0.9.4",
     "istanbul": "^0.4.2",
     "load-grunt-tasks": "^3.4.0",
