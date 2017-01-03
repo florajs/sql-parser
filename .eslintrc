@@ -1,31 +1,17 @@
 {
-  "env": {
-    "node": true,
-    "mocha": true
-  },
+  "extends": "airbnb-base",
   "rules": {
-    "block-scoped-var": 2,
-    "brace-style": 1,
-    "consistent-this": [0, "self"],
-    "curly": [2, "multi-line"],
-    "complexity": [0, 11],
-    "dot-notation": 0,
     "indent": [2, 4],
-    "max-depth": [2, 6],
-    "max-len": [1, 120, 4],
-    "max-nested-callbacks": [2, 5],
-    "max-params": [2, 4],
-    "no-empty": 0,
-    "no-loop-func": 0,
-    "no-undef": 2,
+    "strict": 0,
+    "comma-dangle": 0,
     "no-underscore-dangle": 0,
-    "no-use-before-define": 0,
-    "quotes": [2, "single"],
-    "radix": 2,
-    "semi": [2, "always"],
-    "space-before-function-paren": [2, {"anonymous": "always", "named": "never"}],
-    "space-unary-ops": 0,
-    "strict": [2, "global"],
-    "valid-jsdoc": 0
+    "no-param-reassign": 0,
+    "prefer-template": 0,
+    "no-plusplus": 0,
+    "no-unused-vars": ["error", { "argsIgnorePattern": "next" }],
+    "class-methods-use-this": 0
+  },
+  "parserOptions": {
+    "ecmaVersion": 2015
   }
 }

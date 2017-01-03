@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = {
-    Parser: require('./lib/parser'),
-    util: require('./lib/util')
-};
+const Parser = require('./lib/parser');
+const util = require('./lib/util');
+
+module.exports = { Parser, util };
