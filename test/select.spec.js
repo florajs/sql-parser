@@ -1,13 +1,13 @@
 'use strict';
 
-var expect = require('chai').expect;
-var Parser = require('../lib/parser');
+const expect = require('chai').expect;
+const Parser = require('../lib/parser');
 
-describe('select', function () {
-    var ast,
-        parser = new Parser();
+describe('select', () => {
+    const parser = new Parser();
+    let ast;
 
-    it('should be null if empty', function () {
+    it('should be null if empty', () => {
         ast = parser.parse('SELECT a');
 
         expect(ast.options).to.be.null;
@@ -19,7 +19,7 @@ describe('select', function () {
         expect(ast.limit).to.be.null;
     });
 
-    it('should have appropriate types', function () {
+    it('should have appropriate types', () => {
         ast = parser.parse('SELECT SQL_NO_CACHE DISTINCT a FROM b WHERE c = 0 GROUP BY d ORDER BY e limit 3');
 
         expect(ast.options).to.be.an('array');
@@ -31,13 +31,13 @@ describe('select', function () {
         expect(ast.limit).to.be.an('array');
     });
 
-    describe('column clause', function () {
-        it('should parse "*" shorthand', function () {
+    describe('column clause', () => {
+        it('should parse "*" shorthand', () => {
             ast = parser.parse('SELECT * FROM t');
             expect(ast.columns).to.equal('*');
         });
 
-        it('should parse "table.*" column expressions', function () {
+        it('should parse "table.*" column expressions', () => {
             ast = parser.parse('SELECT t.* FROM t');
 
             expect(ast.columns).to.eql([
@@ -45,7 +45,7 @@ describe('select', function () {
             ]);
         });
 
-        it('should parse aliases w/o "AS" keyword', function () {
+        it('should parse aliases w/o "AS" keyword', () => {
             ast = parser.parse('SELECT a aa FROM  t');
 
             expect(ast.columns).to.eql([
@@ -53,7 +53,7 @@ describe('select', function () {
             ]);
         });
 
-        it('should parse aliases w/ "AS" keyword', function () {
+        it('should parse aliases w/ "AS" keyword', () => {
             ast = parser.parse('SELECT b.c as bc FROM t');
 
             expect(ast.columns).to.eql([
@@ -61,7 +61,7 @@ describe('select', function () {
             ]);
         });
 
-        it('should parse expression', function () {
+        it('should parse expression', () => {
             ast = parser.parse('SELECT fun(d) FROM t');
 
             expect(ast.columns).to.eql([
@@ -79,7 +79,7 @@ describe('select', function () {
             ]);
         });
 
-        it('should parse multiple columns', function () {
+        it('should parse multiple columns', () => {
             ast = parser.parse('SELECT b.c as bc, 1+3 FROM t');
 
             expect(ast.columns).to.eql([
@@ -97,13 +97,13 @@ describe('select', function () {
         });
     });
 
-    describe('from clause', function () {
-        it('should parse single table', function () {
+    describe('from clause', () => {
+        it('should parse single table', () => {
             ast = parser.parse('SELECT * FROM t');
             expect(ast.from).to.eql([{ db: null, table: 't', as: null }]);
         });
 
-        it('should parse subselect', function () {
+        it('should parse subselect', () => {
             ast = parser.parse('SELECT * FROM (SELECT id FROM t1) someAlias');
 
             expect(ast.from).to.eql([{
@@ -124,7 +124,7 @@ describe('select', function () {
             }]);
         });
 
-        it('should parse implicit joins', function () {
+        it('should parse implicit joins', () => {
             ast = parser.parse('SELECT * FROM t, a.b b, c.d as cd');
 
             expect(ast.from).to.eql([
@@ -134,7 +134,7 @@ describe('select', function () {
             ]);
         });
 
-        it('should parse explicit joins', function () {
+        it('should parse explicit joins', () => {
             ast = parser.parse('SELECT * FROM t join a.b b on t.a = b.c left join d on d.d = d.a');
 
             expect(ast.from).to.eql([
@@ -166,7 +166,7 @@ describe('select', function () {
             ]);
         });
 
-        it('should parse joined subselect', function () {
+        it('should parse joined subselect', () => {
             ast = parser.parse('SELECT * FROM t1 JOIN (SELECT id, col1 FROM t2) someAlias ON t1.id = someAlias.id');
 
             expect(ast.from).to.eql([
@@ -201,8 +201,8 @@ describe('select', function () {
         });
     });
 
-    describe('where clause', function () {
-        it('should parse single condition', function () {
+    describe('where clause', () => {
+        it('should parse single condition', () => {
             ast = parser.parse('SELECT * FROM t where t.a > 0');
 
             expect(ast.where).to.eql({
@@ -213,8 +213,8 @@ describe('select', function () {
             });
         });
 
-        it('should parse multiple conditions', function () {
-            ast = parser.parse('SELECT * FROM t where t.c between 1 and \'t\' AND Not true');
+        it('should parse multiple conditions', () => {
+            ast = parser.parse(`SELECT * FROM t where t.c between 1 and 't' AND Not true`);
 
             expect(ast.where).to.eql({
                 type: 'binary_expr',
@@ -239,8 +239,8 @@ describe('select', function () {
             });
         });
 
-        ['is', 'is not'].forEach(function (operator) {
-            it('should parse  condition', function () {
+        ['is', 'is not'].forEach((operator) => {
+            it('should parse  condition', () => {
                 ast = parser.parse('SELECT * FROM t WHERE "col" ' + operator + ' NULL');
 
                 expect(ast.where).to.eql({
@@ -252,8 +252,8 @@ describe('select', function () {
             });
         });
 
-        ['exists', 'not exists'].forEach(function (operator) {
-            it('should parse ' + operator.toUpperCase() + ' condition', function () {
+        ['exists', 'not exists'].forEach((operator) => {
+            it('should parse ' + operator.toUpperCase() + ' condition', () => {
                 ast = parser.parse('SELECT * FROM t WHERE ' + operator + ' (SELECT 1)');
 
                 expect(ast.where).to.eql({
@@ -277,8 +277,8 @@ describe('select', function () {
         });
     });
 
-    describe('limit clause', function () {
-        it('should be parsed w/o offset', function () {
+    describe('limit clause', () => {
+        it('should be parsed w/o offset', () => {
             ast = parser.parse('SELECT DISTINCT a FROM b WHERE c = 0 GROUP BY d ORDER BY e limit 3');
 
             expect(ast.limit).eql([
@@ -287,7 +287,7 @@ describe('select', function () {
             ]);
         });
 
-        it('should be parsed w/ offset', function () {
+        it('should be parsed w/ offset', () => {
             ast = parser.parse('SELECT DISTINCT a FROM b WHERE c = 0 GROUP BY d ORDER BY e limit 0, 3');
 
             expect(ast.limit).to.eql([
@@ -297,14 +297,14 @@ describe('select', function () {
         });
     });
 
-    describe('group by clause', function () {
-        it('should parse single columns', function () {
+    describe('group by clause', () => {
+        it('should parse single columns', () => {
             ast = parser.parse('SELECT a FROM b WHERE c = 0 GROUP BY d');
 
             expect(ast.groupby).to.eql([{ type:'column_ref', table: null, column: 'd' }])
         });
 
-        it('should parse multiple columns', function () {
+        it('should parse multiple columns', () => {
             ast = parser.parse('SELECT a FROM b WHERE c = 0 GROUP BY d, t.b, t.c');
 
             expect(ast.groupby).to.eql([
@@ -315,8 +315,8 @@ describe('select', function () {
         });
     });
 
-    describe('having clause', function () {
-        it('should parse single conditions', function () {
+    describe('having clause', () => {
+        it('should parse single conditions', () => {
             ast = parser.parse('SELECT col1 FROM t GROUP BY col2 HAVING COUNT(*) > 1');
 
             expect(ast.having).to.eql({
@@ -331,7 +331,7 @@ describe('select', function () {
             });
         });
 
-        it('should parse multiple conditions', function () {
+        it('should parse multiple conditions', () => {
             ast = parser.parse('SELECT col1 FROM t GROUP BY col2 HAVING SUM(col2) > 10 OR 1 = 1');
 
             expect(ast.having).to.eql({
@@ -356,7 +356,7 @@ describe('select', function () {
             });
         });
 
-        it('should parse subselects', function () {
+        it('should parse subselects', () => {
             ast = parser.parse('SELECT col1 FROM t GROUP BY col2 HAVING SUM(col2) > (SELECT 10)');
 
             expect(ast.having).to.eql({
@@ -384,8 +384,8 @@ describe('select', function () {
         });
     });
 
-    describe('order by clause', function () {
-        it('should parse single column', function () {
+    describe('order by clause', () => {
+        it('should parse single column', () => {
             ast = parser.parse('SELECT a FROM b WHERE c = 0 order BY d');
 
             expect(ast.orderby).to.eql([
@@ -393,7 +393,7 @@ describe('select', function () {
             ]);
         });
 
-        it('should parse multiple columns', function () {
+        it('should parse multiple columns', () => {
             ast = parser.parse('SELECT a FROM b WHERE c = 0 order BY d, t.b dEsc, t.c');
 
             expect(ast.orderby).to.eql([
@@ -403,7 +403,7 @@ describe('select', function () {
             ]);
         });
 
-        it('should parse expressions', function () {
+        it('should parse expressions', () => {
             ast = parser.parse("SELECT a FROM b WHERE c = 0 order BY d, SuM(e)");
 
             expect(ast.orderby).to.eql([
@@ -420,13 +420,13 @@ describe('select', function () {
         });
     });
 
-    describe('MySQL SQL extensions', function () {
-        it('should parse SQL_CALC_FOUND_ROWS', function () {
+    describe('MySQL SQL extensions', () => {
+        it('should parse SQL_CALC_FOUND_ROWS', () => {
             ast = parser.parse('SELECT SQL_CALC_FOUND_ROWS col FROM t');
             expect(ast.options).to.eql(['SQL_CALC_FOUND_ROWS']);
         });
 
-        it('should parse SQL_CACHE/SQL_NO_CACHE', function () {
+        it('should parse SQL_CACHE/SQL_NO_CACHE', () => {
             ast = parser.parse('SELECT SQL_CACHE col FROM t');
             expect(ast.options).to.eql(['SQL_CACHE']);
 
@@ -434,7 +434,7 @@ describe('select', function () {
             expect(ast.options).to.eql(['SQL_NO_CACHE']);
         });
 
-        it('should parse SQL_SMALL_RESULT/SQL_BIG_RESULT', function () {
+        it('should parse SQL_SMALL_RESULT/SQL_BIG_RESULT', () => {
             ast = parser.parse('SELECT SQL_SMALL_RESULT col FROM t');
             expect(ast.options).to.eql(['SQL_SMALL_RESULT']);
 
@@ -442,25 +442,25 @@ describe('select', function () {
             expect(ast.options).to.eql(['SQL_BIG_RESULT']);
         });
 
-        it('should parse SQL_BUFFER_RESULT', function () {
+        it('should parse SQL_BUFFER_RESULT', () => {
             ast = parser.parse('SELECT SQL_BUFFER_RESULT col FROM t');
             expect(ast.options).to.contain('SQL_BUFFER_RESULT');
         });
 
-        it('should parse multiple options per query', function () {
+        it('should parse multiple options per query', () => {
             ast = parser.parse('SELECT SQL_CALC_FOUND_ROWS SQL_BIG_RESULT SQL_BUFFER_RESULT col FROM t');
             expect(ast.options).to.eql(['SQL_CALC_FOUND_ROWS', 'SQL_BIG_RESULT', 'SQL_BUFFER_RESULT']);
         });
     });
 
-    describe('strings', function () {
-        it('should parse single quoted strings', function () {
-            ast = parser.parse('SELECT \'string\'');
+    describe('strings', () => {
+        it('should parse single quoted strings', () => {
+            ast = parser.parse(`SELECT 'string'`);
             expect(ast.columns).to.eql([{ expr: { type: 'string', value: 'string' }, as: null }]);
         });
 
-        it('should parse keywords in single quotes as string', function () {
-            ast = parser.parse('SELECT \'select\'');
+        it('should parse keywords in single quotes as string', () => {
+            ast = parser.parse(`SELECT 'select'`);
             expect(ast.columns).to.eql([{ expr: { type: 'string', value: 'select' }, as: null }]);
         });
     });

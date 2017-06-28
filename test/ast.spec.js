@@ -1,114 +1,115 @@
 'use strict';
 
-var expect = require('chai').expect;
-var Parser = require('../lib/parser');
-var util   = require('../lib/util');
-var ImplementationError = require('flora-errors').ImplementationError;
+const expect = require('chai').expect;
+const Parser = require('../lib/parser');
+const util   = require('../lib/util');
+const ImplementationError = require('flora-errors').ImplementationError;
 
-describe('AST',function () {
-    var sql, parser = new Parser();
+describe('AST',() => {
+    const parser = new Parser();
+    let sql;
 
     function getParsedSql(sql) {
-        var ast = parser.parse(sql);
+        const ast = parser.parse(sql);
         return util.astToSQL(ast);
     }
 
-    describe('select statement', function () {
-        it('should support MySQL query options', function () {
+    describe('select statement', () => {
+        it('should support MySQL query options', () => {
             expect(getParsedSql('SELECT SQL_CALC_FOUND_ROWS SQL_BUFFER_RESULT col1 FROM t'))
                 .to.equal('SELECT SQL_CALC_FOUND_ROWS SQL_BUFFER_RESULT "col1" FROM "t"');
         });
 
-        describe('expression', function () {
-            it('should support asterisk', function () {
+        describe('expression', () => {
+            it('should support asterisk', () => {
                 expect(getParsedSql('SELECT * FROM t')).to.equal('SELECT * FROM "t"');
             });
 
-            it('should support asterisk prefixed by table', function () {
+            it('should support asterisk prefixed by table', () => {
                 expect(getParsedSql('SELECT t.* FROM t')).to.equal('SELECT "t".* FROM "t"');
             });
 
-            it('should parse multiple expressions', function () {
+            it('should parse multiple expressions', () => {
                 sql = 'SELECT col1 AS a, col2 AS b FROM t';
                 expect(getParsedSql(sql)).to.equal('SELECT "col1" AS "a", "col2" AS "b" FROM "t"');
             });
 
-            it('should escape reserved keywords', function () {
+            it('should escape reserved keywords', () => {
                 expect(getParsedSql('SELECT col."select" FROM t'))
                     .to.equal('SELECT "col"."select" FROM "t"');
             });
 
-            it('should escape reserved keywords in aliases', function () {
+            it('should escape reserved keywords in aliases', () => {
                 expect(getParsedSql('SELECT col AS "index" FROM t'))
                     .to.equal('SELECT "col" AS "index" FROM "t"');
             });
 
-            it('should escape aliases with non-identifier chars (/a-z0-9_/i)', function () {
-                sql = 'SELECT col AS \'foo bar\' FROM t';
-                expect(getParsedSql(sql)).to.contain('"col" AS \'foo bar\'');
+            it('should escape aliases with non-identifier chars (/a-z0-9_/i)', () => {
+                sql = `SELECT col AS 'foo bar' FROM t`;
+                expect(getParsedSql(sql)).to.contain(`"col" AS 'foo bar'`);
             });
 
-            ["'", '"', 'n', 't', '\\'].forEach(function (char) {
-                it('should escape char "' + char + '"', function () {
-                    sql = "SELECT ' escape \\" + char + " '";
+            ["'", '"', 'n', 't', '\\'].forEach((char) => {
+                it('should escape char "' + char + '"', () => {
+                    sql = `SELECT ' escape \\${char}'`;
                     expect(getParsedSql(sql)).to.equal(sql);
                 });
             });
 
-            it('should support boolean values', function () {
+            it('should support boolean values', () => {
                 sql = 'SELECT false, true';
                 expect(getParsedSql(sql)).to.equal('SELECT FALSE, TRUE');
             });
 
-            it('should support string values', function () {
-                sql = 'SELECT \'foo\' AS bar';
-                expect(getParsedSql(sql)).to.equal('SELECT \'foo\' AS "bar"');
+            it('should support string values', () => {
+                sql = `SELECT 'foo' AS bar`;
+                expect(getParsedSql(sql)).to.equal(`SELECT 'foo' AS "bar"`);
             });
 
-            it('should support null values', function () {
+            it('should support null values', () => {
                 sql = 'SELECT null';
                 expect(getParsedSql(sql)).to.equal('SELECT NULL');
             });
 
-            it('should support parentheses', function () {
+            it('should support parentheses', () => {
                 sql = 'SELECT (2 + 3) * 4';
                 expect(getParsedSql(sql)).to.equal(sql);
             });
 
-            it('should support functions', function () {
-                sql = 'SELECT md5(\'foo\')';
+            it('should support functions', () => {
+                sql = `SELECT md5('foo')`;
                 expect(getParsedSql(sql)).to.equal(sql);
             });
 
-            it('should support aggregate functions', function () {
+            it('should support aggregate functions', () => {
                 sql = 'SELECT COUNT(distinct t.id) FROM t';
                 expect(getParsedSql(sql)).to.equal('SELECT COUNT(DISTINCT "t"."id") FROM "t"');
             });
 
-            it('should support unary operators', function () {
+            it('should support unary operators', () => {
                 sql = 'SELECT (not true), !t.foo as foo FROM t';
                 expect(getParsedSql(sql)).to.equal('SELECT (NOT TRUE), NOT "t"."foo" AS "foo" FROM "t"');
             });
 
-            it('should support casts', function () {
+            it('should support casts', () => {
                 expect(getParsedSql('SELECT CAST(col AS INTEGER) FROM t'))
                     .to.equal('SELECT CAST("col" AS INTEGER) FROM "t"');
             });
 
-            it('should support subselects', function () {
-                expect(getParsedSql('SELECT \'string\', (SELECT col FROM t2) subSelect FROM t1'))
-                    .to.equal('SELECT \'string\', (SELECT "col" FROM "t2") AS "subSelect" FROM "t1"');
+            it('should support subselects', () => {
+                expect(getParsedSql(`SELECT 'string', (SELECT col FROM t2) subSelect FROM t1`))
+                    .to.equal(`SELECT 'string', (SELECT "col" FROM "t2") AS "subSelect" FROM "t1"`);
             });
 
-            it('should support subselects in FROM clause', function () {
+            it('should support subselects in FROM clause', () => {
                 expect(getParsedSql('SELECT * FROM (SELECT id FROM t1) AS someAlias'))
                     .to.equal('SELECT * FROM (SELECT "id" FROM "t1") AS "someAlias"');
             });
 
-            it('should throw an exception for undefined values', function () {
+            it('should throw an exception for undefined values', () => {
                 // flora-mysql uses plain values instead of equivalent expressions, so expressions
                 // have to be created by SQL parser
-                expect(function () {
+                expect(() => {
                     util.createBinaryExpr(
                         '=',
                         { type: 'column_ref', table: null, column: 'id' },
@@ -117,70 +118,70 @@ describe('AST',function () {
                 }).to.throw(ImplementationError)
             });
 
-            it('should parse ANSI SQL compliant statements', function () {
-                sql = 'SELECT "id", \'foo\' AS "type" FROM "table"';
+            it('should parse ANSI SQL compliant statements', () => {
+                sql = `SELECT "id", 'foo' AS "type" FROM "table"`;
                 expect(getParsedSql(sql)).to.equal(sql);
             });
         });
 
-        describe('joins', function () {
-            it('should support implicit joins', function () {
+        describe('joins', () => {
+            it('should support implicit joins', () => {
                 expect(getParsedSql('SELECT a.col , b.c FROM a ,b'))
                     .to.equal('SELECT "a"."col", "b"."c" FROM "a", "b"');
             });
 
-            it('should support (INNER) JOINs', function () {
+            it('should support (INNER) JOINs', () => {
                 sql = 'SELECT a FROM t1 join t2 on t1.t2id = t2.t1id';
                 expect(getParsedSql(sql)).to.equal('SELECT "a" FROM "t1" INNER JOIN "t2" ON "t1"."t2id" = "t2"."t1id"');
             });
 
-            it('should support LEFT JOINs', function () {
+            it('should support LEFT JOINs', () => {
                 sql = 'SELECT a FROM t1 left join t2 on t1.t2id = t2.t1id';
                 expect(getParsedSql(sql)).to.equal('SELECT "a" FROM "t1" LEFT JOIN "t2" ON "t1"."t2id" = "t2"."t1id"');
             });
 
-            it('should support multiple joins', function () {
+            it('should support multiple joins', () => {
                 sql = 'SELECT a FROM t1 LEFT JOIN t2 ON t1.t2id = t2.t1id INNER JOIN t3 ON t1.t3id = t3.t1id';
                 expect(getParsedSql(sql))
                     .to.equal('SELECT "a" FROM "t1" LEFT JOIN "t2" ON "t1"."t2id" = "t2"."t1id" INNER JOIN "t3" ON "t1"."t3id" = "t3"."t1id"');
             });
 
-            it('should support alias for base table', function () {
+            it('should support alias for base table', () => {
                 sql = 'SELECT col1 FROM awesome_table t';
                 expect(getParsedSql(sql)).to.equal('SELECT "col1" FROM "awesome_table" AS "t"');
             });
 
-            it('should support joins with tables from other databases', function () {
+            it('should support joins with tables from other databases', () => {
                 sql = 'SELECT col1 FROM t JOIN otherdb.awesome_table at ON t.id = at.tid';
                 expect(getParsedSql(sql))
                     .to.equal('SELECT "col1" FROM "t" INNER JOIN otherdb."awesome_table" AS "at" ON "t"."id" = "at"."tid"');
             });
 
-            it('should support aliases in joins', function () {
+            it('should support aliases in joins', () => {
                 expect(getParsedSql('SELECT col1 FROM t1 LEFT JOIN awesome_table AS t2 ON t1.id = t2.t1id'))
                     .to.equal('SELECT "col1" FROM "t1" LEFT JOIN "awesome_table" AS "t2" ON "t1"."id" = "t2"."t1id"');
             });
 
-            it('should support joined subquery', function () {
+            it('should support joined subquery', () => {
                 expect(getParsedSql('SELECT * FROM t1 LEFT JOIN (SELECT id, col1 FROM t2) AS someAlias ON t1.id = someAlias.id'))
                     .to.equal('SELECT * FROM "t1" LEFT JOIN (SELECT "id", "col1" FROM "t2") AS "someAlias" ON "t1"."id" = "someAlias"."id"');
             });
         });
 
-        describe('where clause', function () {
-            ['<', '<=', '=', '!=', '>=', '>'].forEach(function (operator) {
-                it('should support simple "' + operator + '" comparison', function () {
+        describe('where clause', () => {
+            ['<', '<=', '=', '!=', '>=', '>'].forEach((operator) => {
+                it('should support simple "' + operator + '" comparison', () => {
                     sql = 'SELECT a fRom db.t wHERE "type" ' + operator + ' 3';
                     expect(getParsedSql(sql)).to.equal('SELECT "a" FROM db."t" WHERE "type" ' + operator + ' 3');
                 });
             });
 
-            var operatorMap = { '=': 'IN', '!=': 'NOT IN' };
-            Object.keys(operatorMap).forEach(function (operator) {
-                var sqlOperator = operatorMap[operator];
+            const operatorMap = { '=': 'IN', '!=': 'NOT IN' };
+            Object.keys(operatorMap).forEach((operator) => {
+                const sqlOperator = operatorMap[operator];
 
-                it('should convert "' + operator + '" to ' + sqlOperator + ' operator for array values', function () {
-                    var ast = {
+                it('should convert "' + operator + '" to ' + sqlOperator + ' operator for array values', () => {
+                    const ast = {
                         type: 'select',
                         options: null,
                         distinct: null,
@@ -203,144 +204,144 @@ describe('AST',function () {
                 });
             });
 
-            ['IN', 'NOT IN'].forEach(function (operator) {
-                it('should support ' + operator + ' operator', function () {
+            ['IN', 'NOT IN'].forEach((operator) => {
+                it('should support ' + operator + ' operator', () => {
                     sql = 'SELECT a FROM t WHERE id ' + operator.toLowerCase() + ' (1, 2, 3)';
                     expect(getParsedSql(sql)).to.equal('SELECT "a" FROM "t" WHERE "id" ' + operator + ' (1, 2, 3)');
                 });
             });
 
-            ['IS', 'IS NOT'].forEach(function (operator) {
-                it('should support ' + operator + ' operator', function () {
+            ['IS', 'IS NOT'].forEach((operator) => {
+                it('should support ' + operator + ' operator', () => {
                     sql = 'SELECT a FROM t WHERE col ' + operator.toLowerCase() + ' NULL';
                     expect(getParsedSql(sql)).to.equal('SELECT "a" FROM "t" WHERE "col" ' + operator + ' NULL');
                 });
             });
 
-            it('should support BETWEEN operator', function () {
-                sql = 'SELECT a FROM t WHERE id between \'1\' and 1337';
-                expect(getParsedSql(sql)).to.equal('SELECT "a" FROM "t" WHERE "id" BETWEEN \'1\' AND 1337');
+            it('should support BETWEEN operator', () => {
+                sql = `SELECT a FROM t WHERE id between '1' and 1337`;
+                expect(getParsedSql(sql)).to.equal(`SELECT "a" FROM "t" WHERE "id" BETWEEN '1' AND 1337`);
             });
 
-            it('should support boolean values', function () {
+            it('should support boolean values', () => {
                 sql = 'SELECT col1 FROM t WHERE col2 = false';
                 expect(getParsedSql(sql)).to.equal('SELECT "col1" FROM "t" WHERE "col2" = FALSE');
             });
 
-            it('should support string values', function () {
-                expect(getParsedSql('SELECT col1 FROM t WHERE col2 = \'foobar\''))
-                    .to.equal('SELECT "col1" FROM "t" WHERE "col2" = \'foobar\'');
+            it('should support string values', () => {
+                expect(getParsedSql(`SELECT col1 FROM t WHERE col2 = 'foobar'`))
+                    .to.equal(`SELECT "col1" FROM "t" WHERE "col2" = 'foobar'`);
             });
 
-            it('should support null values', function () {
+            it('should support null values', () => {
                 expect(getParsedSql('SELECT col1 FROM t WHERE col2 IS NULL'))
                     .to.equal('SELECT "col1" FROM "t" WHERE "col2" IS NULL');
             });
 
-            it('should support array values', function () {
+            it('should support array values', () => {
                 expect(getParsedSql('SELECT col1 FROM t WHERE col2 IN (1, 3, 5, 7)'))
                     .to.equal('SELECT "col1" FROM "t" WHERE "col2" IN (1, 3, 5, 7)');
             });
 
-            ['EXISTS', 'NOT EXISTS'].forEach(function (operator) {
-                it('should support ' + operator + ' operator', function () {
+            ['EXISTS', 'NOT EXISTS'].forEach((operator) => {
+                it('should support ' + operator + ' operator', () => {
                     expect(getParsedSql('SELECT a FROM t WHERE ' + operator + ' (SELECT 1)'))
                         .to.equal('SELECT "a" FROM "t" WHERE ' + operator + ' (SELECT 1)');
                 });
             });
         });
 
-        describe('group clause', function () {
-            it('should support single expressions', function () {
+        describe('group clause', () => {
+            it('should support single expressions', () => {
                 expect(getParsedSql('SELECT a FROM t group by t.b'))
                     .to.equal('SELECT "a" FROM "t" GROUP BY "t"."b"');
             });
 
-            it('should support multiple expressions', function () {
+            it('should support multiple expressions', () => {
                 expect(getParsedSql('SELECT a FROM t GROUP BY t.b, t.c'))
                     .to.equal('SELECT "a" FROM "t" GROUP BY "t"."b", "t"."c"');
             });
         });
 
-        describe('having clause', function () {
-            it('should support simple expressions', function () {
+        describe('having clause', () => {
+            it('should support simple expressions', () => {
                 expect(getParsedSql('SELECT a FROM t GROUP BY t.b having COUNT(*) > 1'))
                     .to.equal('SELECT "a" FROM "t" GROUP BY "t"."b" HAVING COUNT(*) > 1');
             });
 
-            it('should support complex expressions', function () {
+            it('should support complex expressions', () => {
                 expect(getParsedSql('SELECT a FROM t GROUP BY t.b HAVING COUNT(*) > (SELECT 10)'))
                     .to.equal('SELECT "a" FROM "t" GROUP BY "t"."b" HAVING COUNT(*) > (SELECT 10)');
             });
         });
 
-        describe('order clause', function () {
-            it('should support implicit sort order', function () {
+        describe('order clause', () => {
+            it('should support implicit sort order', () => {
                 sql = 'SELECT a FROM t order by id';
                 expect(getParsedSql(sql)).to.equal('SELECT "a" FROM "t" ORDER BY "id" ASC');
             });
 
-            it('should support explicit sort order', function () {
+            it('should support explicit sort order', () => {
                 sql = 'SELECT a FROM t order by id desc';
                 expect(getParsedSql(sql)).to.equal('SELECT "a" FROM "t" ORDER BY "id" DESC');
             });
 
-            it('should support multiple expressions', function () {
+            it('should support multiple expressions', () => {
                 sql = 'SELECT a FROM t order by id desc, name asc';
                 expect(getParsedSql(sql)).to.equal('SELECT "a" FROM "t" ORDER BY "id" DESC, "name" ASC');
             });
 
-            it('should support complex expressions', function () {
+            it('should support complex expressions', () => {
                 expect(getParsedSql('SELECT a FROM t ORDER BY rand() ASC'))
                     .to.equal('SELECT "a" FROM "t" ORDER BY rand() ASC');
             });
         });
 
-        describe('limit clause', function () {
-            it('should work w/o offset', function () {
+        describe('limit clause', () => {
+            it('should work w/o offset', () => {
                 sql = 'SELECT a FROM t limit 10';
                 expect(getParsedSql(sql)).to.equal('SELECT "a" FROM "t" LIMIT 0,10');
             });
 
-            it('should work w/ offset', function () {
+            it('should work w/ offset', () => {
                 sql = 'SELECT a FROM t limit 10, 10';
                 expect(getParsedSql(sql)).to.equal('SELECT "a" FROM "t" LIMIT 10,10');
             });
         });
 
-        describe('union operator', function () {
-            it('should combine multiple statements', function () {
-                sql = 'select 1 union select \'1\' union select a from t union (select true)';
-                expect(getParsedSql(sql)).to.equal('SELECT 1 UNION SELECT \'1\' UNION SELECT "a" FROM "t" UNION SELECT TRUE');
+        describe('union operator', () => {
+            it('should combine multiple statements', () => {
+                sql = `select 1 union select '1' union select a from t union (select true)`;
+                expect(getParsedSql(sql)).to.equal(`SELECT 1 UNION SELECT '1' UNION SELECT "a" FROM "t" UNION SELECT TRUE`);
             });
         });
     });
 
-    describe('control flow', function () {
-        describe('case operator', function () {
-            it('should support case-when', function () {
-                sql = 'select case when 1 then \'one\' when 2 then \'two\' END';
-                expect(getParsedSql(sql)).to.equal('SELECT CASE WHEN 1 THEN \'one\' WHEN 2 THEN \'two\' END');
+    describe('control flow', () => {
+        describe('case operator', () => {
+            it('should support case-when', () => {
+                sql = `select case when 1 then 'one' when 2 then 'two' END`;
+                expect(getParsedSql(sql)).to.equal(`SELECT CASE WHEN 1 THEN 'one' WHEN 2 THEN 'two' END`);
             });
 
-            it('should support case-when-else', function () {
-                sql = 'select case FUNC(a) when 1 then \'one\' when 2 then \'two\' else \'more\' END FROM t';
-                expect(getParsedSql(sql)).to.equal('SELECT CASE FUNC("a") WHEN 1 THEN \'one\' WHEN 2 THEN \'two\' ELSE \'more\' END FROM "t"');
+            it('should support case-when-else', () => {
+                sql = `select case FUNC(a) when 1 then 'one' when 2 then 'two' else 'more' END FROM t`;
+                expect(getParsedSql(sql)).to.equal(`SELECT CASE FUNC("a") WHEN 1 THEN 'one' WHEN 2 THEN 'two' ELSE 'more' END FROM "t"`);
             });
         });
 
-        describe('if function', function() {
-            it('should support simple calls', function () {
-                expect(getParsedSql('SELECT IF(col1 = \'xyz\', \'foo\', \'bar\') FROM t'))
-                    .to.equal('SELECT IF("col1" = \'xyz\', \'foo\', \'bar\') FROM "t"');
+        describe('if function', () => {
+            it('should support simple calls', () => {
+                expect(getParsedSql(`SELECT IF(col1 = 'xyz', 'foo', 'bar') FROM t`))
+                    .to.equal(`SELECT IF("col1" = 'xyz', 'foo', 'bar') FROM "t"`);
             });
         });
     });
 
-    describe('placeholder', function () {
-        var ast;
+    describe('placeholder', () => {
+        let ast;
 
-        it('should replace single parameter', function () {
+        it('should replace single parameter', () => {
             ast = parser.parse('SELECT col FROM t WHERE id = :id');
             ast = util.replaceParams(ast, { id: 1 });
 
@@ -352,7 +353,7 @@ describe('AST',function () {
             });
         });
 
-        it('should replace multiple parameters', function () {
+        it('should replace multiple parameters', () => {
             ast = parser.parse('SELECT col FROM t WHERE id = :id AND "type" = :type');
             ast = util.replaceParams(ast, { id: 1, type: 'foobar' });
 
@@ -374,7 +375,7 @@ describe('AST',function () {
             });
         });
 
-        it('should set parameter with string', function () {
+        it('should set parameter with string', () => {
             ast = parser.parse('SELECT col1 FROM t WHERE col2 = :name');
             ast = util.replaceParams(ast, { name: 'John Doe' });
 
@@ -386,7 +387,7 @@ describe('AST',function () {
             });
         });
 
-        it('should set parameter with boolean value', function () {
+        it('should set parameter with boolean value', () => {
             ast = parser.parse('SELECT col1 FROM t WHERE isMain = :main');
             ast = util.replaceParams(ast, { main: true });
 
@@ -398,7 +399,7 @@ describe('AST',function () {
             });
         });
 
-        it('should set parameter with null value', function () {
+        it('should set parameter with null value', () => {
             ast = parser.parse('SELECT col1 FROM t WHERE col2 = :param');
             ast = util.replaceParams(ast, { param: null });
 
@@ -410,7 +411,7 @@ describe('AST',function () {
             });
         });
 
-        it('should set parameter with array as value', function () {
+        it('should set parameter with array as value', () => {
             ast = parser.parse('SELECT col1 FROM t WHERE id = :ids');
             ast = util.replaceParams(ast, { ids: [1, 3, 5, 7] });
 
@@ -430,33 +431,31 @@ describe('AST',function () {
             });
         });
 
-        it('should throw an exception if no value for parameter is available', function () {
+        it('should throw an exception if no value for parameter is available', () => {
             ast = parser.parse('SELECT col FROM t WHERE id = :id');
 
-            expect(function () {
+            expect(() => {
                 util.replaceParams(ast, { foo: 'bar' });
             }).to.throw('no value for parameter :id found');
         });
 
-        it('should return new AST object', function () {
-            var resolvedParamAST;
-
+        it('should return new AST object', () => {
             ast = parser.parse('SELECT col FROM t WHERE id = :id');
-            resolvedParamAST = util.replaceParams(ast, { id: 1 });
+            const resolvedParamAST = util.replaceParams(ast, { id: 1 });
 
             expect(ast).to.not.eql(resolvedParamAST);
         });
     });
 
-    describe('unsupported statements', function () {
-        var unsupportedStatements = {
+    describe('unsupported statements', () => {
+        const unsupportedStatements = {
             insert: 'INSERT INTO t (col1, col2) VALUES (1, 2)',
             update: 'UPDATE t SET col1 = 5 WHERE id = 1337'
         };
 
-        Object.keys(unsupportedStatements).forEach(function (stmtType) {
-            it('should throw exception for ' + stmtType + ' statements', function () {
-                expect(function () {
+        Object.keys(unsupportedStatements).forEach((stmtType) => {
+            it('should throw exception for ' + stmtType + ' statements', () => {
+                expect(() => {
                     getParsedSql(unsupportedStatements[stmtType]);
                 }).to.throw(Error, 'Only SELECT statements supported at the moment');
             });
