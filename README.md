@@ -14,9 +14,9 @@ Usage
 #### Create AST for SQL statement:
 
 ```javascript
-var Parser = require('flora-sql-parser').Parser;
-var parser = new Parser();
-var ast = parser.parse('SELECT * FROM t');
+const Parser = require('flora-sql-parser').Parser;
+const parser = new Parser();
+const ast = parser.parse('SELECT * FROM t');
 
 console.log(ast);
 ```
@@ -24,9 +24,9 @@ console.log(ast);
 #### Convert AST back to SQL:
 
 ```javascript
-var Parser = require('flora-sql-parser').Parser;
-var ast = (new Parser()).parse('SELECT * FROM t');
-var toSQL = require('flora-sql-parser').util.astToSQL;
+const Parser = require('flora-sql-parser').Parser;
+const ast = (new Parser()).parse('SELECT * FROM t');
+const toSQL = require('flora-sql-parser').util.astToSQL;
 
 console.log(toSQL(ast));
 ```
