@@ -61,16 +61,6 @@ describe('AST',() => {
                 expect(getParsedSql(sql)).to.equal('SELECT FALSE, TRUE');
             });
 
-            it('should support string values', () => {
-                sql = `SELECT 'foo' AS bar`;
-                expect(getParsedSql(sql)).to.equal(`SELECT 'foo' AS "bar"`);
-            });
-
-            it('should support null values', () => {
-                sql = 'SELECT null';
-                expect(getParsedSql(sql)).to.equal('SELECT NULL');
-            });
-
             it('should support parentheses', () => {
                 sql = 'SELECT (2 + 3) * 4';
                 expect(getParsedSql(sql)).to.equal(sql);
@@ -334,6 +324,34 @@ describe('AST',() => {
             it('should support simple calls', () => {
                 expect(getParsedSql(`SELECT IF(col1 = 'xyz', 'foo', 'bar') FROM t`))
                     .to.equal(`SELECT IF("col1" = 'xyz', 'foo', 'bar') FROM "t"`);
+            });
+        });
+    });
+
+    describe('literals', () => {
+        it('should support string values', () => {
+            sql = `SELECT 'foo'`;
+            expect(getParsedSql(sql)).to.equal(`SELECT 'foo'`);
+        });
+
+        it('should support null values', () => {
+            sql = 'SELECT null';
+            expect(getParsedSql(sql)).to.equal('SELECT NULL');
+        });
+
+        describe('datetime', () => {
+            const literals = {
+                time: '08:23:16',
+                date: '1999-12-25',
+                timestamp: '1999-12-25 08:23:16'
+            };
+
+            Object.keys(literals).forEach((type) => {
+                const value = literals[type];
+
+                it(type, () => {
+                    expect(getParsedSql(`SELECT ${type} '${value}'`)).to.equal(`SELECT ${type.toUpperCase()} '${value}'`);
+                });
             });
         });
     });

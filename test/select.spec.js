@@ -453,15 +453,36 @@ describe('select', () => {
         });
     });
 
-    describe('strings', () => {
-        it('should parse single quoted strings', () => {
-            ast = parser.parse(`SELECT 'string'`);
-            expect(ast.columns).to.eql([{ expr: { type: 'string', value: 'string' }, as: null }]);
+    describe('literals', () => {
+        describe('strings', () => {
+            it('should parse single quoted strings', () => {
+                ast = parser.parse(`SELECT 'string'`);
+                expect(ast.columns).to.eql([{ expr: { type: 'string', value: 'string' }, as: null }]);
+            });
+
+            it('should parse keywords in single quotes as string', () => {
+                ast = parser.parse(`SELECT 'select'`);
+                expect(ast.columns).to.eql([{ expr: { type: 'string', value: 'select' }, as: null }]);
+            });
         });
 
-        it('should parse keywords in single quotes as string', () => {
-            ast = parser.parse(`SELECT 'select'`);
-            expect(ast.columns).to.eql([{ expr: { type: 'string', value: 'select' }, as: null }]);
+        describe('datetime', () => {
+            const literals = {
+                time: '08:23:16',
+                date: '1999-12-25',
+                timestamp: '1999-12-25 08:23:16'
+            };
+
+            Object.keys(literals).forEach((type) => {
+                const value = literals[type];
+
+                [type, type.toUpperCase()].forEach((t) => {
+                    it(t, () => {
+                        ast = parser.parse(`SELECT ${t} '${value}'`);
+                        expect(ast.columns).to.eql([{ expr: { type, value }, as: null }]);
+                    });
+                });
+            });
         });
     });
 });

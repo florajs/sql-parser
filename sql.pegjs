@@ -703,7 +703,11 @@ signedness
   / KW_UNSIGNED
 
 literal
-  = literal_string / literal_numeric / literal_bool / literal_null
+  = literal_string
+  / literal_numeric
+  / literal_bool
+  / literal_null
+  / literal_datetime
 
 literal_list
   = head:literal tail:(__ COMMA __ literal)* {
@@ -727,6 +731,14 @@ literal_string
   = ca:("'" single_char* "'") {
       return {
         type: 'string',
+        value: ca[1].join('')
+      };
+    }
+
+literal_datetime
+  = type:(KW_TIME / KW_DATE / KW_TIMESTAMP) __ ca:("'" single_char* "'") {
+      return {
+        type: type.toLowerCase(),
         value: ca[1].join('')
       };
     }
@@ -865,8 +877,8 @@ KW_INT      = "INT"i      !ident_start { return 'INT'; }
 KW_INTEGER  = "INTEGER"i  !ident_start { return 'INTEGER'; }
 KW_SMALLINT = "SMALLINT"i !ident_start { return 'SMALLINT'; }
 KW_DATE     = "DATE"i     !ident_start { return 'DATE'; }
-KW_TIME     = "TIME"      !ident_start { return 'TIME'; }
-KW_TIMESTAMP= "TIMESTAMP" !ident_start { return 'TIMESTAMP'; }
+KW_TIME     = "TIME"i     !ident_start { return 'TIME'; }
+KW_TIMESTAMP= "TIMESTAMP"i!ident_start { return 'TIMESTAMP'; }
 
 KW_VAR_PRE = '$'
 KW_RETURN = 'return'i
