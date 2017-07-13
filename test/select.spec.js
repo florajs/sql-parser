@@ -103,6 +103,17 @@ describe('select', () => {
             expect(ast.from).to.eql([{ db: null, table: 't', as: null }]);
         });
 
+        it('should parse tables from other databases', () => {
+            ast = parser.parse('SELECT * FROM u.t');
+            expect(ast.from).to.eql([{ db: 'u', table: 't', as: null }]);
+        });
+
+        it('should parse tables from other databases (ANSI identifier)', () => {
+            ast = parser.parse('SELECT * FROM "u"."t"');
+            expect(ast.from).to.eql([{ db: 'u', table: 't', as: null }]);
+        });
+
+
         it('should parse subselect', () => {
             ast = parser.parse('SELECT * FROM (SELECT id FROM t1) someAlias');
 

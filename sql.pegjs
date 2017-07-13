@@ -279,7 +279,7 @@ join_op
   / (KW_INNER __)? KW_JOIN { return 'INNER JOIN'; }
 
 table_name
-  = dt:ident tail:(__ DOT __ ident_name)? {
+  = dt:ident tail:(__ DOT __ ident)? {
       var obj = { db: null, table: dt };
       if (tail !== null) {
         obj.db = dt;
