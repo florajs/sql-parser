@@ -1,7 +1,7 @@
 {
-  "name": "flora-sql-parser",
-  "version": "0.7.4",
-  "description": "Parse SQL (select) statements into abstract syntax tree (AST) and convert ASTs back to SQL.",
+  "name": "qh-flora-sql-parser",
+  "version": "0.7.4-1",
+  "description": "Parse SQL (select) statements into abstract syntax tree (AST) and convert ASTs back to SQL. remove type keyword",
   "main": "index.js",
   "scripts": {
     "install": "./node_modules/.bin/pegjs -o pegjs-parser.js sql.pegjs",
@@ -32,8 +32,8 @@
     }
   ],
   "license": "MIT",
-  "repository": "godmodelabs/flora-sql-parser",
-  "homepage": "https://github.com/godmodelabs/flora-sql-parser",
+  "repository": "qing-hai/flora-sql-parser",
+  "homepage": "https://github.com/qing-hai/flora-sql-parser",
   "engines": {
     "node": ">=6"
   },
