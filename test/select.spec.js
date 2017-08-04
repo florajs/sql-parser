@@ -149,6 +149,7 @@ describe('select', () => {
 
             expect(ast.from).to.eql([{
                 expr: {
+                    with: null,
                     type: 'select',
                     options: null,
                     distinct: null,
@@ -207,6 +208,7 @@ describe('select', () => {
                     { db: null, table: 't1', as: null },
                     {
                         expr: {
+                            with: null,
                             type: 'select',
                             options: null,
                             distinct: null,
@@ -340,6 +342,7 @@ describe('select', () => {
                     type: 'unary_expr',
                     operator: operator.toUpperCase(),
                     expr: {
+                        with: null,
                         type: 'select',
                         options: null,
                         distinct: null,
@@ -448,6 +451,7 @@ describe('select', () => {
                     args: { expr: { type: 'column_ref', table: null, column: 'col2' } }
                 },
                 right: {
+                    with: null,
                     type: 'select',
                     options: null,
                     distinct: null,
@@ -590,6 +594,68 @@ describe('select', () => {
                     parentheses: true
                 }
             });
+        });
+    });
+
+    describe('common table expressions', () => {
+        it('should parse single CTE', () => {
+            ast = parser.parse(`WITH cte AS (SELECT 1)
+                                SELECT * FROM cte`);
+
+            expect(ast).to.have.property('with')
+                .and.to.be.an('array')
+                .and.to.have.lengthOf(1);
+
+            const cte = ast.with[0];
+            expect(cte).to.have.property('name', 'cte');
+            expect(cte)
+                .to.have.property('stmt')
+                .and.to.be.an('object');
+        });
+
+        it('should parse multiple CTEs', () => {
+            ast = parser.parse(`WITH cte1 AS (SELECT 1), cte2 AS (SELECT 2)
+                                SELECT * FROM cte1 UNION SELECT * FROM cte2`);
+
+            expect(ast)
+                .to.have.property('with')
+                .and.to.have.lengthOf(2);
+
+            const [cte1, cte2] = ast.with;
+            expect(cte1).to.have.property('name', 'cte1');
+            expect(cte2).to.have.property('name', 'cte2');
+        });
+
+        it('should parse CTE with column', () => {
+            ast = parser.parse(`WITH cte (col1) AS (SELECT 1)
+                                SELECT * FROM cte`);
+
+            const cte = ast.with[0];
+            expect(cte)
+                .to.have.property('columns')
+                .and.to.eql(['col1']);
+        });
+
+        it('should parse CTE with multiple columns', () => {
+            ast = parser.parse(`WITH cte (col1, col2) AS (SELECT 1, 2)
+                                SELECT * FROM cte`);
+
+            const cte = ast.with[0];
+            expect(cte.columns).to.eql(['col1', 'col2']);
+        });
+
+        it('should parse recursive CTE', () => {
+            const sql = `WITH RECURSIVE cte(n) AS
+                        (
+                          SELECT 1
+                          UNION
+                          SELECT n + 1 FROM cte WHERE n < 5
+                        )
+                        SELECT * FROM cte`;
+            ast = parser.parse(sql);
+
+            const cte = ast.with[0];
+            expect(cte).to.have.property('recursive', true);
         });
     });
 });
