@@ -593,6 +593,10 @@ primary
       e.parentheses = true;
       return e;
     }
+  / LPAREN __ list:expr_list __ RPAREN {
+        list.parentheses = true;
+        return list;
+    }
   / var_decl
 
 column_ref
