@@ -210,6 +210,24 @@ describe('select', () => {
                 }
             ]);
         });
+
+        it('should parse joins with USING (single column)', () => {
+            ast = parser.parse('SELECT * FROM t1 JOIN t2 USING (id)');
+
+            expect(ast.from).to.eql([
+                { db: null, table: 't1', as: null },
+                { db: null, table: 't2', as: null, join: 'INNER JOIN', using: ['id'] }
+            ]);
+        });
+
+        it('should parse joins with USING (multiple columns)', () => {
+            ast = parser.parse('SELECT * FROM t1 JOIN t2 USING (id1, id2)');
+
+            expect(ast.from).to.eql([
+                { db: null, table: 't1', as: null },
+                { db: null, table: 't2', as: null, join: 'INNER JOIN', using: ['id1', 'id2'] }
+            ]);
+        });
     });
 
     describe('where clause', () => {
@@ -251,7 +269,7 @@ describe('select', () => {
         });
 
         ['is', 'is not'].forEach((operator) => {
-            it('should parse  condition', () => {
+            it(`should parse ${operator} condition`, () => {
                 ast = parser.parse(`SELECT * FROM t WHERE "col" ${operator} NULL`);
 
                 expect(ast.where).to.eql({

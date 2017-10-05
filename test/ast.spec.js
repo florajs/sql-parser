@@ -156,6 +156,16 @@ describe('AST',() => {
                 expect(getParsedSql('SELECT * FROM t1 LEFT JOIN (SELECT id, col1 FROM t2) AS someAlias ON t1.id = someAlias.id'))
                     .to.equal('SELECT * FROM "t1" LEFT JOIN (SELECT "id", "col1" FROM "t2") AS "someAlias" ON "t1"."id" = "someAlias"."id"');
             });
+
+            it('should support USING keyword (single column)', () => {
+                expect(getParsedSql('SELECT * FROM t1 JOIN t2 USING (id)'))
+                    .to.equal('SELECT * FROM "t1" INNER JOIN "t2" USING ("id")');
+            });
+
+            it('should support USING keyword (multiple columns)', () => {
+                expect(getParsedSql('SELECT * FROM t1 JOIN t2 USING (id1, id2)'))
+                    .to.equal('SELECT * FROM "t1" INNER JOIN "t2" USING ("id1", "id2")');
+            });
         });
 
         describe('where clause', () => {

@@ -63,6 +63,7 @@
 
     'UNION': true,
     'UPDATE': true,
+    'USING': true,
 
     'VALUES': true,
 
@@ -237,7 +238,12 @@ table_ref
 
 
 table_join
-  = op:join_op __ t:table_base __ expr:on_clause? {
+  = op:join_op __ t:table_base __ KW_USING __ LPAREN __ head:ident_name tail:(__ COMMA __ ident_name)* __ RPAREN {
+      t.join = op;
+      t.using = createList(head, tail);
+      return t;
+    }
+  / op:join_op __ t:table_base __ expr:on_clause? {
       t.join = op;
       t.on   = expr;
       return t;
@@ -827,6 +833,7 @@ KW_INNER    = "INNER"i    !ident_start
 KW_JOIN     = "JOIN"i     !ident_start
 KW_UNION    = "UNION"i    !ident_start
 KW_VALUES   = "VALUES"i   !ident_start
+KW_USING    = "USING"i    !ident_start
 
 KW_WHERE    = "WHERE"i    !ident_start
 
