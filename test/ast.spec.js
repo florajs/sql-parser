@@ -50,7 +50,7 @@ describe('AST',() => {
             });
 
             ["'", '"', 'n', 't', '\\'].forEach((char) => {
-                it('should escape char "' + char + '"', () => {
+                it(`should escape char ${char} "`, () => {
                     sql = `SELECT ' escape \\${char}'`;
                     expect(getParsedSql(sql)).to.equal(sql);
                 });
@@ -160,9 +160,9 @@ describe('AST',() => {
 
         describe('where clause', () => {
             ['<', '<=', '=', '!=', '>=', '>'].forEach((operator) => {
-                it('should support simple "' + operator + '" comparison', () => {
-                    sql = 'SELECT a fRom db.t wHERE "type" ' + operator + ' 3';
-                    expect(getParsedSql(sql)).to.equal('SELECT "a" FROM db."t" WHERE "type" ' + operator + ' 3');
+                it(`should support simple "${operator}" comparison`, () => {
+                    sql = `SELECT a fRom db.t wHERE "type" ${operator} 3`;
+                    expect(getParsedSql(sql)).to.equal(`SELECT "a" FROM db."t" WHERE "type" ${operator} 3`);
                 });
             });
 
@@ -170,7 +170,7 @@ describe('AST',() => {
             Object.keys(operatorMap).forEach((operator) => {
                 const sqlOperator = operatorMap[operator];
 
-                it('should convert "' + operator + '" to ' + sqlOperator + ' operator for array values', () => {
+                it(`should convert "${operator}" to ${sqlOperator} operator for array values`, () => {
                     const ast = {
                         type: 'select',
                         options: null,
@@ -190,21 +190,21 @@ describe('AST',() => {
                         limit: null
                     };
 
-                    expect(util.astToSQL(ast)).to.equal('SELECT "a" FROM "t" WHERE "id" ' + sqlOperator + ' (1, 2)');
+                    expect(util.astToSQL(ast)).to.equal(`SELECT "a" FROM "t" WHERE "id" ${sqlOperator} (1, 2)`);
                 });
             });
 
             ['IN', 'NOT IN'].forEach((operator) => {
-                it('should support ' + operator + ' operator', () => {
-                    sql = 'SELECT a FROM t WHERE id ' + operator.toLowerCase() + ' (1, 2, 3)';
-                    expect(getParsedSql(sql)).to.equal('SELECT "a" FROM "t" WHERE "id" ' + operator + ' (1, 2, 3)');
+                it(`should support ${operator} operator`, () => {
+                    sql = `SELECT a FROM t WHERE id ${operator.toLowerCase()} (1, 2, 3)`;
+                    expect(getParsedSql(sql)).to.equal(`SELECT "a" FROM "t" WHERE "id" ${operator} (1, 2, 3)`);
                 });
             });
 
             ['IS', 'IS NOT'].forEach((operator) => {
-                it('should support ' + operator + ' operator', () => {
-                    sql = 'SELECT a FROM t WHERE col ' + operator.toLowerCase() + ' NULL';
-                    expect(getParsedSql(sql)).to.equal('SELECT "a" FROM "t" WHERE "col" ' + operator + ' NULL');
+                it(`should support ${operator} operator`, () => {
+                    sql = `SELECT a FROM t WHERE col ${operator.toLowerCase()} NULL`;
+                    expect(getParsedSql(sql)).to.equal(`SELECT "a" FROM "t" WHERE "col" ${operator} NULL`);
                 });
             });
 
@@ -234,9 +234,9 @@ describe('AST',() => {
             });
 
             ['EXISTS', 'NOT EXISTS'].forEach((operator) => {
-                it('should support ' + operator + ' operator', () => {
-                    expect(getParsedSql('SELECT a FROM t WHERE ' + operator + ' (SELECT 1)'))
-                        .to.equal('SELECT "a" FROM "t" WHERE ' + operator + ' (SELECT 1)');
+                it(`should support ${operator} operator`, () => {
+                    expect(getParsedSql(`SELECT a FROM t WHERE ${operator} (SELECT 1)`))
+                        .to.equal(`SELECT "a" FROM "t" WHERE ${operator} (SELECT 1)`);
                 });
             });
         });
@@ -472,7 +472,7 @@ describe('AST',() => {
         };
 
         Object.keys(unsupportedStatements).forEach((stmtType) => {
-            it('should throw exception for ' + stmtType + ' statements', () => {
+            it(`should throw exception for ${stmtType} statements`, () => {
                 expect(() => {
                     getParsedSql(unsupportedStatements[stmtType]);
                 }).to.throw(Error, 'Only SELECT statements supported at the moment');

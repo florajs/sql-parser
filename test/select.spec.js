@@ -252,7 +252,7 @@ describe('select', () => {
 
         ['is', 'is not'].forEach((operator) => {
             it('should parse  condition', () => {
-                ast = parser.parse('SELECT * FROM t WHERE "col" ' + operator + ' NULL');
+                ast = parser.parse(`SELECT * FROM t WHERE "col" ${operator} NULL`);
 
                 expect(ast.where).to.eql({
                     type: 'binary_expr',
@@ -265,7 +265,7 @@ describe('select', () => {
 
         ['exists', 'not exists'].forEach((operator) => {
             it('should parse ' + operator.toUpperCase() + ' condition', () => {
-                ast = parser.parse('SELECT * FROM t WHERE ' + operator + ' (SELECT 1)');
+                ast = parser.parse(`SELECT * FROM t WHERE ${operator} (SELECT 1)`);
 
                 expect(ast.where).to.eql({
                     type: 'unary_expr',
