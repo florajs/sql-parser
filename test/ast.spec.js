@@ -112,6 +112,11 @@ describe('AST',() => {
                 sql = `SELECT "id", 'foo' AS "type" FROM "table"`;
                 expect(getParsedSql(sql)).to.equal(sql);
             });
+
+            it('should parse DUAL table', () => {
+                sql = `SELECT "id" FROM DUAL`;
+                expect(getParsedSql(sql)).to.equal(sql);
+            });
         });
 
         describe('joins', () => {

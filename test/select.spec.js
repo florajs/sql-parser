@@ -228,6 +228,11 @@ describe('select', () => {
                 { db: null, table: 't2', as: null, join: 'INNER JOIN', using: ['id1', 'id2'] }
             ]);
         });
+
+        it('should parse DUAL table', () => {
+            ast = parser.parse('SELECT * FROM DUAL');
+            expect(ast.from).to.eql([{ type: 'dual' }]);
+        });
     });
 
     describe('where clause', () => {

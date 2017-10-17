@@ -260,7 +260,12 @@ table_join
 
 //NOTE that, the table assigned to `var` shouldn't write in `table_join`
 table_base
-  = t:table_name __ KW_AS? __ alias:ident? {
+  = KW_DUAL {
+      return {
+        type: 'dual'
+      };
+  }
+  / t:table_name __ KW_AS? __ alias:ident? {
       if (t.type === 'var') {
         t.as = alias;
         return t;
@@ -890,6 +895,8 @@ KW_TIMESTAMP= "TIMESTAMP"i!ident_start { return 'TIMESTAMP'; }
 KW_VAR_PRE = '$'
 KW_RETURN = 'return'i
 KW_ASSIGN = ':='
+
+KW_DUAL = "DUAL"
 
 // MySQL extensions to SQL
 OPT_SQL_CALC_FOUND_ROWS = "SQL_CALC_FOUND_ROWS"i
