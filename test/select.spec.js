@@ -231,7 +231,7 @@ describe('select', () => {
 
         it('should parse DUAL table', () => {
             ast = parser.parse('SELECT * FROM DUAL');
-            expect(ast.from).to.eql([{ expr: { type: 'dual' }, as: null }]);
+            expect(ast.from).to.eql([{ type: 'dual' }]);
         });
     });
 

@@ -260,12 +260,9 @@ table_join
 
 //NOTE that, the table assigned to `var` shouldn't write in `table_join`
 table_base
-  = KW_DUAL __ KW_AS? __ alias:ident? {
+  = KW_DUAL {
       return {
-        expr: {
-          type: 'dual',
-        },
-        as: alias
+        type: 'dual'
       };
   }
   / t:table_name __ KW_AS? __ alias:ident? {
