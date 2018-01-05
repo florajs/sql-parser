@@ -45,8 +45,8 @@ describe('AST',() => {
             });
 
             it('should escape aliases with non-identifier chars (/a-z0-9_/i)', () => {
-                sql = `SELECT col AS 'foo bar' FROM t`;
-                expect(getParsedSql(sql)).to.contain(`"col" AS 'foo bar'`);
+                sql = `SELECT col AS "foo bar" FROM t`;
+                expect(getParsedSql(sql)).to.contain(`"col" AS "foo bar"`);
             });
 
             ["'", '"', 'n', 't', '\\'].forEach((char) => {
