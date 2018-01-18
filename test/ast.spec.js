@@ -224,6 +224,7 @@ describe('AST',() => {
             });
 
             it('should support query param values', () => {
+                
                 sql =  'SELECT * FROM t where t.a > :my_param';
                 expect(getParsedSql(sql)).to.equal('SELECT * FROM "t" WHERE "t"."a" > :my_param');
             });
