@@ -18,6 +18,9 @@
     "name": "BörseGo AG",
     "email": "it@boerse-go.de"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "contributors": [
     {
       "name": "Marco Baumgartl",
