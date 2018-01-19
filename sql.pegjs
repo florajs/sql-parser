@@ -625,7 +625,7 @@ column_name
 ident_name
   =  start:ident_start parts:ident_part* { return start + parts.join(''); }
 
-ident_start = [A-Za-z_]
+ident_start = [A-Za-z_$]
 
 ident_part  = [A-Za-z0-9_]
 
@@ -880,7 +880,7 @@ KW_DATE     = "DATE"i     !ident_start { return 'DATE'; }
 KW_TIME     = "TIME"i     !ident_start { return 'TIME'; }
 KW_TIMESTAMP= "TIMESTAMP"i!ident_start { return 'TIMESTAMP'; }
 
-KW_VAR_PRE = '$'
+KW_VAR_PRE = '@'
 KW_RETURN = 'return'i
 KW_ASSIGN = ':='
 

@@ -1,10 +1,11 @@
 {
   "name": "qh-flora-sql-parser",
-  "version": "0.7.6",
+  "version": "0.7.7",
   "description": "Parse SQL (select) statements into abstract syntax tree (AST) and convert ASTs back to SQL. remove type keyword",
   "main": "index.js",
   "scripts": {
     "__install": "./node_modules/.bin/pegjs -o pegjs-parser.js sql.pegjs",
+    "generate": "./node_modules/.bin/pegjs -o pegjs-parser.js sql.pegjs",
     "test": "./node_modules/.bin/grunt test",
     "lint": "grunt lint"
   },

@@ -420,8 +420,8 @@ function peg$parse(input, options) {
       peg$c94 = peg$classExpectation(["`"], true, false),
       peg$c95 = function(name) { return name; },
       peg$c96 = function(start, parts) { return start + parts.join(''); },
-      peg$c97 = /^[A-Za-z_]/,
-      peg$c98 = peg$classExpectation([["A", "Z"], ["a", "z"], "_"], false, false),
+      peg$c97 = /^[A-Za-z_$]/,
+      peg$c98 = peg$classExpectation([["A", "Z"], ["a", "z"], "_", "$"], false, false),
       peg$c99 = /^[A-Za-z0-9_]/,
       peg$c100 = peg$classExpectation([["A", "Z"], ["a", "z"], ["0", "9"], "_"], false, false),
       peg$c101 = /^[A-Za-z0-9_:]/,
@@ -713,8 +713,8 @@ function peg$parse(input, options) {
       peg$c331 = "timestamp",
       peg$c332 = peg$literalExpectation("TIMESTAMP", true),
       peg$c333 = function() { return 'TIMESTAMP'; },
-      peg$c334 = "$",
-      peg$c335 = peg$literalExpectation("$", false),
+      peg$c334 = "@",
+      peg$c335 = peg$literalExpectation("@", false),
       peg$c336 = "return",
       peg$c337 = peg$literalExpectation("return", true),
       peg$c338 = ":=",
@@ -8496,7 +8496,7 @@ function peg$parse(input, options) {
   function peg$parseKW_VAR_PRE() {
     var s0;
 
-    if (input.charCodeAt(peg$currPos) === 36) {
+    if (input.charCodeAt(peg$currPos) === 64) {
       s0 = peg$c334;
       peg$currPos++;
     } else {
