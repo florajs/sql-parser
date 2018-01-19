@@ -594,7 +594,7 @@ column_list
     }
 
 ident
-  = name:ident_name !{ return reservedMap[name] === true; } {
+  = name:ident_name !{ return (["in"].indexOf(name)===-1) && (reservedMap[name.toUpperCase()] === true); } {
       return name;
     }
   / name:quoted_ident {
