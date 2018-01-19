@@ -401,7 +401,7 @@ function peg$parse(input, options) {
               column: col
             };
           },
-      peg$c80 = function(name) { return reservedMap[name.toUpperCase()] === true; },
+      peg$c80 = function(name) { return reservedMap[name] === true; },
       peg$c81 = function(name) {
             return name;
           },
