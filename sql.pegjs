@@ -594,7 +594,10 @@ column_list
     }
 
 ident
-  = name:ident_name !{ return (["in"].indexOf(name)===-1) && (reservedMap[name.toUpperCase()] === true); } {
+  = name:ident_name !{ 
+      var mongoDbOps=["in"]; //$in
+      return (mongoDbOps.indexOf(name)===-1) && (reservedMap[name.toUpperCase()] === true); 
+    } {
       return name;
     }
   / name:quoted_ident {
@@ -616,7 +619,10 @@ backticks_quoted_ident
   = "`" chars:[^`]+ "`" { return chars.join(''); }
 
 column
-  = name:column_name !{ return reservedMap[name] === true; } { return name; }
+  = name:column_name !{ 
+      var mongoDBNamedParams=["else","then", "as"]; //$cond
+      return (mongoDBNamedParams.indexOf(name)===-1) && (reservedMap[name.toUpperCase()] === true);
+    } { return name; }
   / quoted_ident
 
 column_name

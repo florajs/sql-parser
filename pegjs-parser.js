@@ -401,7 +401,10 @@ function peg$parse(input, options) {
               column: col
             };
           },
-      peg$c80 = function(name) { return (["in"].indexOf(name)===-1) && (reservedMap[name.toUpperCase()] === true); },
+      peg$c80 = function(name) { 
+            var mongoDbOps=["in"];
+            return (mongoDbOps.indexOf(name)===-1) && (reservedMap[name.toUpperCase()] === true); 
+          },
       peg$c81 = function(name) {
             return name;
           },
@@ -418,7 +421,10 @@ function peg$parse(input, options) {
       peg$c92 = peg$literalExpectation("`", false),
       peg$c93 = /^[^`]/,
       peg$c94 = peg$classExpectation(["`"], true, false),
-      peg$c95 = function(name) { return reservedMap[name] === true; },
+      peg$c95 = function(name) { 
+            var mongoDBNamedParams=["else","then", "as"];
+            return (mongoDBNamedParams.indexOf(name)===-1) && (reservedMap[name.toUpperCase()] === true);
+          },
       peg$c96 = function(name) { return name; },
       peg$c97 = function(start, parts) { return start + parts.join(''); },
       peg$c98 = /^[A-Za-z_$]/,
