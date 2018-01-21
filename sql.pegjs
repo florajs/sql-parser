@@ -564,6 +564,7 @@ primary
   / aggr_func
   / func_call
   / case_expr
+  / proc_array //add by qinghai
   / column_ref
   / param
   / LPAREN __ e:expr __ RPAREN {
