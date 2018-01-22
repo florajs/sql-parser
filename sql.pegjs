@@ -70,6 +70,21 @@
     'WHERE': true
   };
 
+  var selectPartsReservedMap = { //add by qinghai
+    'DISTINCT': true,
+    'EXISTS': true,
+    'FROM': true,
+    'GROUP': true,
+    'HAVING': true,
+    'JOIN': true,
+    'ORDER': true,
+    'REPLACE': true,
+    'SELECT': true,
+    'UNION': true,
+    'UPDATE': true,
+    'WHERE': true
+  };
+
   function createUnaryExpr(op, e) {
     return {
       type: 'unary_expr',
@@ -154,9 +169,9 @@ select_stmt
     }
 
 select_stmt_nake
-  = KW_SELECT           __
+  = KW_SELECT           __  
     opts:option_clause? __
-    d:KW_DISTINCT?      __
+    d:KW_DISTINCT?      __  
     c:column_clause     __
     f:from_clause?      __
     w:where_clause?     __
@@ -218,8 +233,24 @@ column_list_item
       return { expr: e, as: alias };
     }
 
+alias_ident
+  = name:ident_name !{ 
+      if (reservedMap[name.toUpperCase()] === true){
+          if (selectPartsReservedMap[name.toUpperCase()]===true){
+            return true;
+          }else
+            throw new Error("Error: "+ JSON.stringify(name)+" is a reserved word, can not as alias clause");
+      }
+    } {
+      return name;
+    }
+  / name:quoted_ident {
+      return name;
+    }
+
+
 alias_clause
-  = KW_AS? __ i:ident { return i; }
+  = KW_AS? __ i:alias_ident { return i; }
 
 from_clause
   = KW_FROM __ l:table_ref_list { return l; }
