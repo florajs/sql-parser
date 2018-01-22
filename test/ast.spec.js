@@ -223,6 +223,11 @@ describe('AST',() => {
                 });
             });
 
+            it('should support query param values', () => {
+                sql =  'SELECT * FROM t where t.a > :my_param';
+                expect(getParsedSql(sql)).to.equal('SELECT * FROM "t" WHERE "t"."a" > :my_param');
+            });
+
             it('should support BETWEEN operator', () => {
                 sql = `SELECT a FROM t WHERE id between '1' and 1337`;
                 expect(getParsedSql(sql)).to.equal(`SELECT "a" FROM "t" WHERE "id" BETWEEN '1' AND 1337`);
@@ -236,6 +241,11 @@ describe('AST',() => {
             it('should support string values', () => {
                 expect(getParsedSql(`SELECT col1 FROM t WHERE col2 = 'foobar'`))
                     .to.equal(`SELECT "col1" FROM "t" WHERE "col2" = 'foobar'`);
+            });
+
+            it('should support bool values', () => {
+                expect(getParsedSql(`SELECT col1 FROM t WHERE col2 = FALSE`))
+                    .to.equal(`SELECT "col1" FROM "t" WHERE "col2" = FALSE`);
             });
 
             it('should support null values', () => {
