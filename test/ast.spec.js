@@ -243,6 +243,11 @@ describe('AST',() => {
                     .to.equal(`SELECT "col1" FROM "t" WHERE "col2" = 'foobar'`);
             });
 
+            it('should support bool values', () => {
+                expect(getParsedSql(`SELECT col1 FROM t WHERE col2 = FALSE`))
+                    .to.equal(`SELECT "col1" FROM "t" WHERE "col2" = FALSE`);
+            });
+
             it('should support null values', () => {
                 expect(getParsedSql('SELECT col1 FROM t WHERE col2 IS NULL'))
                     .to.equal('SELECT "col1" FROM "t" WHERE "col2" IS NULL');
