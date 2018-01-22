@@ -247,6 +247,17 @@ describe('select', () => {
             });
         });
 
+        it('should parse single condition with boolean', () => {
+            ast = parser.parse('SELECT * FROM t where t.a = TRUE');
+
+            expect(ast.where).to.eql({
+                type: 'binary_expr',
+                operator: '=',
+                left: { type: 'column_ref', table: 't', column: 'a' },
+                right: { type: 'bool', value: true }
+            });
+        });
+
         it('should parse parameters', () => {
             ast = parser.parse('SELECT * FROM t where t.a > :my_param');
 
