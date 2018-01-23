@@ -652,7 +652,7 @@ backticks_quoted_ident
 
 column
   = name:column_name !{ 
-      var mongoDBNamedParams=["else","then", "as"]; //$cond
+      var mongoDBNamedParams=["else","then", "as","in"]; //$cond
       return (mongoDBNamedParams.indexOf(name)===-1) && (reservedMap[name.toUpperCase()] === true);
     } { return name; }
   / quoted_ident
@@ -1022,6 +1022,7 @@ proc_primary
   / var_decl
   / proc_func_call
   / param
+  / proc_array
   / LPAREN __ e:proc_additive_expr __ RPAREN {
       e.parentheses = true;
       return e;
