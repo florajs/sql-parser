@@ -135,6 +135,16 @@ describe('AST',() => {
                 expect(getParsedSql(sql)).to.equal('SELECT "a" FROM "t1" LEFT JOIN "t2" ON "t1"."t2id" = "t2"."t1id"');
             });
 
+            it('should support RIGHT JOINs', () => {
+                sql = 'SELECT a FROM t1 right join t2 on t1.t2id = t2.t1id';
+                expect(getParsedSql(sql)).to.equal('SELECT "a" FROM "t1" RIGHT JOIN "t2" ON "t1"."t2id" = "t2"."t1id"');
+            });
+
+            it('should support FULL JOINs', () => {
+                sql = 'SELECT a FROM t1 full join t2 on t1.t2id = t2.t1id';
+                expect(getParsedSql(sql)).to.equal('SELECT "a" FROM "t1" FULL JOIN "t2" ON "t1"."t2id" = "t2"."t1id"');
+            });
+
             it('should support multiple joins', () => {
                 sql = 'SELECT a FROM t1 LEFT JOIN t2 ON t1.t2id = t2.t1id INNER JOIN t3 ON t1.t3id = t3.t1id';
                 expect(getParsedSql(sql))
