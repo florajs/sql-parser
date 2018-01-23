@@ -177,6 +177,70 @@ describe('select', () => {
             ]);
         });
 
+        it('should parse right joins', () => {
+            ast = parser.parse('SELECT * FROM t inner join a.b b on t.a = b.c right join d on d.d = t.a');
+
+            expect(ast.from).to.eql([
+                { db: null, table: 't', as: null },
+                {
+                    db: 'a',
+                    table: 'b',
+                    as: 'b',
+                    join: 'INNER JOIN',
+                    on: {
+                        type: 'binary_expr',
+                        operator: '=',
+                        left: { type: 'column_ref', table: 't', column: 'a' },
+                        right: { type: 'column_ref', table: 'b', column: 'c' }
+                    }
+                },
+                {
+                    db: null,
+                    table: 'd',
+                    as: null,
+                    join: 'RIGHT JOIN',
+                    on: {
+                        type: 'binary_expr',
+                        operator: '=',
+                        left: { type: 'column_ref', table: 'd', column: 'd' },
+                        right: { type: 'column_ref', table: 't', column: 'a' }
+                    }
+                }
+            ]);
+        });
+
+        it('should parse full joins', () => {
+            ast = parser.parse('SELECT * FROM t join a.b b on t.a = b.c full join d on d.d = t.a');
+
+            expect(ast.from).to.eql([
+                { db: null, table: 't', as: null },
+                {
+                    db: 'a',
+                    table: 'b',
+                    as: 'b',
+                    join: 'INNER JOIN',
+                    on: {
+                        type: 'binary_expr',
+                        operator: '=',
+                        left: { type: 'column_ref', table: 't', column: 'a' },
+                        right: { type: 'column_ref', table: 'b', column: 'c' }
+                    }
+                },
+                {
+                    db: null,
+                    table: 'd',
+                    as: null,
+                    join: 'FULL JOIN',
+                    on: {
+                        type: 'binary_expr',
+                        operator: '=',
+                        left: { type: 'column_ref', table: 'd', column: 'd' },
+                        right: { type: 'column_ref', table: 't', column: 'a' }
+                    }
+                }
+            ]);
+        });
+
         it('should parse joined subselect', () => {
             ast = parser.parse('SELECT * FROM t1 JOIN (SELECT id, col1 FROM t2) someAlias ON t1.id = someAlias.id');
 
