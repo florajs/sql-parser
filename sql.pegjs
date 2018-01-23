@@ -39,6 +39,8 @@
     'JOIN': true,
 
     'LEFT': true,
+    'RIGHT': true,
+    'FULL': true,
     'LIKE': true,
     'LIMIT': true,
 
@@ -287,6 +289,8 @@ table_base
 
 join_op
   = KW_LEFT __ KW_JOIN { return 'LEFT JOIN'; }
+  / KW_RIGHT __ KW_JOIN { return 'RIGHT JOIN'; }
+  / KW_FULL __ KW_JOIN { return 'FULL JOIN'; }
   / (KW_INNER __)? KW_JOIN { return 'INNER JOIN'; }
 
 table_name
@@ -834,6 +838,8 @@ KW_TABLE    = "TABLE"i    !ident_start
 
 KW_ON       = "ON"i       !ident_start
 KW_LEFT     = "LEFT"i     !ident_start
+KW_RIGHT    = "RIGHT"i    !ident_start
+KW_FULL     = "FULL"i     !ident_start
 KW_INNER    = "INNER"i    !ident_start
 KW_JOIN     = "JOIN"i     !ident_start
 KW_UNION    = "UNION"i    !ident_start

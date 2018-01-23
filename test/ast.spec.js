@@ -135,6 +135,16 @@ describe('AST',() => {
                 expect(getParsedSql(sql)).to.equal('SELECT "a" FROM "t1" LEFT JOIN "t2" ON "t1"."t2id" = "t2"."t1id"');
             });
 
+            it('should support RIGHT JOINs', () => {
+                sql = 'SELECT a FROM t1 right join t2 on t1.t2id = t2.t1id';
+                expect(getParsedSql(sql)).to.equal('SELECT "a" FROM "t1" RIGHT JOIN "t2" ON "t1"."t2id" = "t2"."t1id"');
+            });
+
+            it('should support FULL JOINs', () => {
+                sql = 'SELECT a FROM t1 full join t2 on t1.t2id = t2.t1id';
+                expect(getParsedSql(sql)).to.equal('SELECT "a" FROM "t1" FULL JOIN "t2" ON "t1"."t2id" = "t2"."t1id"');
+            });
+
             it('should support multiple joins', () => {
                 sql = 'SELECT a FROM t1 LEFT JOIN t2 ON t1.t2id = t2.t1id INNER JOIN t3 ON t1.t3id = t3.t1id';
                 expect(getParsedSql(sql))
@@ -223,6 +233,11 @@ describe('AST',() => {
                 });
             });
 
+            it('should support query param values', () => {
+                sql =  'SELECT * FROM t where t.a > :my_param';
+                expect(getParsedSql(sql)).to.equal('SELECT * FROM "t" WHERE "t"."a" > :my_param');
+            });
+
             it('should support BETWEEN operator', () => {
                 sql = `SELECT a FROM t WHERE id between '1' and 1337`;
                 expect(getParsedSql(sql)).to.equal(`SELECT "a" FROM "t" WHERE "id" BETWEEN '1' AND 1337`);
@@ -236,6 +251,11 @@ describe('AST',() => {
             it('should support string values', () => {
                 expect(getParsedSql(`SELECT col1 FROM t WHERE col2 = 'foobar'`))
                     .to.equal(`SELECT "col1" FROM "t" WHERE "col2" = 'foobar'`);
+            });
+
+            it('should support bool values', () => {
+                expect(getParsedSql(`SELECT col1 FROM t WHERE col2 = FALSE`))
+                    .to.equal(`SELECT "col1" FROM "t" WHERE "col2" = FALSE`);
             });
 
             it('should support null values', () => {
