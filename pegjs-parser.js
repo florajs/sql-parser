@@ -2149,7 +2149,7 @@ function peg$parse(input, options) {
         if (s3 !== peg$FAILED) {
           s4 = peg$parse__();
           if (s4 !== peg$FAILED) {
-            s5 = peg$parsecolumn_ref_list();
+            s5 = peg$parsecolumn_clause();
             if (s5 !== peg$FAILED) {
               peg$savedPos = s0;
               s1 = peg$c16(s5);

@@ -330,8 +330,11 @@ on_clause
 where_clause
   = KW_WHERE __ e:expr { return e; }
 
+//group_by_clause
+//  = KW_GROUP __ KW_BY __ l:column_ref_list { return l; }
+
 group_by_clause
-  = KW_GROUP __ KW_BY __ l:column_ref_list { return l; }
+  = KW_GROUP __ KW_BY __ l:column_clause { return l; }
 
 column_ref_list
   = head:column_ref tail:(__ COMMA __ column_ref)* {
