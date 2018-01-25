@@ -579,6 +579,7 @@ primary
   / aggr_func
   / func_call
   / case_expr
+  / map_ref
   / column_ref
   / param
   / LPAREN __ e:expr __ RPAREN {
@@ -600,6 +601,16 @@ column_ref
         type: 'column_ref',
         table: null,
         column: col
+      };
+    }
+
+map_ref
+  = tbl:ident __ DOT __ map:column_map {
+      return {
+        type: 'map_ref',
+        table: tbl,
+        column: map.column,
+        key: map.key
       };
     }
 
@@ -629,6 +640,9 @@ single_quoted_ident
 
 backticks_quoted_ident
   = "`" chars:[^`]+ "`" { return chars.join(''); }
+
+column_map
+  = col_name:ident_part* LBRAKE map_key:quoted_ident RBRAKE !{ return reservedMap[col_name.join('').toUpperCase()] === true || reservedMap[map_key.toUpperCase()] === true; } { return { column: col_name.join(''), key: map_key }; }
 
 column
   = name:column_name !{ return reservedMap[name.toUpperCase()] === true; } { return name; }

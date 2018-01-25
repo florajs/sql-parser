@@ -333,6 +333,17 @@ describe('select', () => {
             });
         });
 
+        it('should parse map comparison', () => {
+            ast = parser.parse('SELECT * FROM t where t.a[\'my_key\'] = \'hello\'');
+
+            expect(ast.where).to.eql({
+                type: 'binary_expr',
+                operator: '=',
+                left: { type: 'map_ref', table: 't', column: 'a', key: 'my_key' },
+                right: { type: 'string', value: 'hello' }
+            });
+        });
+
         it('should parse multiple conditions', () => {
             ast = parser.parse(`SELECT * FROM t where t.c between 1 and 't' AND Not true`);
 
