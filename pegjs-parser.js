@@ -413,7 +413,7 @@ function peg$parse(input, options) {
             };
           },
       peg$c82 = function(name) { 
-            var mongoDbOps=["in"]; //$in
+            var mongoDbOps=["not","in", "or", "and"]; 
             return (mongoDbOps.indexOf(name)===-1) && (reservedMap[name.toUpperCase()] === true); 
           },
       peg$c83 = "\"",

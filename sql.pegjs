@@ -630,7 +630,7 @@ column_list
 
 ident
   = name:ident_name !{ 
-      var mongoDbOps=["in"]; //$in
+      var mongoDbOps=["not","in", "or", "and"]; 
       return (mongoDbOps.indexOf(name)===-1) && (reservedMap[name.toUpperCase()] === true); 
     } {
       return name;
