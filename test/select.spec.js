@@ -273,6 +273,17 @@ describe('select', () => {
             });
         });
 
+        it('should parse single condition with boolean', () => {
+            ast = parser.parse('SELECT * FROM t where t.a = TRUE');
+
+            expect(ast.where).to.eql({
+                type: 'binary_expr',
+                operator: '=',
+                left: { type: 'column_ref', table: 't', column: 'a' },
+                right: { type: 'bool', value: true }
+            });
+        });
+
         ['is', 'is not'].forEach((operator) => {
             it(`should parse ${operator} condition`, () => {
                 ast = parser.parse(`SELECT * FROM t WHERE "col" ${operator} NULL`);
