@@ -247,6 +247,17 @@ describe('select', () => {
             });
         });
 
+        it('should parse parameters', () => {
+            ast = parser.parse('SELECT * FROM t where t.a > :my_param');
+
+            expect(ast.where).to.eql({
+                type: 'binary_expr',
+                operator: '>',
+                left: { type: 'column_ref', table: 't', column: 'a' },
+                right: { type: 'param', value: 'my_param' }
+            });
+        });
+
         it('should parse multiple conditions', () => {
             ast = parser.parse(`SELECT * FROM t where t.c between 1 and 't' AND Not true`);
 
