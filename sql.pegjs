@@ -612,14 +612,16 @@ column_ref
       return {
         type: 'column_ref',
         table: tbl,
-        column: col
+        column: col.name,
+        isQuoted: !!col.isQuoted
       };
     }
   / col:column {
       return {
         type: 'column_ref',
         table: null,
-        column: col
+        column: col.name,
+        isQuoted: !!col.isQuoted
       };
     }
 
@@ -627,6 +629,7 @@ column_list
   = head:column tail:(__ COMMA __ column)* {
       return createList(head, tail);
     }
+
 
 ident
   = name:ident_name !{ 
@@ -657,8 +660,16 @@ column
   = name:column_name !{ 
       var mongoDBNamedParams=["else","then", "as","in"]; //$cond
       return (mongoDBNamedParams.indexOf(name)===-1) && (reservedMap[name.toUpperCase()] === true);
-    } { return name; }
-  / quoted_ident
+    } { return { 
+          name:name
+       }; 
+    }
+  / name:quoted_ident { //added by qinghai
+      return {
+        name:name,
+        isQuoted:true
+      };
+  }
 
 column_name
   =  start:ident_start parts:column_part* { return start + parts.join(''); }
