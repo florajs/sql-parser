@@ -1060,8 +1060,15 @@ proc_primary_list
       return createList(head, tail);
     }
 
+proc_array_primary_list
+  = head:primary tail:(__ COMMA __ primary)* {
+      return createList(head, tail);
+    }
+
+
 proc_array =
-  LBRAKE __ l:proc_primary_list __ RBRAKE {
+  //LBRAKE __ l:proc_primary_list __ RBRAKE {
+  LBRAKE __ l:proc_array_primary_list __ RBRAKE {
     return { type: 'array', value: l };
   }
 
