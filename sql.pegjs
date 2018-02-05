@@ -633,7 +633,7 @@ column_list
 
 ident
   = name:ident_name !{ 
-      var mongoDbOps=["not","in", "or", "and"]; 
+      var mongoDbOps=["not","in", "or", "and", "exists"]; //function
       return (mongoDbOps.indexOf(name)===-1) && (reservedMap[name.toUpperCase()] === true); 
     } {
       return name;
