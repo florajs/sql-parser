@@ -61,22 +61,52 @@ describe('select', () => {
             ]);
         });
 
-        it('should parse expression', () => {
-            ast = parser.parse('SELECT fun(d) FROM t');
+        describe('functions', () => {
+            it('should parse function expression', () => {
+                ast = parser.parse('SELECT fun(d) FROM t');
 
-            expect(ast.columns).to.eql([
-                {
-                    expr: {
-                        type: 'function',
-                        name: 'fun',
-                        args: {
-                            type  : 'expr_list',
-                            value : [ { type: 'column_ref', table: null, column: 'd' } ]
+                expect(ast.columns).to.eql([
+                    {
+                        expr: {
+                            type: 'function',
+                            name: 'fun',
+                            args: {
+                                type  : 'expr_list',
+                                value : [ { type: 'column_ref', table: null, column: 'd' } ]
+                            }
+                        },
+                        as: null
+                    }
+                ]);
+            });
+
+            [
+                'CURRENT_DATE',
+                'CURRENT_TIME',
+                'CURRENT_TIMESTAMP',
+                'CURRENT_USER',
+                'SESSION_USER',
+                'USER',
+                'SYSTEM_USER'
+            ].forEach((func) => {
+                it(`should parse scalar function ${func}`, () => {
+                    ast = parser.parse(`SELECT ${func} FROM t`);
+
+                    expect(ast.columns).to.eql([
+                        {
+                            expr: {
+                                type: 'function',
+                                name: func,
+                                args: {
+                                    type: 'expr_list',
+                                    value: []
+                                }
+                            },
+                            as: null
                         }
-                    },
-                    as: null
-                }
-            ]);
+                    ]);
+                });
+            });
         });
 
         it('should parse multiple columns', () => {
