@@ -415,7 +415,7 @@ function peg$parse(input, options) {
             };
           },
       peg$c82 = function(name) { 
-            var mongoDbOps=["not","in", "or", "and"]; 
+            var mongoDbOps=["not","in", "or", "and", "exists"]; //function
             return (mongoDbOps.indexOf(name)===-1) && (reservedMap[name.toUpperCase()] === true); 
           },
       peg$c83 = "\"",
