@@ -658,7 +658,7 @@ backticks_quoted_ident
 
 column
   = name:column_name !{ 
-      var mongoDBNamedParams=["else","then", "as","in"]; //$cond
+      var mongoDBNamedParams=["else","then", "as","in", "case"]; //$cond
       return (mongoDBNamedParams.indexOf(name)===-1) && (reservedMap[name.toUpperCase()] === true);
     } { return { 
           name:name

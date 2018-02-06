@@ -432,7 +432,7 @@ function peg$parse(input, options) {
       peg$c94 = /^[^`]/,
       peg$c95 = peg$classExpectation(["`"], true, false),
       peg$c96 = function(name) { 
-            var mongoDBNamedParams=["else","then", "as","in"]; //$cond
+            var mongoDBNamedParams=["else","then", "as","in", "case"]; //$cond
             return (mongoDBNamedParams.indexOf(name)===-1) && (reservedMap[name.toUpperCase()] === true);
           },
       peg$c97 = function(name) { return { 
