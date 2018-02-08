@@ -239,7 +239,7 @@ describe('select', () => {
             ]);
         });
 
-        it('should parse right joins', () => {
+        it('should parse full joins', () => {
             ast = parser.parse('SELECT * FROM t inner join a.b b on t.a = b.c full join d on d.d = t.a');
 
             expect(ast.from).to.eql([

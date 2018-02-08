@@ -140,7 +140,7 @@ describe('AST',() => {
                 expect(getParsedSql(sql)).to.equal('SELECT "a" FROM "t1" RIGHT JOIN "t2" ON "t1"."t2id" = "t2"."t1id"');
             });
 
-            it('should support RIGHT JOINs', () => {
+            it('should support FULL JOINs', () => {
                 sql = 'SELECT a FROM t1 full join t2 on t1.t2id = t2.t1id';
                 expect(getParsedSql(sql)).to.equal('SELECT "a" FROM "t1" FULL JOIN "t2" ON "t1"."t2id" = "t2"."t1id"');
             });
