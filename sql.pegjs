@@ -53,6 +53,7 @@
     'ON': true,
     'OR': true,
     'ORDER': true,
+    'OUTER': true,
 
     'REPLACE': true,
     'RIGHT': true,
@@ -295,9 +296,9 @@ table_base
     }
 
 join_op
-  = KW_LEFT __ KW_JOIN { return 'LEFT JOIN'; }
-  / KW_RIGHT __ KW_JOIN { return 'RIGHT JOIN'; }
-  / KW_FULL __ KW_JOIN { return 'FULL JOIN'; }
+  = KW_LEFT __ KW_OUTER? __ KW_JOIN { return 'LEFT JOIN'; }
+  / KW_RIGHT __ KW_OUTER? __ KW_JOIN { return 'RIGHT JOIN'; }
+  / KW_FULL __ KW_OUTER? __ KW_JOIN { return 'FULL JOIN'; }
   / (KW_INNER __)? KW_JOIN { return 'INNER JOIN'; }
 
 table_name
@@ -865,6 +866,7 @@ KW_RIGHT    = "RIGHT"i    !ident_start
 KW_FULL     = "FULL"i     !ident_start
 KW_INNER    = "INNER"i    !ident_start
 KW_JOIN     = "JOIN"i     !ident_start
+KW_OUTER    = "OUTER"i    !ident_start
 KW_UNION    = "UNION"i    !ident_start
 KW_VALUES   = "VALUES"i   !ident_start
 KW_USING    = "USING"i    !ident_start
