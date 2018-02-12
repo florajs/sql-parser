@@ -1,0 +1,8 @@
+runner_image: "drydock-prod.workiva.net/workiva/smithy-runner-node:242774"
+project: flora-sql-parser
+language: javascript
+
+script:
+  - npm install
+  - npm run test
+
