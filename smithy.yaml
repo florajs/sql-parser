@@ -1,5 +1,4 @@
 runner_image: "drydock-prod.workiva.net/workiva/smithy-runner-node:242774"
-project: static
 language: javascript
 
 script:
