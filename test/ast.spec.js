@@ -229,7 +229,7 @@ describe('AST',() => {
             ['IS', 'IS NOT'].forEach((operator) => {
                 it(`should support ${operator} operator`, () => {
                     sql = `SELECT a FROM t WHERE col ${operator.toLowerCase()} NULL`;
-                    expect(getParsedSql(sql)).to.equal(`SELECT "a" FROM "t" WHERE "col" ${operator} NULL`);
+                    expect(getParsedSql(sql)).to.equal(`SELECT "a" FROM "t" WHERE "col" ${operator} NUL`);
                 });
             });
 
