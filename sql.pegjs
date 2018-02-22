@@ -56,7 +56,7 @@
     'SHOW': true,
     'STATUS': true, // reserved (MySQL)
 
-    'TABLE': true,
+    //'TABLE': true, //removed by qinghai
     'THEN': true,
     'TRUE': true,
     //'TYPE': true,   // reserved (MySQL)
@@ -871,7 +871,7 @@ KW_FROM     = "FROM"i     !ident_start
 KW_SET      = "SET"i      !ident_start
 
 KW_AS       = "AS"i       !ident_start
-KW_TABLE    = "TABLE"i    !ident_start
+//KW_TABLE    = "TABLE"i    !ident_start
 
 KW_ON       = "ON"i       !ident_start
 KW_LEFT     = "LEFT"i     !ident_start
