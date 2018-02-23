@@ -213,13 +213,20 @@ query_option
     ) { return option; }
 
 column_clause
-  = (KW_ALL / (STAR !ident_start)) { return '*'; }
-  / head:column_list_item tail:(__ COMMA __ column_list_item)* {
+  = head:column_list_item tail:(__ COMMA __ column_list_item)* {
       return createList(head, tail);
     }
 
 column_list_item
-  = tbl:ident __ DOT __ STAR {
+  = (KW_ALL / (STAR !ident_start)) { return {
+        expr: {
+          type: 'column_ref',
+          table: null,
+          column: '*'
+        },
+        as: null
+      }}
+  / tbl:ident __ DOT __ STAR {
       return {
         expr: {
           type: 'column_ref',

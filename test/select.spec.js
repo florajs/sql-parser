@@ -34,7 +34,17 @@ describe('select', () => {
     describe('column clause', () => {
         it('should parse "*" shorthand', () => {
             ast = parser.parse('SELECT * FROM t');
-            expect(ast.columns).to.equal('*');
+            expect(ast.columns).to.eql([
+                { expr: { type: 'column_ref', 'table': null, column: '*' }, as: null }
+            ]);
+        });
+
+        it('should parse "*" shorthand, add field', () => { //add by qinghai
+            ast = parser.parse('SELECT *, f1 FROM t');
+            expect(ast.columns).to.eql([
+                { expr: { type: 'column_ref', 'table': null, column: '*' }, as: null },
+                { expr: { type: 'column_ref', 'table': null, column: 'f1' }, as: null }
+            ]);
         });
 
         it('should parse "table.*" column expressions', () => {
