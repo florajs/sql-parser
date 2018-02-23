@@ -6,7 +6,7 @@
   "scripts": {
     "build": "./node_modules/.bin/pegjs -o pegjs-parser.js sql.pegjs",
     "prepublish": "./node_modules/.bin/pegjs -o pegjs-parser.js sql.pegjs",
-    "test": "./node_modules/.bin/grunt test",
+    "test": "npm run build && grunt mochaTest:test",
     "lint": "grunt lint"
   },
   "keywords": [

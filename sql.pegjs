@@ -609,20 +609,28 @@ primary
 
 column_ref
   = tbl:ident __ DOT __ col:column {
-      return {
+      var rst= {
         type: 'column_ref',
         table: tbl,
         column: col.name,
-        isQuoted: !!col.isQuoted
       };
+
+      return rst;
     }
   / col:column {
-      return {
+    var rst={
         type: 'column_ref',
         table: null,
         column: col.name,
-        isQuoted: !!col.isQuoted
-      };
+     };
+      var isQuoted= !!col.isQuoted;
+
+      if (isQuoted){
+        rst.isQuoted=true;
+      }
+
+
+     return rst; 
     }
 
 column_list
@@ -633,7 +641,7 @@ column_list
 
 ident
   = name:ident_name !{ 
-      var mongoDbOps=["not","in", "or", "and", "exists"]; //function
+      var mongoDbOps=["not","in", "or", "and"]; //function
       return (mongoDbOps.indexOf(name)===-1) && (reservedMap[name.toUpperCase()] === true); 
     } {
       return name;

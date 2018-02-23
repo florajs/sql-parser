@@ -399,23 +399,31 @@ function peg$parse(input, options) {
             return e;
           },
       peg$c80 = function(tbl, col) {
-            return {
+            var rst= {
               type: 'column_ref',
               table: tbl,
               column: col.name,
-              isQuoted: !!col.isQuoted
             };
+
+            return rst;
           },
       peg$c81 = function(col) {
-            return {
+          var rst={
               type: 'column_ref',
               table: null,
               column: col.name,
-              isQuoted: !!col.isQuoted
-            };
+           };
+            var isQuoted= !!col.isQuoted;
+
+            if (isQuoted){
+              rst.isQuoted=true;
+            }
+
+
+           return rst; 
           },
       peg$c82 = function(name) { 
-            var mongoDbOps=["not","in", "or", "and", "exists"]; //function
+            var mongoDbOps=["not","in", "or", "and"]; //function
             return (mongoDbOps.indexOf(name)===-1) && (reservedMap[name.toUpperCase()] === true); 
           },
       peg$c83 = "\"",

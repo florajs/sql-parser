@@ -387,7 +387,7 @@ describe('AST',() => {
                 right: {
                     type: 'binary_expr',
                     operator: '=',
-                    left: { type: 'column_ref', table: null, column: 'type' },
+                    left: { type: 'column_ref', table: null, column: 'type',  "isQuoted": true },
                     right: { type: 'string', value: 'foobar' }
                 }
             });

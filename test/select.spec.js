@@ -257,13 +257,13 @@ describe('select', () => {
                 expect(ast.where).to.eql({
                     type: 'binary_expr',
                     operator: operator.toUpperCase(),
-                    left: { type: 'column_ref', table: null, column: 'col' },
+                    left: { type: 'column_ref', table: null, column: 'col',   "isQuoted": true },
                     right: { type: 'null', value: null }
                 });
             });
         });
 
-        ['exists', 'not exists'].forEach((operator) => {
+        ['EXISTS', 'NOT EXISTS'].forEach((operator) => {
             it('should parse ' + operator.toUpperCase() + ' condition', () => {
                 ast = parser.parse('SELECT * FROM t WHERE ' + operator + ' (SELECT 1)');
 
@@ -312,16 +312,17 @@ describe('select', () => {
         it('should parse single columns', () => {
             ast = parser.parse('SELECT a FROM b WHERE c = 0 GROUP BY d');
 
-            expect(ast.groupby).to.eql([{ type:'column_ref', table: null, column: 'd' }])
+            expect(ast.groupby).to.eql([{"as":null, "expr":{ type:'column_ref', table: null, column: 'd' }}])
         });
 
         it('should parse multiple columns', () => {
             ast = parser.parse('SELECT a FROM b WHERE c = 0 GROUP BY d, t.b, t.c');
 
-            expect(ast.groupby).to.eql([
-                { type: 'column_ref', table: null, column: 'd' },
-                { type: 'column_ref', table: 't', column: 'b' },
-                { type: 'column_ref', table: 't', column: 'c' }
+            expect(ast.groupby).to.eql(
+                [
+                    {"as": null, "expr": { "column": "d",  "table": null,  "type": "column_ref"}},
+                    {"as": null, "expr": { "column": "b", "table": "t", "type": "column_ref" }},
+                    { "as": null, "expr": {"column": "c", "table": "t", "type": "column_ref"}}
             ]);
         });
     });
