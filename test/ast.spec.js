@@ -76,6 +76,39 @@ describe('AST',() => {
                 expect(getParsedSql(sql)).to.equal('SELECT COUNT(DISTINCT "t"."id") FROM "t"');
             });
 
+            it('should support distinct aggregate functions ', () => {
+                var ast = {
+                  type: 'select',
+                  options: null,
+                  distinct: null,
+                  columns: [
+                  { 
+                    expr: { 
+                      type: 'aggr_func', 
+                      name: 'SUM', 
+                      args: { 
+                        distinct: 'DISTINCT', 
+                        expr: { 
+                          type: 'column_ref', 
+                          table: 't', 
+                          column: 'id' 
+                        }
+                      }
+                    },
+    
+                    as: null 
+                  }
+                  ],
+                  from: [{ db: null, table: 't', as: null }],
+                  where: null,
+                  groupby: null,
+                  limit: null
+              };
+              var sql = util.astToSQL(ast);
+              expect(sql).to.equal('SELECT SUM(DISTINCT "t"."id") FROM "t"');
+            });
+
+
             it('should support unary operators', () => {
                 sql = 'SELECT (not true), !t.foo as foo FROM t';
                 expect(getParsedSql(sql)).to.equal('SELECT (NOT TRUE), NOT "t"."foo" AS "foo" FROM "t"');

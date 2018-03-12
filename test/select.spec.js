@@ -95,6 +95,28 @@ describe('select', () => {
                 }
             ]);
         });
+
+        it('should parse distinct sum aggregation', () => {
+          ast = parser.parse('SELECT sum(distinct t.c) as bc FROM t');
+
+          expect(ast.columns).to.eql([
+              { 
+                expr: { 
+                  type: 'aggr_func', 
+                  name: 'SUM', 
+                  args: { 
+                    distinct: 'DISTINCT', 
+                    expr: { 
+                      type: 'column_ref', 
+                      table: 't', 
+                      column: 'c' 
+                    }
+                  }
+                },  
+                as: 'bc' 
+              }
+          ]);
+      });
     });
 
     describe('from clause', () => {
