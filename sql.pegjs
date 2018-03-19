@@ -671,15 +671,17 @@ aggr_func
   / aggr_fun_smma
 
 aggr_fun_smma
-  = name:KW_SUM_MAX_MIN_AVG  __ LPAREN __ e:additive_expr __ RPAREN {
+  = name:KW_SUM_MAX_MIN_AVG  __ LPAREN __ arg:smma_arg __ RPAREN {
       return {
         type: 'aggr_func',
         name: name,
-        args: {
-          expr: e
-        }
+        args: arg
       };
     }
+
+smma_arg
+  = e:additive_expr { return { expr: e }; }
+  / d:KW_DISTINCT __ c:column_ref { return { distinct: d, expr: c }; }
 
 KW_SUM_MAX_MIN_AVG
   = KW_SUM / KW_MAX / KW_MIN / KW_AVG
