@@ -11,6 +11,10 @@
     'CASE': true,
     'CREATE': true,
     'CONTAINS': true,
+    'CURRENT_DATE': true,
+    'CURRENT_TIME': true,
+    'CURRENT_TIMESTAMP': true,
+    'CURRENT_USER': true,
 
     'DELETE': true,
     'DESC': true,
@@ -24,6 +28,7 @@
 
     'FALSE': true,
     'FROM': true,
+    'FULL': true,
 
     'GROUP': true,
 
@@ -50,13 +55,17 @@
     'ON': true,
     'OR': true,
     'ORDER': true,
+    'OUTER': true,
 
     'REPLACE': true,
+    'RIGHT': true,
 
     'SELECT': true,
+    'SESSION_USER': true,
     'SET': true,
     'SHOW': true,
     'STATUS': true, // reserved (MySQL)
+    'SYSTEM_USER': true,
 
     'TABLE': true,
     'THEN': true,
@@ -65,6 +74,7 @@
 
     'UNION': true,
     'UPDATE': true,
+    'USER': true,
     'USING': true,
 
     'VALUES': true,
@@ -288,9 +298,9 @@ table_base
     }
 
 join_op
-  = KW_LEFT __ KW_JOIN { return 'LEFT JOIN'; }
-  / KW_RIGHT __ KW_JOIN { return 'RIGHT JOIN'; }
-  / KW_FULL __ KW_JOIN { return 'FULL JOIN'; }
+  = KW_LEFT __ KW_OUTER? __ KW_JOIN { return 'LEFT JOIN'; }
+  / KW_RIGHT __ KW_OUTER? __ KW_JOIN { return 'RIGHT JOIN'; }
+  / KW_FULL __ KW_OUTER? __ KW_JOIN { return 'FULL JOIN'; }
   / (KW_INNER __)? KW_JOIN { return 'INNER JOIN'; }
 
 table_name
@@ -586,6 +596,10 @@ primary
       e.parentheses = true;
       return e;
     }
+  / LPAREN __ list:expr_list __ RPAREN {
+        list.parentheses = true;
+        return list;
+    }
   / var_decl
 
 column_ref
@@ -710,6 +724,22 @@ func_call
         args: l ? l: { type: 'expr_list', value: [] }
       };
     }
+  / name:scalar_func {
+      return {
+        type: 'function',
+        name: name,
+        args: { type: 'expr_list', value: [] }
+      };
+    }
+
+scalar_func
+  = KW_CURRENT_DATE
+  / KW_CURRENT_TIME
+  / KW_CURRENT_TIMESTAMP
+  / KW_CURRENT_USER
+  / KW_USER
+  / KW_SESSION_USER
+  / KW_SYSTEM_USER
 
 cast_expr
   = KW_CAST __ LPAREN __ e:expr __ KW_AS __ t:data_type __ RPAREN {
@@ -858,6 +888,7 @@ KW_RIGHT    = "RIGHT"i    !ident_start
 KW_FULL     = "FULL"i     !ident_start
 KW_INNER    = "INNER"i    !ident_start
 KW_JOIN     = "JOIN"i     !ident_start
+KW_OUTER    = "OUTER"i    !ident_start
 KW_UNION    = "UNION"i    !ident_start
 KW_VALUES   = "VALUES"i   !ident_start
 KW_USING    = "USING"i    !ident_start
@@ -913,6 +944,14 @@ KW_SMALLINT = "SMALLINT"i !ident_start { return 'SMALLINT'; }
 KW_DATE     = "DATE"i     !ident_start { return 'DATE'; }
 KW_TIME     = "TIME"i     !ident_start { return 'TIME'; }
 KW_TIMESTAMP= "TIMESTAMP"i!ident_start { return 'TIMESTAMP'; }
+KW_USER     = "USER"i     !ident_start { return 'USER'; }
+
+KW_CURRENT_DATE     = "CURRENT_DATE"i !ident_start { return 'CURRENT_DATE'; }
+KW_CURRENT_TIME     = "CURRENT_TIME"i !ident_start { return 'CURRENT_TIME'; }
+KW_CURRENT_TIMESTAMP= "CURRENT_TIMESTAMP"i !ident_start { return 'CURRENT_TIMESTAMP'; }
+KW_CURRENT_USER     = "CURRENT_USER"i !ident_start { return 'CURRENT_USER'; }
+KW_SESSION_USER     = "SESSION_USER"i !ident_start { return 'SESSION_USER'; }
+KW_SYSTEM_USER      = "SYSTEM_USER"i !ident_start { return 'SYSTEM_USER'; }
 
 KW_VAR_PRE = '$'
 KW_RETURN = 'return'i
