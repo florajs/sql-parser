@@ -147,6 +147,46 @@ describe('select', () => {
               }
           ]);
       });
+
+      it('should parse casted boolean columns', () => {
+        ast = parser.parse('select cast(t.c as boolean) as dc from t');
+        expect(ast.columns).to.eql([
+          { 
+            expr: { 
+              type: 'cast', 
+              target: {
+                dataType: 'BOOLEAN'
+              }, 
+              expr: { 
+                type: 'column_ref', 
+                table: 't', 
+                column: 'c' 
+              }
+            },  
+            as: 'dc' 
+          }
+        ]);
+      });
+
+      it('should parse casted double columns', () => {
+        ast = parser.parse('select cast(t.c as double) as dc from t');
+        expect(ast.columns).to.eql([
+          { 
+            expr: { 
+              type: 'cast', 
+              target: {
+                dataType: 'DOUBLE'
+              }, 
+              expr: { 
+                type: 'column_ref', 
+                table: 't', 
+                column: 'c' 
+              }
+            },  
+            as: 'dc' 
+          }
+        ]);
+      });
     });
 
     describe('from clause', () => {

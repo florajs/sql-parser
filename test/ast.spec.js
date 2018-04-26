@@ -119,6 +119,16 @@ describe('AST',() => {
                     .to.equal('SELECT CAST("col" AS INTEGER) FROM "t"');
             });
 
+            it('should support casts with double', () => {
+              expect(getParsedSql('SELECT CAST(col AS DOUBLE) FROM t'))
+                  .to.equal('SELECT CAST("col" AS DOUBLE) FROM "t"');
+            });
+            
+            it('should support casts with boolean', () => {
+              expect(getParsedSql('SELECT CAST(col AS BOOLEAN) FROM t'))
+                  .to.equal('SELECT CAST("col" AS BOOLEAN) FROM "t"');
+            });
+
             it('should support subselects', () => {
                 expect(getParsedSql(`SELECT 'string', (SELECT col FROM t2) subSelect FROM t1`))
                     .to.equal(`SELECT 'string', (SELECT "col" FROM "t2") AS "subSelect" FROM "t1"`);
