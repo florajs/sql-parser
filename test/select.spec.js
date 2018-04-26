@@ -168,6 +168,62 @@ describe('select', () => {
         ]);
       });
 
+      it('should parse aggregated distinct casted columns', () => {
+        ast = parser.parse('select count(distinct cast(t.c as boolean)) as dc from t');
+        expect(ast.columns).to.eql([
+          { 
+            expr: {
+              type: 'aggr_func', 
+              name: 'COUNT', 
+              args: { 
+                distinct: 'DISTINCT', 
+                expr: {
+                  type: 'cast',
+                  target: {
+                    dataType: 'BOOLEAN'
+                  }, 
+                  expr: { 
+                    type: 'column_ref', 
+                    table: 't', 
+                    column: 'c' 
+                  }
+                }
+              },  
+              
+            },
+            as: 'dc' 
+          }
+        ]);
+      });
+
+      it('should parse aggregated distinct sum casted columns', () => {
+        ast = parser.parse('select sum(distinct cast(t.c as boolean)) as dc from t');
+        expect(ast.columns).to.eql([
+          { 
+            expr: {
+              type: 'aggr_func', 
+              name: 'SUM', 
+              args: { 
+                distinct: 'DISTINCT', 
+                expr: {
+                  type: 'cast',
+                  target: {
+                    dataType: 'BOOLEAN'
+                  }, 
+                  expr: { 
+                    type: 'column_ref', 
+                    table: 't', 
+                    column: 'c' 
+                  }
+                }
+              },  
+              
+            },
+            as: 'dc' 
+          }
+        ]);
+      });
+
       it('should parse casted double columns', () => {
         ast = parser.parse('select cast(t.c as double) as dc from t');
         expect(ast.columns).to.eql([

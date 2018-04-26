@@ -695,7 +695,7 @@ aggr_fun_smma
 
 smma_arg
   = e:additive_expr { return { expr: e }; }
-  / d:KW_DISTINCT __ c:column_ref { return { distinct: d, expr: c }; }
+  / d:KW_DISTINCT __ e:additive_expr { return { distinct: d, expr: e}; }
 
 KW_SUM_MAX_MIN_AVG
   = KW_SUM / KW_MAX / KW_MIN / KW_AVG
@@ -711,7 +711,7 @@ aggr_fun_count
 
 count_arg
   = e:star_expr { return { expr: e }; }
-  / d:KW_DISTINCT? __ c:column_ref { return { distinct: d, expr: c }; }
+  / d:KW_DISTINCT __ e:additive_expr { return { distinct: d, expr: e}; }
 
 star_expr
   = "*" { return { type: 'star', value: '*' }; }
