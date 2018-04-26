@@ -711,7 +711,7 @@ aggr_fun_count
 
 count_arg
   = e:star_expr { return { expr: e }; }
-  / d:KW_DISTINCT __ e:additive_expr { return { distinct: d, expr: e}; }
+  / d:KW_DISTINCT? __ e:additive_expr { return { distinct: d, expr: e}; }
 
 star_expr
   = "*" { return { type: 'star', value: '*' }; }
