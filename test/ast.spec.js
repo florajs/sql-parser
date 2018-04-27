@@ -76,6 +76,39 @@ describe('AST',() => {
                 expect(getParsedSql(sql)).to.equal('SELECT COUNT(DISTINCT "t"."id") FROM "t"');
             });
 
+            it('should support distinct aggregate functions ', () => {
+                var ast = {
+                  type: 'select',
+                  options: null,
+                  distinct: null,
+                  columns: [
+                  { 
+                    expr: { 
+                      type: 'aggr_func', 
+                      name: 'SUM', 
+                      args: { 
+                        distinct: 'DISTINCT', 
+                        expr: { 
+                          type: 'column_ref', 
+                          table: 't', 
+                          column: 'id' 
+                        }
+                      }
+                    },
+    
+                    as: null 
+                  }
+                  ],
+                  from: [{ db: null, table: 't', as: null }],
+                  where: null,
+                  groupby: null,
+                  limit: null
+              };
+              var sql = util.astToSQL(ast);
+              expect(sql).to.equal('SELECT SUM(DISTINCT "t"."id") FROM "t"');
+            });
+
+
             it('should support unary operators', () => {
                 sql = 'SELECT (not true), !t.foo as foo FROM t';
                 expect(getParsedSql(sql)).to.equal('SELECT (NOT TRUE), NOT "t"."foo" AS "foo" FROM "t"');
@@ -84,6 +117,16 @@ describe('AST',() => {
             it('should support casts', () => {
                 expect(getParsedSql('SELECT CAST(col AS INTEGER) FROM t'))
                     .to.equal('SELECT CAST("col" AS INTEGER) FROM "t"');
+            });
+
+            it('should support casts with double', () => {
+              expect(getParsedSql('SELECT CAST(col AS DOUBLE) FROM t'))
+                  .to.equal('SELECT CAST("col" AS DOUBLE) FROM "t"');
+            });
+            
+            it('should support casts with boolean', () => {
+              expect(getParsedSql('SELECT CAST(col AS BOOLEAN) FROM t'))
+                  .to.equal('SELECT CAST("col" AS BOOLEAN) FROM "t"');
             });
 
             it('should support subselects', () => {
@@ -234,8 +277,13 @@ describe('AST',() => {
             });
 
             it('should support query param values', () => {
-                sql = 'SELECT * FROM t where t.a > :my_param';
+                sql =  'SELECT * FROM t where t.a > :my_param';
                 expect(getParsedSql(sql)).to.equal('SELECT * FROM "t" WHERE "t"."a" > :my_param');
+            });
+
+            it('should support map values', () => {
+                sql =  'SELECT * FROM t where t.a[\'value\'] = \'something\'';
+                expect(getParsedSql(sql)).to.equal('SELECT * FROM "t" WHERE "t".a[\'value\'] = \'something\'');
             });
 
             it('should support BETWEEN operator', () => {
@@ -251,6 +299,11 @@ describe('AST',() => {
             it('should support string values', () => {
                 expect(getParsedSql(`SELECT col1 FROM t WHERE col2 = 'foobar'`))
                     .to.equal(`SELECT "col1" FROM "t" WHERE "col2" = 'foobar'`);
+            });
+
+            it('should support bool values', () => {
+                expect(getParsedSql(`SELECT col1 FROM t WHERE col2 = FALSE`))
+                    .to.equal(`SELECT "col1" FROM "t" WHERE "col2" = FALSE`);
             });
 
             it('should support null values', () => {

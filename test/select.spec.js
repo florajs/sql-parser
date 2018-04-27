@@ -125,6 +125,124 @@ describe('select', () => {
                 }
             ]);
         });
+
+        it('should parse distinct sum aggregation', () => {
+          ast = parser.parse('SELECT sum(distinct t.c) as bc FROM t');
+
+          expect(ast.columns).to.eql([
+              { 
+                expr: { 
+                  type: 'aggr_func', 
+                  name: 'SUM', 
+                  args: { 
+                    distinct: 'DISTINCT', 
+                    expr: { 
+                      type: 'column_ref', 
+                      table: 't', 
+                      column: 'c' 
+                    }
+                  }
+                },  
+                as: 'bc' 
+              }
+          ]);
+      });
+
+      it('should parse casted boolean columns', () => {
+        ast = parser.parse('select cast(t.c as boolean) as dc from t');
+        expect(ast.columns).to.eql([
+          { 
+            expr: { 
+              type: 'cast', 
+              target: {
+                dataType: 'BOOLEAN'
+              }, 
+              expr: { 
+                type: 'column_ref', 
+                table: 't', 
+                column: 'c' 
+              }
+            },  
+            as: 'dc' 
+          }
+        ]);
+      });
+
+      it('should parse aggregated distinct casted columns', () => {
+        ast = parser.parse('select count(distinct cast(t.c as boolean)) as dc from t');
+        expect(ast.columns).to.eql([
+          { 
+            expr: {
+              type: 'aggr_func', 
+              name: 'COUNT', 
+              args: { 
+                distinct: 'DISTINCT', 
+                expr: {
+                  type: 'cast',
+                  target: {
+                    dataType: 'BOOLEAN'
+                  }, 
+                  expr: { 
+                    type: 'column_ref', 
+                    table: 't', 
+                    column: 'c' 
+                  }
+                }
+              },  
+              
+            },
+            as: 'dc' 
+          }
+        ]);
+      });
+
+      it('should parse aggregated distinct sum casted columns', () => {
+        ast = parser.parse('select sum(distinct cast(t.c as boolean)) as dc from t');
+        expect(ast.columns).to.eql([
+          { 
+            expr: {
+              type: 'aggr_func', 
+              name: 'SUM', 
+              args: { 
+                distinct: 'DISTINCT', 
+                expr: {
+                  type: 'cast',
+                  target: {
+                    dataType: 'BOOLEAN'
+                  }, 
+                  expr: { 
+                    type: 'column_ref', 
+                    table: 't', 
+                    column: 'c' 
+                  }
+                }
+              },  
+              
+            },
+            as: 'dc' 
+          }
+        ]);
+      });
+
+      it('should parse casted double columns', () => {
+        ast = parser.parse('select cast(t.c as double) as dc from t');
+        expect(ast.columns).to.eql([
+          { 
+            expr: { 
+              type: 'cast', 
+              target: {
+                dataType: 'DOUBLE'
+              }, 
+              expr: { 
+                type: 'column_ref', 
+                table: 't', 
+                column: 'c' 
+              }
+            },  
+            as: 'dc' 
+          }
+        ]);
+      });
     });
 
     describe('from clause', () => {
@@ -271,6 +389,17 @@ describe('select', () => {
             });
         });
 
+        it('should parse single condition with boolean', () => {
+            ast = parser.parse('SELECT * FROM t where t.a = TRUE');
+
+            expect(ast.where).to.eql({
+                type: 'binary_expr',
+                operator: '=',
+                left: { type: 'column_ref', table: 't', column: 'a' },
+                right: { type: 'bool', value: true }
+            });
+        });
+
         it('should parse parameters', () => {
             ast = parser.parse('SELECT * FROM t where t.a > :my_param');
 
@@ -279,6 +408,17 @@ describe('select', () => {
                 operator: '>',
                 left: { type: 'column_ref', table: 't', column: 'a' },
                 right: { type: 'param', value: 'my_param' }
+            });
+        });
+
+        it('should parse map comparison', () => {
+            ast = parser.parse('SELECT * FROM t where t.a[\'my_key\'] = \'hello\'');
+
+            expect(ast.where).to.eql({
+                type: 'binary_expr',
+                operator: '=',
+                left: { type: 'map_ref', table: 't', column: 'a', key: 'my_key' },
+                right: { type: 'string', value: 'hello' }
             });
         });
 

@@ -1,0 +1,7 @@
+runner_image: "drydock-prod.workiva.net/workiva/smithy-runner-node:242774"
+language: javascript
+
+script:
+  - npm install
+  - npm run test
+
