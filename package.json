@@ -38,24 +38,24 @@
     "node": ">=6"
   },
   "dependencies": {
-    "flora-errors": "^0.7.0",
-    "has": "^1.0.1",
+    "flora-errors": "^0.8.0",
+    "has": "^1.0.3",
     "pegjs": "^0.10.0"
   },
   "devDependencies": {
-    "chai": "^3.4.1",
-    "eslint": "^3.11.1",
-    "eslint-config-airbnb-base": "^11.0.0",
+    "chai": "^4.1.2",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.2.0",
     "grunt": "^1.0.1",
     "grunt-cli": "^1.2.0",
-    "grunt-eslint": "^19.0.0",
-    "grunt-exec": "^1.0.0",
+    "grunt-eslint": "^20.2.0",
+    "grunt-exec": "^3.0.0",
     "grunt-mocha-istanbul": "^5.0.1",
     "grunt-mocha-test": "^0.13.2",
     "istanbul": "^0.4.2",
-    "load-grunt-tasks": "^3.4.0",
-    "mocha": "^3.0.0",
-    "mocha-bamboo-reporter": "^1.1.0"
+    "load-grunt-tasks": "^4.0.0",
+    "mocha": "^5.2.0",
+    "mocha-bamboo-reporter": "^1.1.1"
   }
 }
