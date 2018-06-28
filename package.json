@@ -4,7 +4,7 @@
   "description": "Parse SQL (select) statements into abstract syntax tree (AST) and convert ASTs back to SQL.",
   "main": "index.js",
   "scripts": {
-    "install": "./node_modules/.bin/pegjs -o pegjs-parser.js sql.pegjs",
+    "install": "pegjs -o pegjs-parser.js sql.pegjs",
     "test": "./node_modules/.bin/grunt test",
     "lint": "grunt lint"
   },
