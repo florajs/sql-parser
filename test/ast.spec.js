@@ -339,6 +339,11 @@ describe('AST',() => {
                 sql = `select 1 union select '1' union select a from t union (select true)`;
                 expect(getParsedSql(sql)).to.equal(`SELECT 1 UNION SELECT '1' UNION SELECT "a" FROM "t" UNION SELECT TRUE`);
             });
+
+            it('should be supported in expressions', () => {
+                sql = `select * from (select 1 union select 2) t`;
+                expect(getParsedSql(sql)).to.equal(`SELECT * FROM (SELECT 1 UNION SELECT 2) AS "t"`);
+            });
         });
     });
 
