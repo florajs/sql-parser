@@ -28,7 +28,6 @@ module.exports = function (grunt) {
             coverage: {
                 src: 'test',
                 options: {
-                    excludes: ['pegjs-parser.js'],
                     coverageFolder: 'build',
                     reportFormats: ['clover', 'lcov']
                 }
@@ -37,7 +36,7 @@ module.exports = function (grunt) {
 
         exec: {
             createParser: {
-                cmd: './node_modules/.bin/pegjs -o pegjs-parser.js sql.pegjs'
+                cmd: './node_modules/.bin/pegjs -o build/pegjs-parser.js sql.pegjs'
             }
         },
     });

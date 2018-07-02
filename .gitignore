@@ -1,8 +1,5 @@
 node_modules/
 build/
 
-# generated parser
-pegjs-parser.js
-
 # Bamboo build output
 mocha.json
