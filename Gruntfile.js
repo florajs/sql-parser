@@ -1,6 +1,10 @@
 'use strict';
 
+const path = require('path');
+
 module.exports = function (grunt) {
+
+    grunt.file.mkdir(path.join(__dirname, 'build'));
 
     grunt.initConfig({
         eslint: {
