@@ -532,7 +532,7 @@ is_op_right
   }
 
 between_op_right
-  = op:KW_BETWEEN __  begin:additive_expr __ KW_AND __ end:additive_expr {
+  = op:between_or_not_between_op __  begin:additive_expr __ KW_AND __ end:additive_expr {
       return {
         op: op,
         right: {
@@ -541,6 +541,10 @@ between_op_right
         }
       };
     }
+
+between_or_not_between_op
+  = nk:(KW_NOT __ KW_BETWEEN) { return nk[0] + ' ' + nk[2]; }
+  / KW_BETWEEN
 
 like_op
   = nk:(KW_NOT __ KW_LIKE) { return nk[0] + ' ' + nk[2]; }
