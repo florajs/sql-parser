@@ -238,9 +238,11 @@ describe('AST',() => {
                 expect(getParsedSql(sql)).to.equal('SELECT * FROM "t" WHERE "t"."a" > :my_param');
             });
 
-            it('should support BETWEEN operator', () => {
-                sql = `SELECT a FROM t WHERE id between '1' and 1337`;
-                expect(getParsedSql(sql)).to.equal(`SELECT "a" FROM "t" WHERE "id" BETWEEN '1' AND 1337`);
+            ['BETWEEN', 'NOT BETWEEN'].forEach((operator) => {
+                it(`should support ${operator} operator`, () => {
+                    sql = `SELECT a FROM t WHERE id ${operator.toLowerCase()} '1' and 1337`;
+                    expect(getParsedSql(sql)).to.equal(`SELECT "a" FROM "t" WHERE "id" ${operator} '1' AND 1337`);
+                });
             });
 
             it('should support boolean values', () => {
