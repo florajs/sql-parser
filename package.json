@@ -6,7 +6,8 @@
   "scripts": {
     "build": "./node_modules/.bin/grunt create-parser",
     "test": "./node_modules/.bin/grunt test",
-    "lint": "./node_modules/.bin/grunt lint"
+    "lint": "./node_modules/.bin/grunt lint",
+    "prepack": "npm run build"
   },
   "keywords": [
     "sql",
