@@ -89,6 +89,18 @@ describe('AST',() => {
                 'signed integer casts': [
                     'SELECT CAST(col as unsigned integer) FROM t',
                     'SELECT CAST("col" AS UNSIGNED INTEGER) FROM "t"'
+                ],
+                'simple decimal casts': [
+                    'SELECT CAST(col AS DECIMAL) FROM t',
+                    'SELECT CAST("col" AS DECIMAL) FROM "t"'
+                ],
+                'decimal casts with precision': [
+                    'SELECT CAST(col AS DECIMAL(4)) FROM t',
+                    'SELECT CAST("col" AS DECIMAL(4)) FROM "t"'
+                ],
+                'decimal casts with precision and scale': [
+                    'SELECT CAST(col AS DECIMAL(6, 2)) FROM t',
+                    'SELECT CAST("col" AS DECIMAL(6, 2)) FROM "t"'
                 ]
             };
             Object.keys(castQueries).forEach(cast => {
