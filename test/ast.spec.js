@@ -81,10 +81,24 @@ describe('AST',() => {
                 expect(getParsedSql(sql)).to.equal('SELECT (NOT TRUE), NOT "t"."foo" AS "foo" FROM "t"');
             });
 
-            it('should support casts', () => {
-                expect(getParsedSql('SELECT CAST(col AS INTEGER) FROM t'))
-                    .to.equal('SELECT CAST("col" AS INTEGER) FROM "t"');
+            const castQueries = {
+                'simple casts':  [
+                    'SELECT CAST(col AS CHAR) FROM t',
+                    'SELECT CAST("col" AS CHAR) FROM "t"'
+                ],
+                'signed integer casts': [
+                    'SELECT CAST(col as unsigned integer) FROM t',
+                    'SELECT CAST("col" AS UNSIGNED INTEGER) FROM "t"'
+                ]
+            };
+            Object.keys(castQueries).forEach(cast => {
+                const [inputQuery, expectedQuery] = castQueries[cast];
+
+                it(`should support ${cast}`, () => {
+                    expect(getParsedSql(inputQuery)).to.equal(expectedQuery);
+                });
             });
+
 
             it('should support subselects', () => {
                 expect(getParsedSql(`SELECT 'string', (SELECT col FROM t2) subSelect FROM t1`))
