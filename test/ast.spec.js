@@ -1,11 +1,10 @@
 'use strict';
 
-const expect = require('chai').expect;
-const Parser = require('../lib/parser');
-const util   = require('../lib/util');
-const ImplementationError = require('flora-errors').ImplementationError;
+const { expect } = require('chai');
+const { Parser, util } = require('../');
+const { ImplementationError } = require('flora-errors');
 
-describe('AST',() => {
+describe('AST', () => {
     const parser = new Parser();
     let sql;
 

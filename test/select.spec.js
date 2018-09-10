@@ -1,7 +1,7 @@
 'use strict';
 
-const expect = require('chai').expect;
-const Parser = require('../lib/parser');
+const { expect } = require('chai');
+const { Parser } = require('../');
 
 describe('select', () => {
     const parser = new Parser();
