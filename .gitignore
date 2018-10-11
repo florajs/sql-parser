@@ -3,3 +3,5 @@ build/
 
 # Bamboo build output
 mocha.json
+
+package-lock.json
