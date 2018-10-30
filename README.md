@@ -1,5 +1,4 @@
-Flora SQL Parser
-================
+# Flora SQL Parser
 
 [![Build Status](https://travis-ci.org/godmodelabs/flora-sql-parser.svg?branch=master)](https://travis-ci.org/godmodelabs/flora-sql-parser)
 [![NPM version](https://badge.fury.io/js/flora-sql-parser.svg)](https://www.npmjs.com/package/flora-sql-parser)
@@ -7,11 +6,9 @@ Flora SQL Parser
 
 Parse simple SQL statements into an abstract syntax tree (AST) and convert it back to SQL.
 
+## Usage
 
-Usage
------
-
-#### Create AST for SQL statement:
+### Create AST for SQL statement
 
 ```javascript
 const { Parser } = require('flora-sql-parser');
@@ -21,7 +18,7 @@ const ast = parser.parse('SELECT * FROM t');
 console.log(ast);
 ```
 
-#### Convert AST back to SQL:
+### Convert AST back to SQL
 
 ```javascript
 const { Parser } = require('flora-sql-parser');
@@ -32,17 +29,17 @@ console.log(toSQL(ast));
 ```
 
 The generated SQL is ANSI SQL compliant. To run those queries on MySQL, make sure you set correct SQL mode
+
 ```sql
 SET SESSION sql_mode = 'ANSI';
 ```
+
 before running any query.
 
-Acknowledgement
---------------
+## Acknowledgement
 
 This project is based on the SQL parser extracted from Alibaba's [nquery](https://github.com/alibaba/nquery) module.  
 
-License
--------
+## License
 
 [MIT](LICENSE)
