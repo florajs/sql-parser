@@ -144,6 +144,10 @@ describe('AST', () => {
                 'decimal casts with precision and scale': [
                     'SELECT CAST(col AS DECIMAL(6, 2)) FROM t',
                     'SELECT CAST("col" AS DECIMAL(6, 2)) FROM "t"'
+                ],
+                'json casts':  [
+                    `SELECT CAST('{"foo":"bar"}' AS JSON) FROM dual`,
+                    `SELECT CAST('{\\"foo\\":\\"bar\\"}' AS JSON) FROM "dual"`
                 ]
             };
             Object.keys(castQueries).forEach(cast => {

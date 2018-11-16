@@ -42,6 +42,7 @@
     'IS': true,
 
     'JOIN': true,
+    'JSON': true,
 
     'LEFT': true,
     'LIKE': true,
@@ -968,6 +969,7 @@ KW_SIGNED   = "SIGNED"i   !ident_start { return 'SIGNED'; }
 KW_UNSIGNED = "UNSIGNED"i !ident_start { return 'UNSIGNED'; }
 KW_INT      = "INT"i      !ident_start { return 'INT'; }
 KW_INTEGER  = "INTEGER"i  !ident_start { return 'INTEGER'; }
+KW_JSON     = "JSON"i     !ident_start { return 'JSON'; }
 KW_SMALLINT = "SMALLINT"i !ident_start { return 'SMALLINT'; }
 KW_DATE     = "DATE"i     !ident_start { return 'DATE'; }
 KW_TIME     = "TIME"i     !ident_start { return 'TIME'; }
@@ -1139,6 +1141,7 @@ data_type
   = character_string_type
   / numeric_type
   / datetime_type
+  / json_type
 
 character_string_type
   = t:(KW_CHAR / KW_VARCHAR) __ LPAREN __ l:[0-9]+ __ RPAREN __ {
@@ -1152,3 +1155,6 @@ numeric_type
 
 datetime_type
   = t:(KW_DATE / KW_TIME / KW_TIMESTAMP) { return { dataType: t }; }
+
+json_type
+  = t:KW_JSON { return { dataType: t }; }
