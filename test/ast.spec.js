@@ -361,6 +361,12 @@ describe('AST', () => {
                 expect(getParsedSql('SELECT a FROM t GROUP BY t.b, t.c'))
                     .to.equal('SELECT "a" FROM "t" GROUP BY "t"."b", "t"."c"');
             });
+
+            it('should not generate an empty GROUP BY clause on empty arrays', () => {
+                const ast = parser.parse('SELECT a FROM t');
+                ast.groupby = [];
+                expect(util.astToSQL(ast)).to.equal('SELECT "a" FROM "t"');
+            });
         });
 
         describe('having clause', () => {
@@ -394,6 +400,12 @@ describe('AST', () => {
             it('should support complex expressions', () => {
                 expect(getParsedSql('SELECT a FROM t ORDER BY rand() ASC'))
                     .to.equal('SELECT "a" FROM "t" ORDER BY rand() ASC');
+            });
+
+            it('should not generate an empty ORDER BY clause on empty arrays', () => {
+                const ast = parser.parse('SELECT a FROM t');
+                ast.orderby = [];
+                expect(util.astToSQL(ast)).to.equal('SELECT "a" FROM "t"');
             });
         });
 
