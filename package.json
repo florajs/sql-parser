@@ -1,6 +1,6 @@
 {
   "name": "flora-sql-parser",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Parse SQL (select) statements into abstract syntax tree (AST) and convert ASTs back to SQL.",
   "main": "index.js",
   "scripts": {
