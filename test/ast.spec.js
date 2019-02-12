@@ -190,6 +190,23 @@ describe('AST', () => {
                 sql = `SELECT "id" FROM DUAL`;
                 expect(getParsedSql(sql)).to.equal(sql);
             });
+
+            describe('interval', () => {
+                it('should parse simple INTERVAL', () => {
+                    sql = 'SELECT NOW() + INTERVAL 1 DAY FROM DUAL';
+                    expect(getParsedSql(sql)).to.equal(`SELECT NOW() + INTERVAL '1' DAY FROM DUAL`);
+                });
+
+                it('should parse string INTERVAL', () => {
+                    sql = `SELECT NOW() + INTERVAL '1' DAY FROM DUAL`;
+                    expect(getParsedSql(sql)).to.equal(sql);
+                });
+
+                it('should parse signed INTERVAL', () => {
+                    sql = `SELECT NOW() + INTERVAL - '1' DAY FROM DUAL`;
+                    expect(getParsedSql(sql)).to.equal(sql);
+                });
+            });
         });
 
         describe('joins', () => {

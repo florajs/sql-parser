@@ -16,6 +16,7 @@
     'CURRENT_TIMESTAMP': true,
     'CURRENT_USER': true,
 
+    'DAY': true,
     'DELETE': true,
     'DESC': true,
     'DISTINCT': true,
@@ -33,12 +34,14 @@
     'GROUP': true,
 
     'HAVING': true,
+    'HOUR': true,
 
     'IN': true,
     'INDEX': true,
     'INNER': true,
     'INSERT': true,
     'INTO': true,
+    'INTERVAL': true,
     'IS': true,
 
     'JOIN': true,
@@ -48,6 +51,10 @@
     'LIKE': true,
     'LIMIT': true,
 
+    'MICROSECOND': true,
+    'MINUTE': true,
+    'MONTH': true,
+
     'NOT': true,
     'NULL': true,
 
@@ -56,10 +63,13 @@
     'ORDER': true,
     'OUTER': true,
 
+    'QUARTER': true,
+
     'RECURSIVE': true,
     'REPLACE': true,
     'RIGHT': true,
 
+    'SECOND': true,
     'SELECT': true,
     'SESSION_USER': true,
     'SET': true,
@@ -80,8 +90,11 @@
     'VALUES': true,
 
     'WITH': true,
+    'WEEK': true,
     'WHEN': true,
-    'WHERE': true
+    'WHERE': true,
+
+    'YEAR': true
   };
 
   function createUnaryExpr(op, e) {
@@ -625,6 +638,7 @@ primary
         return list;
     }
   / var_decl
+  / interval_expr
 
 column_ref
   = tbl:ident __ DOT __ col:column {
@@ -785,6 +799,23 @@ cast_expr
       }
     };
   }
+
+interval_expr
+  = KW_INTERVAL __  sign:("+" / "-")? __ "'"? __ value:int "'"? __ qualifier:interval_unit {
+    return {
+      type: 'interval',
+      sign: sign,
+      value: value,
+      qualifier: qualifier
+    };
+  }
+
+interval_unit
+  = KW_MINUTE
+  / KW_HOUR
+  / KW_DAY
+  / KW_MONTH
+  / KW_YEAR
 
 signedness
   = KW_SIGNED
@@ -974,6 +1005,13 @@ KW_DATE     = "DATE"i     !ident_start { return 'DATE'; }
 KW_TIME     = "TIME"i     !ident_start { return 'TIME'; }
 KW_TIMESTAMP= "TIMESTAMP"i!ident_start { return 'TIMESTAMP'; }
 KW_USER     = "USER"i     !ident_start { return 'USER'; }
+
+KW_INTERVAL     = "INTERVAL"i !ident_start { return 'INTERVAL'; }
+KW_MINUTE       = "MINUTE"i !ident_start { return 'MINUTE'; }
+KW_HOUR         = "HOUR"i !ident_start { return 'HOUR'; }
+KW_DAY          = "DAY"i !ident_start { return 'DAY'; }
+KW_MONTH        = "MONTH"i !ident_start { return 'MONTH'; }
+KW_YEAR         = "YEAR"i !ident_start { return 'YEAR'; }
 
 KW_CURRENT_DATE     = "CURRENT_DATE"i !ident_start { return 'CURRENT_DATE'; }
 KW_CURRENT_TIME     = "CURRENT_TIME"i !ident_start { return 'CURRENT_TIME'; }

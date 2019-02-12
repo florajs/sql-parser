@@ -125,6 +125,120 @@ describe('select', () => {
                 }
             ]);
         });
+
+        describe('interval', () => {
+            describe('qualifiers', () => {
+                [
+                    'MINUTE',
+                    'HOUR',
+                    'DAY',
+                    'MONTH',
+                    'YEAR'
+                ].forEach(qualifier => {
+                    it(`should support ${qualifier}`, () => {
+                        ast = parser.parse(`SELECT CURRENT_DATE + INTERVAL 10 ${qualifier} FROM dual`);
+
+                        expect(ast.columns).to.deep.contain({
+                            expr: {
+                                type: 'binary_expr',
+                                operator: '+',
+                                left: {
+                                    type: 'function',
+                                    name: 'CURRENT_DATE',
+                                    args: { type: 'expr_list', value: [] }
+                                },
+                                right: {
+                                    type: 'interval',
+                                    sign: null,
+                                    value: '10',
+                                    qualifier: qualifier
+                                }
+                            },
+                            as: null
+                        });
+                    });
+                });
+            });
+
+            [
+                ['should support intervals with explicit plus sign in interval qualifier', '+10', '+', '10'],
+                ['should support negative interval qualifier', '-10', '-', '10']
+            ].forEach(([description, interval, sign, expectedResult]) => {
+                it(description, () => {
+                    ast = parser.parse(`SELECT CURRENT_DATE + INTERVAL ${interval} DAY FROM dual`);
+
+                    expect(ast.columns).to.deep.contain({
+                        expr: {
+                            type: 'binary_expr',
+                            operator: '+',
+                            left: {
+                                type: 'function',
+                                name: 'CURRENT_DATE',
+                                args: { type: 'expr_list', value: [] }
+                            },
+                            right: {
+                                type: 'interval',
+                                sign: sign,
+                                value: expectedResult,
+                                qualifier: 'DAY'
+                            }
+                        },
+                        as: null
+                    });
+                });
+            });
+
+            it('should support intervals as strings', () => {
+                ast = parser.parse(`SELECT CURRENT_DATE + INTERVAL '10' DAY FROM dual`);
+
+                expect(ast.columns).to.deep.contain({
+                    expr: {
+                        type: 'binary_expr',
+                        operator: '+',
+                        left: {
+                            type: 'function',
+                            name: 'CURRENT_DATE',
+                            args: { type: 'expr_list', value: [] }
+                        },
+                        right: {
+                            type: 'interval',
+                            sign: null,
+                            value: '10',
+                            qualifier: 'DAY'
+                        }
+                    },
+                    as: null
+                });
+            });
+
+            [
+                ['should support positive sign', '+', '-10'],
+                ['should support negative sign', '-', '-10']
+            ].forEach(([description, sign, expectedResult]) => {
+                it(description, () => {
+                    ast = parser.parse(`SELECT CURRENT_DATE + INTERVAL ${sign} '-10' DAY FROM dual`);
+
+                    expect(ast.columns).to.deep.contain({
+                        expr: {
+                            type: 'binary_expr',
+                            operator: '+',
+                            left: {
+                                type: 'function',
+                                name: 'CURRENT_DATE',
+                                args: {type: 'expr_list', value: []}
+                            },
+                            right: {
+                                type: 'interval',
+                                sign: sign,
+                                value: expectedResult,
+                                qualifier: 'DAY'
+                            }
+                        },
+                        as: null
+                    });
+                });
+            });
+        });
     });
 
     describe('from clause', () => {
