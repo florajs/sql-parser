@@ -466,6 +466,11 @@ describe('AST', () => {
             expect(getParsedSql(sql)).to.equal('SELECT NULL');
         });
 
+        it('should support trailing zeros', function() {
+            expect(getParsedSql('SELECT 042')).oneOf(['SELECT 42', 'SELECT 042']);
+            expect(getParsedSql('SELECT -042')).oneOf(['SELECT -42', 'SELECT -042']);
+        });
+
         describe('datetime', () => {
             const literals = {
                 time: '08:23:16',

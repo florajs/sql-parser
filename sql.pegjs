@@ -864,9 +864,9 @@ number
   / int_:int __                   { return parseFloat(int_); }
 
 int
-  = digit19:digit19 digits:digits { return digit19 + digits; }
+  = digits
   / digit:digit
-  / op:("-" / "+" ) digit19:digit19 digits:digits { return "-" + digit19 + digits; }
+  / op:("-" / "+" ) digits:digits { return "-" + digits; }
   / op:("-" / "+" ) digit:digit { return "-" + digit; }
 
 frac
@@ -879,7 +879,6 @@ digits
   = digits:digit+ { return digits.join(""); }
 
 digit   = [0-9]
-digit19 = [1-9]
 
 hexDigit
   = [0-9a-fA-F]
