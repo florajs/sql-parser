@@ -467,8 +467,8 @@ describe('AST', () => {
         });
 
         it('should support trailing zeros', () => {
-            expect(getParsedSql('SELECT 042')).oneOf(['SELECT 42', 'SELECT 042']);
-            expect(getParsedSql('SELECT -042')).oneOf(['SELECT -42', 'SELECT -042']);
+            expect(getParsedSql('SELECT 042')).equal('SELECT 42');
+            expect(getParsedSql('SELECT -042')).equal('SELECT -42');
         });
 
         describe('datetime', () => {
