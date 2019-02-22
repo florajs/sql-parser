@@ -40,7 +40,7 @@
     "README.md",
     "LICENSE"
   ],
-  "license": "MIT",
+  "license": "GPL-2.0",
   "repository": "godmodelabs/flora-sql-parser",
   "homepage": "https://github.com/godmodelabs/flora-sql-parser",
   "engines": {

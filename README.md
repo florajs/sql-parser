@@ -42,4 +42,4 @@ This project is based on the SQL parser extracted from Alibaba's [nquery](https:
 
 ## License
 
-[MIT](LICENSE)
+[GPL-2.0](LICENSE)
