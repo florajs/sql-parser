@@ -45,7 +45,7 @@
   "repository": "godmodelabs/flora-sql-parser",
   "homepage": "https://github.com/godmodelabs/flora-sql-parser",
   "engines": {
-    "node": ">=8"
+    "node": ">=10"
   },
   "dependencies": {
     "flora-errors": "^0.9.1",
