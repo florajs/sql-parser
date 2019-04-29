@@ -4,10 +4,11 @@
   "description": "Parse SQL (select) statements into abstract syntax tree (AST) and convert ASTs back to SQL.",
   "main": "index.js",
   "scripts": {
-    "build": "mkdir -p build && pegjs -o build/pegjs-parser.js sql.pegjs",
-    "test": "npm run lint && mocha",
-    "lint": "npm run build && eslint .",
-    "prepublishOnly": "npm run build"
+    "build": "node -e \"parseInt(process.versions.node, 10) >= 10 ? require('fs').mkdirSync('build', { recursive: true }) : process.exit(1);\" && pegjs -o build/pegjs-parser.js sql.pegjs",
+    "pretest": "npm run build",
+    "test": "mocha",
+    "lint": "eslint .",
+    "prepack": "npm run build"
   },
   "pre-commit": "test",
   "keywords": [
