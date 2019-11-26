@@ -538,6 +538,20 @@ describe('select', () => {
     });
 
     describe('literals', () => {
+        describe('numbers', () => {
+            [
+                ['should parse positive number', '+1', 1],
+                ['should parse negative number', '-1', -1],
+                ['should parse positive numbers', '+10', 10],
+                ['should parse negative numbers', '-10', -10],
+            ].forEach(([label, expr, expectedValue]) => {
+                it(label, () => {
+                    ast = parser.parse(`SELECT ${expr}`);
+                    expect(ast.columns).to.eql([{ expr: { type: 'number', value: expectedValue }, as: null }]);
+                });
+            });
+        });
+
         describe('strings', () => {
             it('should parse single quoted strings', () => {
                 ast = parser.parse(`SELECT 'string'`);
