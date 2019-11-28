@@ -6,7 +6,7 @@
   "scripts": {
     "build": "node -e \"parseInt(process.versions.node, 10) >= 10 ? require('fs').mkdirSync('build', { recursive: true }) : process.exit(1);\" && pegjs -o build/pegjs-parser.js sql.pegjs",
     "pretest": "npm run build",
-    "test": "mocha",
+    "test": "mocha --recursive",
     "lint": "eslint .",
     "prepack": "npm run build"
   },
