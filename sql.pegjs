@@ -180,7 +180,7 @@ select_stmt
       return s[2];
     }
 
-with_clause
+with_clause "WITH clause"
   = KW_WITH __ head:cte_definition tail:(__ COMMA __ cte_definition)* {
       return createList(head, tail);
     }
@@ -199,7 +199,7 @@ cte_column_definition
       return createList(head, tail);
     }
 
-select_stmt_nake
+select_stmt_nake "SELECT statement"
   = cte:with_clause? __ KW_SELECT __
     opts:option_clause? __
     d:KW_DISTINCT?      __
@@ -244,7 +244,7 @@ query_option
         / OPT_SQL_BUFFER_RESULT
     ) { return option; }
 
-column_clause
+column_clause "columns"
   = (KW_ALL / (STAR !ident_start)) { return '*'; }
   / head:column_list_item tail:(__ COMMA __ column_list_item)* {
       return createList(head, tail);
@@ -268,17 +268,16 @@ column_list_item
 alias_clause
   = KW_AS? __ i:ident { return i; }
 
-from_clause
+from_clause "FROM clause"
   = KW_FROM __ l:table_ref_list { return l; }
 
-table_ref_list
-  = head:table_base
-    tail:table_ref* {
+table_ref_list "table reference list"
+  = head:table_base tail:table_ref* {
       tail.unshift(head);
       return tail;
     }
 
-table_ref
+table_ref "table reference"
   = __ COMMA __ t:table_base { return t; }
   / __ t:table_join { return t; }
 
@@ -355,10 +354,10 @@ table_name
 on_clause
   = KW_ON __ e:expr { return e; }
 
-where_clause
+where_clause "WHERE clause"
   = KW_WHERE __ e:expr { return e; }
 
-group_by_clause
+group_by_clause "GROUP BY clause"
   = KW_GROUP __ KW_BY __ l:column_ref_list { return l; }
 
 column_ref_list
@@ -366,10 +365,10 @@ column_ref_list
       return createList(head, tail);
     }
 
-having_clause
+having_clause "HAVING clause"
   = KW_HAVING __ e:expr { return e; }
 
-order_by_clause
+order_by_clause "ORDER BY clause"
   = KW_ORDER __ KW_BY __ l:order_by_list { return l; }
 
 order_by_list
@@ -388,7 +387,7 @@ number_or_param
   = literal_numeric
   / param
 
-limit_clause
+limit_clause "LIMIT clause"
   = KW_LIMIT __ i1:(number_or_param) __ tail:(COMMA __ number_or_param)? {
       var res = [i1];
       if (tail === null) res.unshift({ type: 'number', value: 0 });
@@ -465,7 +464,7 @@ expr_list
       return el;
     }
 
-case_expr
+case_expr "CASE expression"
   = KW_CASE                         __
     expr:expr?                      __
     condition_list:case_when_then+  __
@@ -764,7 +763,7 @@ scalar_func
   / KW_SESSION_USER
   / KW_SYSTEM_USER
 
-cast_expr
+cast_expr "CAST expression"
   = KW_CAST __ LPAREN __ e:expr __ KW_AS __ t:data_type __ RPAREN {
     return {
       type: 'cast',
@@ -800,7 +799,7 @@ cast_expr
     };
   }
 
-interval_expr
+interval_expr "INTERVAL expression"
   = KW_INTERVAL __  sign:("+" / "-")? __ "'"? __ value:int "'"? __ qualifier:interval_unit {
     return {
       type: 'interval',
