@@ -97,21 +97,12 @@
     'YEAR': true
   };
 
-  function createUnaryExpr(op, e) {
-    return {
-      type: 'unary_expr',
-      operator: op,
-      expr: e
-    };
+  function createUnaryExpr(operator, expr) {
+    return { type: 'unary_expr', operator, expr };
   }
 
-  function createBinaryExpr(op, left, right) {
-    return {
-      type: 'binary_expr',
-      operator: op,
-      left: left,
-      right: right
-    };
+  function createBinaryExpr(operator, left, right) {
+    return { type: 'binary_expr', operator, left, right };
   }
 
   function createList(head, tail) {
@@ -185,8 +176,7 @@ with_clause "WITH clause"
       return createList(head, tail);
     }
   / __ KW_WITH __ KW_RECURSIVE __ cte:cte_definition {
-      cte.recursive = true;
-      return [cte]
+      return [{ ...cte, recursive: true }];
     }
 
 cte_definition
@@ -251,11 +241,11 @@ column_clause "columns"
     }
 
 column_list_item
-  = tbl:ident __ DOT __ STAR {
+  = table:ident __ DOT __ STAR {
       return {
         expr: {
           type: 'column_ref',
-          table: tbl,
+          table,
           column: '*'
         },
         as: null
@@ -284,19 +274,14 @@ table_ref "table reference"
 
 table_join
   = op:join_op __ t:table_base __ KW_USING __ LPAREN __ head:ident_name tail:(__ COMMA __ ident_name)* __ RPAREN {
-      t.join = op;
-      t.using = createList(head, tail);
-      return t;
+      return { ...t, join: op, using: createList(head, tail) };
     }
   / op:join_op __ t:table_base __ expr:on_clause? {
-      t.join = op;
-      t.on   = expr;
-      return t;
+      return { ...t, join: op, on: expr };
     }
   / op:join_op __ LPAREN __ stmt:union_stmt __ RPAREN __ KW_AS? __ alias:ident __ expr:on_clause? {
-    stmt.parentheses = true;
     return {
-      expr: stmt,
+      expr: { ...stmt, parentheses: true },
       as: alias,
       join: op,
       on: expr
@@ -312,8 +297,7 @@ table_base
   }
   / t:table_name __ KW_AS? __ alias:ident? {
       if (t.type === 'var') {
-        t.as = alias;
-        return t;
+        return { ...t, as: alias };
       } else {
         return {
           db: t.db,
@@ -323,9 +307,8 @@ table_base
       }
     }
   / LPAREN __ stmt:union_stmt __ RPAREN __ KW_AS? __ alias:ident {
-      stmt.parentheses = true;
       return {
-        expr: stmt,
+        expr: { ...stmt, parentheses: true },
         as: alias
       };
     }
@@ -378,9 +361,7 @@ order_by_list
 
 order_by_element
   = e:expr __ d:(KW_DESC / KW_ASC)? {
-    var obj = { expr: e, type: 'ASC' };
-    if (d === 'DESC') obj.type = 'DESC';
-    return obj;
+    return { expr: e, type: d === 'DESC' ? 'DESC' : 'ASC' };
   }
 
 number_or_param
@@ -459,9 +440,7 @@ value_item
 
 expr_list
   = head:expr tail:(__ COMMA __ expr)* {
-      var el = { type: 'expr_list' };
-      el.value = createList(head, tail);
-      return el;
+      return { type: 'expr_list', value: createList(head, tail) };
     }
 
 case_expr "CASE expression"
@@ -535,8 +514,7 @@ comparison_expr
 
 exists_expr
   = op:exists_op __ LPAREN __ stmt:union_stmt __ RPAREN {
-    stmt.parentheses = true;
-    return createUnaryExpr(op, stmt);
+    return createUnaryExpr(op, { ...stmt, parentheses: true });
   }
 
 exists_op
@@ -560,16 +538,16 @@ arithmetic_comparison_operator
 
 is_op_right
   = KW_IS __ right:additive_expr {
-      return { op: 'IS', right: right };
+      return { op: 'IS', right };
     }
   / (KW_IS __ KW_NOT) __ right:additive_expr {
-      return { op: 'IS NOT', right: right };
+      return { op: 'IS NOT', right };
   }
 
 between_op_right
   = op:between_or_not_between_op __  begin:additive_expr __ KW_AND __ end:additive_expr {
       return {
-        op: op,
+        op,
         right: {
           type: 'expr_list',
           value: [begin, end]
@@ -591,15 +569,15 @@ in_op
 
 like_op_right
   = op:like_op __ right:comparison_expr {
-      return { op: op, right: right };
+      return { op, right: right };
     }
 
 in_op_right
   = op:in_op __ LPAREN  __ l:expr_list __ RPAREN {
-      return { op: op, right: l };
+      return { op, right: l };
     }
   / op:in_op __ e:var_decl {
-      return { op: op, right: e };
+      return { op, right: e };
     }
 
 additive_expr
@@ -614,7 +592,7 @@ additive_operator
 multiplicative_expr
   = head:primary
     tail:(__ multiplicative_operator  __ primary)* {
-      return createBinaryExprChain(head, tail)
+      return createBinaryExprChain(head, tail);
     }
 
 multiplicative_operator
@@ -629,12 +607,10 @@ primary
   / column_ref
   / param
   / LPAREN __ e:expr __ RPAREN {
-      e.parentheses = true;
-      return e;
+      return { ...e, parentheses: true };
     }
   / LPAREN __ list:expr_list __ RPAREN {
-        list.parentheses = true;
-        return list;
+        return { ...list, parentheses: true };
     }
   / var_decl
   / interval_expr
@@ -709,13 +685,11 @@ aggr_func
   / aggr_fun_smma
 
 aggr_fun_smma
-  = name:KW_SUM_MAX_MIN_AVG  __ LPAREN __ e:additive_expr __ RPAREN {
+  = name:KW_SUM_MAX_MIN_AVG  __ LPAREN __ expr:additive_expr __ RPAREN {
       return {
         type: 'aggr_func',
         name: name,
-        args: {
-          expr: e
-        }
+        args: { expr }
       };
     }
 
@@ -723,12 +697,8 @@ KW_SUM_MAX_MIN_AVG
   = KW_SUM / KW_MAX / KW_MIN / KW_AVG
 
 aggr_fun_count
-  = name:KW_COUNT __ LPAREN __ arg:count_arg __ RPAREN {
-      return {
-        type: 'aggr_func',
-        name: name,
-        args: arg
-      };
+  = name:KW_COUNT __ LPAREN __ args:count_arg __ RPAREN {
+      return { type: 'aggr_func', name, args };
     }
 
 count_arg
@@ -740,18 +710,10 @@ star_expr
 
 func_call
   = name:ident __ LPAREN __ l:expr_list? __ RPAREN {
-      return {
-        type: 'function',
-        name: name,
-        args: l ? l: { type: 'expr_list', value: [] }
-      };
+      return { type: 'function', name, args: l ? l : { type: 'expr_list', value: [] } };
     }
   / name:scalar_func {
-      return {
-        type: 'function',
-        name: name,
-        args: { type: 'expr_list', value: [] }
-      };
+      return { type: 'function', name, args: { type: 'expr_list', value: [] } };
     }
 
 scalar_func
@@ -764,12 +726,8 @@ scalar_func
   / KW_SYSTEM_USER
 
 cast_expr "CAST expression"
-  = KW_CAST __ LPAREN __ e:expr __ KW_AS __ t:data_type __ RPAREN {
-    return {
-      type: 'cast',
-      expr: e,
-      target: t
-    };
+  = KW_CAST __ LPAREN __ expr:expr __ KW_AS __ target:data_type __ RPAREN {
+    return { type: 'cast', expr, target };
   }
   / KW_CAST __ LPAREN __ e:expr __ KW_AS __ KW_DECIMAL __ LPAREN __ precision:int __ RPAREN __ RPAREN {
     return {
@@ -801,12 +759,7 @@ cast_expr "CAST expression"
 
 interval_expr "INTERVAL expression"
   = KW_INTERVAL __  sign:("+" / "-")? __ "'"? __ value:int "'"? __ qualifier:interval_unit {
-    return {
-      type: 'interval',
-      sign: sign,
-      value: value,
-      qualifier: qualifier
-    };
+    return { type: 'interval', sign, value, qualifier };
   }
 
 interval_unit
@@ -883,8 +836,8 @@ line_terminator
   = [\n\r]
 
 literal_numeric
-  = n:number {
-      return { type: 'number', value: n };
+  = value:number {
+      return { type: 'number', value };
     }
 
 number
@@ -1154,14 +1107,10 @@ proc_array =
   }
 
 var_decl
-  = KW_VAR_PRE name:ident_name m:mem_chain {
+  = KW_VAR_PRE name:ident_name members:mem_chain {
     //push for analysis
     varList.push(name);
-    return {
-      type: 'var',
-      name: name,
-      members: m
-    };
+    return { type: 'var', name,  members };
   }
 
 mem_chain
