@@ -106,19 +106,11 @@
   }
 
   function createList(head, tail) {
-    var result = [head];
-    for (var i = 0; i < tail.length; i++) {
-      result.push(tail[i][3]);
-    }
-    return result;
+    return [head, ...tail.map(item => item[3])];
   }
 
   function createBinaryExprChain(head, tail) {
-    var result = head;
-    for (var i = 0; i < tail.length; i++) {
-      result = createBinaryExpr(tail[i][1], result, tail[i][3]);
-    }
-    return result;
+    return tail.reduce((result, item) => createBinaryExpr(item[1], result, item[3]), head);
   }
 
   var cmpPrefixMap = {
@@ -218,11 +210,7 @@ select_stmt_nake "SELECT statement"
 // MySQL extensions to standard SQL
 option_clause
   = head:query_option tail:(__ query_option)* {
-    var opts = [head];
-    for (var i = 0, l = tail.length; i < l; ++i) {
-      opts.push(tail[i][1]);
-    }
-    return opts;
+    return [head, ...tail.map(item => item[1])];
   }
 
 query_option
@@ -1115,11 +1103,7 @@ var_decl
 
 mem_chain
   = l:('.' ident_name)* {
-    var s = [];
-    for (var i = 0; i < l.length; i++) {
-      s.push(l[i][1]);
-    }
-    return s;
+    return l.map(item => item[1]);
   }
 
 data_type
