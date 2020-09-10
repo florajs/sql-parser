@@ -65,4 +65,9 @@ describe('joins', () => {
         expect(getParsedSql('SELECT * FROM t1 JOIN t2 USING (id1, id2)'))
             .to.equal('SELECT * FROM "t1" INNER JOIN "t2" USING ("id1", "id2")');
     });
+
+    it('should support LATERAL joins', () => {
+        expect(getParsedSql('SELECT * FROM t1 join lateral (SELECT id FROM t2 WHERE t1.id = t2.t1id) alias ON true'))
+            .to.equal('SELECT * FROM "t1" INNER JOIN LATERAL (SELECT "id" FROM "t2" WHERE "t1"."id" = "t2"."t1id") AS "alias" ON TRUE');
+    });
 });

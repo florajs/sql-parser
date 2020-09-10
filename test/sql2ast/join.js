@@ -19,7 +19,7 @@ describe('joins', () => {
     ['left', 'right', 'full'].forEach((join) => {
         [' ', ' outer '].forEach((outer) => {
             it(`should parse ${join}${outer}joins`, () => {
-                const ast = parser.parse(`SELECT * FROM t ${join} ${outer} join d on d.d = d.a`);
+                const ast = parser.parse(`SELECT * FROM t ${join} ${outer} join d on t.d = d.a`);
 
                 expect(ast.from).to.eql([
                     { db: null, table: 't', as: null },
@@ -31,7 +31,7 @@ describe('joins', () => {
                         on: {
                             type: 'binary_expr',
                             operator: '=',
-                            left: { type: 'column_ref', table: 'd', column: 'd' },
+                            left: { type: 'column_ref', table: 't', column: 'd' },
                             right: { type: 'column_ref', table: 'd', column: 'a' }
                         }
                     }
@@ -70,7 +70,8 @@ describe('joins', () => {
                     operator: '=',
                     left: { type: 'column_ref', table: 't1', column: 'id' },
                     right: { type: 'column_ref', table: 'someAlias', column: 'id' }
-                }
+                },
+                lateral: false
             }
         ]);
     });
@@ -91,5 +92,12 @@ describe('joins', () => {
             { db: null, table: 't1', as: null },
             { db: null, table: 't2', as: null, join: 'INNER JOIN', using: ['id1', 'id2'] }
         ]);
+    });
+
+    it('should parse LATERAL joins', () => {
+        const ast = parser.parse('SELECT * FROM t1 JOIN LATERAL (SELECT id FROM t2 WHERE t1.id = t2.t1id) AS subselect ON TRUE');
+        const [, lateralJoin] = ast.from;
+
+        expect(lateralJoin).to.have.property('lateral', true);
     });
 });

@@ -250,53 +250,34 @@ from_clause "FROM clause"
   = KW_FROM __ l:table_ref_list { return l; }
 
 table_ref_list "table reference list"
-  = head:table_base tail:table_ref* {
-      tail.unshift(head);
-      return tail;
+  = head:table_ref tail:(__ COMMA? __ table_ref)* {
+      return createList(head, tail);
     }
 
 table_ref "table reference"
-  = __ COMMA __ t:table_base { return t; }
-  / __ t:table_join { return t; }
-
-
-table_join
-  = op:join_op __ t:table_base __ KW_USING __ LPAREN __ head:ident_name tail:(__ COMMA __ ident_name)* __ RPAREN {
+  = t:table_primary { return t; }
+  / op:join_op __ t:table_ref __ KW_USING __ LPAREN __ head:ident_name tail:(__ COMMA __ ident_name)* __ RPAREN {
       return { ...t, join: op, using: createList(head, tail) };
     }
-  / op:join_op __ t:table_base __ expr:on_clause? {
+  / op:join_op __ t:table_ref __ expr:on_clause? {
       return { ...t, join: op, on: expr };
     }
-  / op:join_op __ LPAREN __ stmt:union_stmt __ RPAREN __ KW_AS? __ alias:ident __ expr:on_clause? {
-    return {
-      expr: { ...stmt, parentheses: true },
-      as: alias,
-      join: op,
-      on: expr
-    };
-  }
 
-//NOTE that, the table assigned to `var` shouldn't write in `table_join`
-table_base
+table_primary
   = KW_DUAL {
-      return {
-        type: 'dual'
-      };
-  }
-  / t:table_name __ KW_AS? __ alias:ident? {
-      if (t.type === 'var') {
-        return { ...t, as: alias };
-      } else {
-        return {
-          db: t.db,
-          table: t.table,
-          as: alias
-        };
-      }
+      return { type: 'dual' };
     }
-  / LPAREN __ stmt:union_stmt __ RPAREN __ KW_AS? __ alias:ident {
+  / lateral:KW_LATERAL? __ LPAREN __ stmt:union_stmt __ RPAREN __ KW_AS? __ alias:ident {
       return {
         expr: { ...stmt, parentheses: true },
+        as: alias,
+        lateral: lateral !== null
+      };
+    }
+  / t:table_name __ KW_AS? __ alias:ident? {
+      return {
+        db: t.db,
+        table: t.table,
         as: alias
       };
     }
@@ -890,6 +871,7 @@ KW_OUTER    = "OUTER"i    !ident_start
 KW_UNION    = "UNION"i    !ident_start
 KW_VALUES   = "VALUES"i   !ident_start
 KW_USING    = "USING"i    !ident_start
+KW_LATERAL  = "LATERAL"i  !ident_start
 
 KW_WHERE    = "WHERE"i      !ident_start
 KW_WITH     = "WITH"i       !ident_start
