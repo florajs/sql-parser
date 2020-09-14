@@ -164,19 +164,21 @@ select_stmt
     }
 
 with_clause "WITH clause"
-  = KW_WITH __ head:cte_definition tail:(__ COMMA __ cte_definition)* {
-      return createList(head, tail);
-    }
-  / __ KW_WITH __ KW_RECURSIVE __ cte:cte_definition {
-      return [{ ...cte, recursive: true }];
+  = KW_WITH __ recursive:KW_RECURSIVE? __ list:with_list {
+      return { type: 'with', recursive: recursive !== null, value: list };
     }
 
-cte_definition
-  = name:ident_name __ columns:cte_column_definition? __ KW_AS __ LPAREN __ stmt:union_stmt __ RPAREN {
+with_list
+  = head:with_list_element tail:(__ COMMA __ with_list_element)* {
+      return createList(head, tail);
+    }
+
+with_list_element
+  = name:ident_name __ columns:with_column_list? __ KW_AS __ LPAREN __ stmt:union_stmt __ RPAREN {
       return { name, stmt, columns };
     }
 
-cte_column_definition
+with_column_list
   = LPAREN __ head:column tail:(__ COMMA __ column)* __ RPAREN {
       return createList(head, tail);
     }

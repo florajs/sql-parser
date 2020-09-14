@@ -12,15 +12,21 @@ describe('common table expressions', () => {
             SELECT * FROM cte
         `.trim());
 
-        expect(ast).to.have.property('with')
+        expect(ast).to.have.property('with').and.to.be.an('object');
+
+        const cte = ast.with;
+        expect(cte).to.have.property('type', 'with');
+        expect(cte).to.have.property('value')
             .and.to.be.an('array')
             .and.to.have.lengthOf(1);
 
-        const cte = ast.with[0];
-        expect(cte).to.have.property('name', 'cte');
-        expect(cte)
+        const [withListElement] = cte.value;
+        expect(withListElement).to.have.property('name', 'cte');
+        expect(withListElement).to.have.property('columns', null);
+        expect(withListElement)
             .to.have.property('stmt')
-            .and.to.be.an('object');
+            .and.to.be.an('object')
+            .and.to.have.property('type', 'select');
     });
 
     it('should parse multiple CTEs', () => {
@@ -29,11 +35,11 @@ describe('common table expressions', () => {
             SELECT * FROM cte1 UNION SELECT * FROM cte2
         `.trim());
 
-        expect(ast)
-            .to.have.property('with')
+        expect(ast.with)
+            .to.have.property('value')
             .and.to.have.lengthOf(2);
 
-        const [cte1, cte2] = ast.with;
+        const [cte1, cte2] = ast.with.value;
         expect(cte1).to.have.property('name', 'cte1');
         expect(cte2).to.have.property('name', 'cte2');
     });
@@ -44,7 +50,7 @@ describe('common table expressions', () => {
             SELECT * FROM cte
         `.trim());
 
-        const cte = ast.with[0];
+        const [cte] = ast.with.value;
         expect(cte)
             .to.have.property('columns')
             .and.to.eql(['col1']);
@@ -56,7 +62,7 @@ describe('common table expressions', () => {
             SELECT * FROM cte
         `.trim());
 
-        const cte = ast.with[0];
+        const [cte] = ast.with.value;
         expect(cte.columns).to.eql(['col1', 'col2']);
     });
 
@@ -71,7 +77,6 @@ describe('common table expressions', () => {
             SELECT * FROM cte
         `.trim());
 
-        const cte = ast.with[0];
-        expect(cte).to.have.property('recursive', true);
+        expect(ast.with).to.have.property('recursive', true);
     });
 });

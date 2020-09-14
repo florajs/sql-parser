@@ -9,6 +9,7 @@ describe('common table expressions', () => {
             WITH cte AS (SELECT 1)
             SELECT * FROM cte
         `.trim();
+
         expect(getParsedSql(sql)).to.equal('WITH "cte" AS (SELECT 1) SELECT * FROM "cte"');
     });
 
