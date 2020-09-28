@@ -258,11 +258,8 @@ table_ref_list "table reference list"
 
 table_ref "table reference"
   = t:table_primary { return t; }
-  / op:join_op __ t:table_ref __ KW_USING __ LPAREN __ head:ident_name tail:(__ COMMA __ ident_name)* __ RPAREN {
-      return { ...t, join: op, using: createList(head, tail) };
-    }
-  / op:join_op __ t:table_ref __ expr:on_clause? {
-      return { ...t, join: op, on: expr };
+  / op:join_op __ t:table_ref __ spec:join_spec {
+      return { ...t, join: op, ...spec };
     }
 
 table_primary
@@ -289,6 +286,14 @@ join_op
   / KW_RIGHT __ KW_OUTER? __ KW_JOIN { return 'RIGHT JOIN'; }
   / KW_FULL __ KW_OUTER? __ KW_JOIN { return 'FULL JOIN'; }
   / (KW_INNER __)? KW_JOIN { return 'INNER JOIN'; }
+
+join_spec "join specification"
+  = KW_ON __ e:expr {
+      return { on: e };
+    }
+  / KW_USING __ LPAREN __ head:ident_name tail:(__ COMMA __ ident_name)* __ RPAREN {
+      return { using: createList(head, tail) };
+    }
 
 table_name
   = dt:ident tail:(__ DOT __ ident)? {
