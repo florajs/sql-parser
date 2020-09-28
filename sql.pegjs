@@ -273,12 +273,8 @@ table_primary
         lateral: lateral !== null
       };
     }
-  / t:table_name __ KW_AS? __ alias:ident? {
-      return {
-        db: t.db,
-        table: t.table,
-        as: alias
-      };
+  / t:table_name __ KW_AS? __ as:ident? {
+      return { ...t, as };
     }
 
 join_op
