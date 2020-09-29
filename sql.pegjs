@@ -266,9 +266,9 @@ table_primary
   = KW_DUAL {
       return { type: 'dual' };
     }
-  / lateral:KW_LATERAL? __ LPAREN __ stmt:union_stmt __ RPAREN __ KW_AS? __ alias:ident {
+  / lateral:KW_LATERAL? __ sub:sub_query __ KW_AS? __ alias:ident {
       return {
-        expr: { ...stmt, parentheses: true },
+        expr: { ...sub },
         as: alias,
         lateral: lateral !== null
       };
@@ -308,6 +308,11 @@ table_name
 
 on_clause
   = KW_ON __ e:expr { return e; }
+
+sub_query
+  = LPAREN __ stmt:union_stmt __ RPAREN {
+      return { ...stmt, parentheses: true };
+    }
 
 where_clause "WHERE clause"
   = KW_WHERE __ e:expr { return e; }
@@ -485,8 +490,8 @@ comparison_expr
     }
 
 exists_expr
-  = op:exists_op __ LPAREN __ stmt:union_stmt __ RPAREN {
-    return createUnaryExpr(op, { ...stmt, parentheses: true });
+  = op:exists_op __ sub:sub_query {
+    return createUnaryExpr(op, { ...sub });
   }
 
 exists_op
