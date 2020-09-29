@@ -70,4 +70,27 @@ describe('joins', () => {
         expect(getParsedSql('SELECT * FROM t1 join lateral (SELECT id FROM t2 WHERE t1.id = t2.t1id) alias ON true'))
             .to.equal('SELECT * FROM "t1" INNER JOIN LATERAL (SELECT "id" FROM "t2" WHERE "t1"."id" = "t2"."t1id") AS "alias" ON TRUE');
     });
+
+    describe('derived table columns', () => {
+        it('should support single column in "base table"', () => {
+            expect(getParsedSql('SELECT id FROM (SELECT 1) t (id)'))
+                .to.equal('SELECT "id" FROM (SELECT 1) AS "t" ("id")');
+        });
+
+        it('should parse multiple columns in "base table"', () => {
+            expect(getParsedSql('SELECT id1, id2 FROM (SELECT 1, 2) t (id1, id2)'))
+                .to.equal('SELECT "id1", "id2" FROM (SELECT 1, 2) AS "t" ("id1", "id2")');
+        });
+
+        it('should support single column in joins', () => {
+            expect(getParsedSql('SELECT id FROM t1 JOIN (SELECT 1) t2 (id) ON TRUE'))
+                .to.equal('SELECT "id" FROM "t1" INNER JOIN (SELECT 1) AS "t2" ("id") ON TRUE');
+        });
+
+        it('should support multiple columns in joins', () => {
+            expect(getParsedSql('SELECT id1, id2 FROM t1 JOIN (SELECT 1, 2) t2 (id1, id2) ON TRUE'))
+                .to.equal('SELECT "id1", "id2" FROM "t1" INNER JOIN (SELECT 1, 2) AS "t2" ("id1", "id2") ON TRUE');
+        });
+    });
+
 });

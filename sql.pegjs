@@ -266,11 +266,12 @@ table_primary
   = KW_DUAL {
       return { type: 'dual' };
     }
-  / lateral:KW_LATERAL? __ sub:sub_query __ KW_AS? __ alias:ident {
+  / lateral:KW_LATERAL? __ sub:sub_query __ KW_AS? __ alias:ident __ cols:derived_col_list? {
       return {
         expr: { ...sub },
         as: alias,
-        lateral: lateral !== null
+        lateral: lateral !== null,
+        columns: cols
       };
     }
   / t:table_name __ KW_AS? __ as:ident? {
@@ -312,6 +313,11 @@ on_clause
 sub_query
   = LPAREN __ stmt:union_stmt __ RPAREN {
       return { ...stmt, parentheses: true };
+    }
+
+derived_col_list "derived column list"
+  = LPAREN __ head:ident __ tail:(__ COMMA __ ident)* __ RPAREN {
+      return createList(head, tail);
     }
 
 where_clause "WHERE clause"

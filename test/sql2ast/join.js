@@ -71,7 +71,8 @@ describe('joins', () => {
                     left: { type: 'column_ref', table: 't1', column: 'id' },
                     right: { type: 'column_ref', table: 'someAlias', column: 'id' }
                 },
-                lateral: false
+                lateral: false,
+                columns: null
             }
         ]);
     });
@@ -99,5 +100,23 @@ describe('joins', () => {
         const [, lateralJoin] = ast.from;
 
         expect(lateralJoin).to.have.property('lateral', true);
+    });
+
+    it('should parse derived column list with single column', () => {
+        const ast = parser.parse('SELECT id FROM (SELECT 1) t(id)');
+        const [subSelect] = ast.from;
+
+        expect(subSelect)
+            .to.have.property('columns')
+            .and.to.eql(['id']);
+    });
+
+    it('should parse derived column list with multiple columns', () => {
+        const ast = parser.parse('SELECT id1, id2 FROM (SELECT 1, 2) t(id1, id2)');
+        const [subSelect] = ast.from;
+
+        expect(subSelect)
+            .to.have.property('columns')
+            .and.to.eql(['id1', 'id2']);
     });
 });

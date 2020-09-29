@@ -41,7 +41,8 @@ describe('from clause', () => {
                 parentheses: true
             },
             as: 'someAlias',
-            lateral: false
+            lateral: false,
+            columns: null
         }]);
     });
 
