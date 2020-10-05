@@ -266,6 +266,16 @@ table_primary
   = KW_DUAL {
       return { type: 'dual' };
     }
+  / LPAREN __ KW_VALUES __ l:table_row_value_expr_list __ RPAREN __ KW_AS? __ alias:ident __ cols:derived_col_list? {
+      return {
+        expr: {
+            type: 'values',
+            value: l
+        },
+        as: alias,
+        columns: cols
+      };
+    }
   / lateral:KW_LATERAL? __ sub:sub_query __ KW_AS? __ alias:ident __ cols:derived_col_list? {
       return {
         expr: { ...sub },
@@ -305,6 +315,20 @@ table_name
       v.db = null;
       v.table = v.name;
       return v;
+    }
+
+table_row_value_expr_list
+  = head:row_value_constructor tail:(__ COMMA __ row_value_constructor)* {
+      return createList(head, tail);
+    }
+
+row_value_constructor
+  = rowkw:KW_ROW? __ LPAREN __ head:literal __ tail:(__ COMMA __ literal)* __ RPAREN {
+      return {
+        type: 'row_value',
+        keyword: rowkw !== null,
+        value: createList(head, tail),
+      };
     }
 
 on_clause
@@ -961,6 +985,7 @@ KW_RETURN = 'return'i
 KW_ASSIGN = ':='
 
 KW_DUAL = "DUAL"
+KW_ROW  = "ROW"i !ident_start { return 'ROW'; }
 
 // MySQL extensions to SQL
 OPT_SQL_CALC_FOUND_ROWS = "SQL_CALC_FOUND_ROWS"i
