@@ -12,7 +12,7 @@ describe('joins', () => {
         expect(ast.from).to.eql([
             { db: null, table: 't', as: null },
             { db: 'a', table: 'b', as: 'b' },
-            { db: 'c', table: 'd', as: 'cd' }
+            { db: 'c', table: 'd', as: 'cd' },
         ]);
     });
 
@@ -32,9 +32,9 @@ describe('joins', () => {
                             type: 'binary_expr',
                             operator: '=',
                             left: { type: 'column_ref', table: 't', column: 'd' },
-                            right: { type: 'column_ref', table: 'd', column: 'a' }
-                        }
-                    }
+                            right: { type: 'column_ref', table: 'd', column: 'a' },
+                        },
+                    },
                 ]);
             });
         });
@@ -53,15 +53,15 @@ describe('joins', () => {
                     distinct: null,
                     from: [{ db: null, table: 't2', as: null }],
                     columns: [
-                        { expr: { type: 'column_ref', table: null, 'column': 'id' }, as: null },
-                        { expr: { type: 'column_ref', table: null, 'column': 'col1' }, as: null }
+                        { expr: { type: 'column_ref', table: null, column: 'id' }, as: null },
+                        { expr: { type: 'column_ref', table: null, column: 'col1' }, as: null },
                     ],
                     where: null,
                     groupby: null,
                     having: null,
                     orderby: null,
                     limit: null,
-                    parentheses: true
+                    parentheses: true,
                 },
                 as: 'someAlias',
                 join: 'INNER JOIN',
@@ -69,11 +69,11 @@ describe('joins', () => {
                     type: 'binary_expr',
                     operator: '=',
                     left: { type: 'column_ref', table: 't1', column: 'id' },
-                    right: { type: 'column_ref', table: 'someAlias', column: 'id' }
+                    right: { type: 'column_ref', table: 'someAlias', column: 'id' },
                 },
                 lateral: false,
-                columns: null
-            }
+                columns: null,
+            },
         ]);
     });
 
@@ -82,7 +82,7 @@ describe('joins', () => {
 
         expect(ast.from).to.eql([
             { db: null, table: 't1', as: null },
-            { db: null, table: 't2', as: null, join: 'INNER JOIN', using: ['id'] }
+            { db: null, table: 't2', as: null, join: 'INNER JOIN', using: ['id'] },
         ]);
     });
 
@@ -91,12 +91,14 @@ describe('joins', () => {
 
         expect(ast.from).to.eql([
             { db: null, table: 't1', as: null },
-            { db: null, table: 't2', as: null, join: 'INNER JOIN', using: ['id1', 'id2'] }
+            { db: null, table: 't2', as: null, join: 'INNER JOIN', using: ['id1', 'id2'] },
         ]);
     });
 
     it('should parse LATERAL joins', () => {
-        const ast = parser.parse('SELECT * FROM t1 JOIN LATERAL (SELECT id FROM t2 WHERE t1.id = t2.t1id) AS subselect ON TRUE');
+        const ast = parser.parse(
+            'SELECT * FROM t1 JOIN LATERAL (SELECT id FROM t2 WHERE t1.id = t2.t1id) AS subselect ON TRUE'
+        );
         const [, lateralJoin] = ast.from;
 
         expect(lateralJoin).to.have.property('lateral', true);
@@ -106,17 +108,13 @@ describe('joins', () => {
         const ast = parser.parse('SELECT id FROM (SELECT 1) t(id)');
         const [subSelect] = ast.from;
 
-        expect(subSelect)
-            .to.have.property('columns')
-            .and.to.eql(['id']);
+        expect(subSelect).to.have.property('columns').and.to.eql(['id']);
     });
 
     it('should parse derived column list with multiple columns', () => {
         const ast = parser.parse('SELECT id1, id2 FROM (SELECT 1, 2) t(id1, id2)');
         const [subSelect] = ast.from;
 
-        expect(subSelect)
-            .to.have.property('columns')
-            .and.to.eql(['id1', 'id2']);
+        expect(subSelect).to.have.property('columns').and.to.eql(['id1', 'id2']);
     });
 });
