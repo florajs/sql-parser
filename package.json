@@ -8,6 +8,7 @@
     "pretest": "npm run build",
     "test": "mocha --recursive",
     "lint": "eslint .",
+    "lint-fix": "eslint --fix .",
     "prepack": "npm run build"
   },
   "pre-commit": "test",
