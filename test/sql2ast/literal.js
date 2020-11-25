@@ -30,6 +30,11 @@ describe('literals', () => {
             const ast = parser.parse(`SELECT 'select'`);
             expect(ast.columns).to.eql([{ expr: { type: 'string', value: 'select' }, as: null }]);
         });
+
+        it('should parse double single quotes as escape character', () => {
+            const ast = parser.parse(`SELECT 'wendy''s'`);
+            expect(ast.columns).to.eql([{ expr: { type: 'string', value: "wendy's" }, as: null }]);
+        });
     });
 
     describe('datetime', () => {
