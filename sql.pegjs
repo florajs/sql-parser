@@ -703,7 +703,7 @@ set_function_type
 set_quantifier = KW_DISTINCT / KW_ALL
 
 star_expr
-  = "*" { return { type: 'star', value: '*' }; }
+  = STAR { return { type: 'star', value: '*' }; }
 
 func_call
   = name:ident __ LPAREN __ l:expr_list? __ RPAREN {
