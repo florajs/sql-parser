@@ -28,21 +28,19 @@ describe('expressions', () => {
         expect(getParsedSql(sql)).to.equal('SELECT (NOT TRUE), NOT "t"."foo" AS "foo" FROM "t"');
     });
 
-    it('should support aggregate functions', () => {
-        const sql = 'SELECT COUNT(distinct t.id) FROM t';
-        expect(getParsedSql(sql)).to.equal('SELECT COUNT(DISTINCT "t"."id") FROM "t"');
+    ['distinct', 'all'].forEach((quantifier) => {
+        it(`should support "${quantifier}" quantifier in aggregate functions`, () => {
+            const sql = `SELECT COUNT(${quantifier} t.id) FROM t`;
+            expect(getParsedSql(sql)).to.equal(`SELECT COUNT(${quantifier.toUpperCase()} "t"."id") FROM "t"`);
+        });
     });
 
     it('should throw an exception for undefined values', () => {
         // flora-mysql uses plain values instead of equivalent expressions, so expressions
         // have to be created by SQL parser
         expect(() => {
-            util.createBinaryExpr(
-                '=',
-                { type: 'column_ref', table: null, column: 'id' },
-                undefined
-            );
-        }).to.throw(ImplementationError)
+            util.createBinaryExpr('=', { type: 'column_ref', table: null, column: 'id' }, undefined);
+        }).to.throw(ImplementationError);
     });
 
     describe('case', () => {
@@ -53,24 +51,20 @@ describe('expressions', () => {
 
         it('should support case-when-else', () => {
             const sql = `select case FUNC(a) when 1 then 'one' when 2 then 'two' else 'more' END FROM t`;
-            expect(getParsedSql(sql)).to.equal(`SELECT CASE FUNC("a") WHEN 1 THEN 'one' WHEN 2 THEN 'two' ELSE 'more' END FROM "t"`);
+            expect(getParsedSql(sql)).to.equal(
+                `SELECT CASE FUNC("a") WHEN 1 THEN 'one' WHEN 2 THEN 'two' ELSE 'more' END FROM "t"`
+            );
         });
     });
 
     describe('casts', () => {
         Object.entries({
-            'simple casts': [
-                'SELECT CAST(col AS CHAR) FROM t',
-                'SELECT CAST("col" AS CHAR) FROM "t"'
-            ],
+            'simple casts': ['SELECT CAST(col AS CHAR) FROM t', 'SELECT CAST("col" AS CHAR) FROM "t"'],
             'signed integer casts': [
                 'SELECT CAST(col as unsigned integer) FROM t',
                 'SELECT CAST("col" AS UNSIGNED INTEGER) FROM "t"'
             ],
-            'simple decimal casts': [
-                'SELECT CAST(col AS DECIMAL) FROM t',
-                'SELECT CAST("col" AS DECIMAL) FROM "t"'
-            ],
+            'simple decimal casts': ['SELECT CAST(col AS DECIMAL) FROM t', 'SELECT CAST("col" AS DECIMAL) FROM "t"'],
             'decimal casts with precision': [
                 'SELECT CAST(col AS DECIMAL(4)) FROM t',
                 'SELECT CAST("col" AS DECIMAL(4)) FROM "t"'
@@ -97,8 +91,9 @@ describe('expressions', () => {
         });
 
         it('should support if function', () => {
-            expect(getParsedSql(`SELECT IF(col1 = 'xyz', 'foo', 'bar') FROM t`))
-                .to.equal(`SELECT IF("col1" = 'xyz', 'foo', 'bar') FROM "t"`);
+            expect(getParsedSql(`SELECT IF(col1 = 'xyz', 'foo', 'bar') FROM t`)).to.equal(
+                `SELECT IF("col1" = 'xyz', 'foo', 'bar') FROM "t"`
+            );
         });
     });
 });

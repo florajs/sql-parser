@@ -33,6 +33,7 @@ describe('having clause', () => {
                 left: {
                     type: 'aggr_func',
                     name: 'SUM',
+                    quantifier: null,
                     args: { expr: { type: 'column_ref', table: null, column: 'col2' } }
                 },
                 right: { type: 'number', value: 10 }
@@ -55,6 +56,7 @@ describe('having clause', () => {
             left: {
                 type: 'aggr_func',
                 name: 'SUM',
+                quantifier: null,
                 args: { expr: { type: 'column_ref', table: null, column: 'col2' } }
             },
             right: {

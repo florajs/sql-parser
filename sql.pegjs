@@ -688,29 +688,19 @@ param
     }
 
 aggr_func
-  = aggr_fun_count
-  / aggr_fun_smma
-
-aggr_fun_smma
-  = name:KW_SUM_MAX_MIN_AVG  __ LPAREN __ expr:additive_expr __ RPAREN {
-      return {
-        type: 'aggr_func',
-        name: name,
-        args: { expr }
-      };
+  = name:KW_COUNT __ LPAREN __ expr:star_expr __ RPAREN {
+      return { type: 'aggr_func', name, args: { expr } };
+    }
+  / name:set_function_type  __ LPAREN __ quantifier:set_quantifier? __ expr:column_ref __ RPAREN {
+      return { type: 'aggr_func', name, quantifier, args: { expr } };
     }
 
-KW_SUM_MAX_MIN_AVG
-  = KW_SUM / KW_MAX / KW_MIN / KW_AVG
+set_function_type
+  = KW_AVG / KW_MAX / KW_MIN / KW_SUM
+  / KW_COUNT
+  / 'group_concat'i { return 'GROUP_CONCAT'; } /* MySQL doesn't support listagg */
 
-aggr_fun_count
-  = name:KW_COUNT __ LPAREN __ args:count_arg __ RPAREN {
-      return { type: 'aggr_func', name, args };
-    }
-
-count_arg
-  = e:star_expr { return { expr: e }; }
-  / d:KW_DISTINCT? __ c:column_ref { return { distinct: d, expr: c }; }
+set_quantifier = KW_DISTINCT / KW_ALL
 
 star_expr
   = "*" { return { type: 'star', value: '*' }; }
