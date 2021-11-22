@@ -709,6 +709,9 @@ func_call
   = name:ident __ LPAREN __ l:expr_list? __ RPAREN {
       return { type: 'function', name, args: l ? l : { type: 'expr_list', value: [] } };
     }
+  / name:(KW_YEAR / KW_MONTH / KW_DAY / KW_HOUR / KW_MINUTE) __ LPAREN __ l:expr_list? __ RPAREN {
+      return { type: 'function', name, args: l ? l : { type: 'expr_list', value: [] } };
+    }
   / name:scalar_func {
       return { type: 'function', name, args: { type: 'expr_list', value: [] } };
     }
