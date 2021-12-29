@@ -38,9 +38,7 @@
   "files": [
     "index.js",
     "lib/",
-    "build/pegjs-parser.js",
-    "README.md",
-    "LICENSE"
+    "build/pegjs-parser.js"
   ],
   "license": "GPL-2.0",
   "repository": "godmodelabs/flora-sql-parser",
