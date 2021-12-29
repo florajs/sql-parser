@@ -21,12 +21,11 @@ describe('order clause', () => {
     });
 
     it('should support complex expressions', () => {
-        expect(getParsedSql('SELECT a FROM t ORDER BY rand() ASC'))
-            .to.equal('SELECT "a" FROM "t" ORDER BY rand() ASC');
+        expect(getParsedSql('SELECT a FROM t ORDER BY rand() ASC')).to.equal('SELECT "a" FROM "t" ORDER BY rand() ASC');
     });
 
     it('should not generate an empty ORDER BY clause on empty arrays', () => {
-        const ast = (new Parser()).parse('SELECT a FROM t');
+        const ast = new Parser().parse('SELECT a FROM t');
         ast.orderby = [];
         expect(util.astToSQL(ast)).to.equal('SELECT "a" FROM "t"');
     });

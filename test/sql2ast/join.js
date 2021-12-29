@@ -12,7 +12,7 @@ describe('joins', () => {
         expect(ast.from).to.eql([
             { db: null, table: 't', as: null },
             { db: 'a', table: 'b', as: 'b' },
-            { db: 'c', table: 'd', as: 'cd' },
+            { db: 'c', table: 'd', as: 'cd' }
         ]);
     });
 
@@ -32,9 +32,9 @@ describe('joins', () => {
                             type: 'binary_expr',
                             operator: '=',
                             left: { type: 'column_ref', table: 't', column: 'd' },
-                            right: { type: 'column_ref', table: 'd', column: 'a' },
-                        },
-                    },
+                            right: { type: 'column_ref', table: 'd', column: 'a' }
+                        }
+                    }
                 ]);
             });
         });
@@ -54,14 +54,14 @@ describe('joins', () => {
                     from: [{ db: null, table: 't2', as: null }],
                     columns: [
                         { expr: { type: 'column_ref', table: null, column: 'id' }, as: null },
-                        { expr: { type: 'column_ref', table: null, column: 'col1' }, as: null },
+                        { expr: { type: 'column_ref', table: null, column: 'col1' }, as: null }
                     ],
                     where: null,
                     groupby: null,
                     having: null,
                     orderby: null,
                     limit: null,
-                    parentheses: true,
+                    parentheses: true
                 },
                 as: 'someAlias',
                 join: 'INNER JOIN',
@@ -69,11 +69,11 @@ describe('joins', () => {
                     type: 'binary_expr',
                     operator: '=',
                     left: { type: 'column_ref', table: 't1', column: 'id' },
-                    right: { type: 'column_ref', table: 'someAlias', column: 'id' },
+                    right: { type: 'column_ref', table: 'someAlias', column: 'id' }
                 },
                 lateral: false,
-                columns: null,
-            },
+                columns: null
+            }
         ]);
     });
 
@@ -82,7 +82,7 @@ describe('joins', () => {
 
         expect(ast.from).to.eql([
             { db: null, table: 't1', as: null },
-            { db: null, table: 't2', as: null, join: 'INNER JOIN', using: ['id'] },
+            { db: null, table: 't2', as: null, join: 'INNER JOIN', using: ['id'] }
         ]);
     });
 
@@ -91,7 +91,7 @@ describe('joins', () => {
 
         expect(ast.from).to.eql([
             { db: null, table: 't1', as: null },
-            { db: null, table: 't2', as: null, join: 'INNER JOIN', using: ['id1', 'id2'] },
+            { db: null, table: 't2', as: null, join: 'INNER JOIN', using: ['id1', 'id2'] }
         ]);
     });
 

@@ -29,7 +29,10 @@ describe('where clause', () => {
                     left: { type: 'column_ref', table: null, column: 'id' },
                     right: {
                         type: 'expr_list',
-                        value: [{ type: 'number', value: 1 }, { type: 'number', value: 2 }]
+                        value: [
+                            { type: 'number', value: 1 },
+                            { type: 'number', value: 2 }
+                        ]
                     }
                 },
                 groupby: null,
@@ -72,29 +75,34 @@ describe('where clause', () => {
     });
 
     it('should support string values', () => {
-        expect(getParsedSql(`SELECT col1 FROM t WHERE col2 = 'foobar'`))
-            .to.equal(`SELECT "col1" FROM "t" WHERE "col2" = 'foobar'`);
+        expect(getParsedSql(`SELECT col1 FROM t WHERE col2 = 'foobar'`)).to.equal(
+            `SELECT "col1" FROM "t" WHERE "col2" = 'foobar'`
+        );
     });
 
     it('should support null values', () => {
-        expect(getParsedSql('SELECT col1 FROM t WHERE col2 IS NULL'))
-            .to.equal('SELECT "col1" FROM "t" WHERE "col2" IS NULL');
+        expect(getParsedSql('SELECT col1 FROM t WHERE col2 IS NULL')).to.equal(
+            'SELECT "col1" FROM "t" WHERE "col2" IS NULL'
+        );
     });
 
     it('should support array values', () => {
-        expect(getParsedSql('SELECT col1 FROM t WHERE col2 IN (1, 3, 5, 7)'))
-            .to.equal('SELECT "col1" FROM "t" WHERE "col2" IN (1, 3, 5, 7)');
+        expect(getParsedSql('SELECT col1 FROM t WHERE col2 IN (1, 3, 5, 7)')).to.equal(
+            'SELECT "col1" FROM "t" WHERE "col2" IN (1, 3, 5, 7)'
+        );
     });
 
     ['EXISTS', 'NOT EXISTS'].forEach((operator) => {
         it(`should support ${operator} operator`, () => {
-            expect(getParsedSql(`SELECT a FROM t WHERE ${operator} (SELECT 1)`))
-                .to.equal(`SELECT "a" FROM "t" WHERE ${operator} (SELECT 1)`);
+            expect(getParsedSql(`SELECT a FROM t WHERE ${operator} (SELECT 1)`)).to.equal(
+                `SELECT "a" FROM "t" WHERE ${operator} (SELECT 1)`
+            );
         });
     });
 
     it('should support row value constructors', () => {
-        expect(getParsedSql(`SELECT * FROM "user" WHERE (firstname, lastname) = ('John', 'Doe')`))
-            .to.equal(`SELECT * FROM "user" WHERE ("firstname","lastname") = ('John','Doe')`);
+        expect(getParsedSql(`SELECT * FROM "user" WHERE (firstname, lastname) = ('John', 'Doe')`)).to.equal(
+            `SELECT * FROM "user" WHERE ("firstname","lastname") = ('John','Doe')`
+        );
     });
 });

@@ -40,8 +40,8 @@ describe('where clause', () => {
                 operator: 'BETWEEN',
                 left: { type: 'column_ref', table: 't', column: 'c' },
                 right: {
-                    type : 'expr_list',
-                    value : [
+                    type: 'expr_list',
+                    value: [
                         { type: 'number', value: 1 },
                         { type: 'string', value: 't' }
                     ]

@@ -14,14 +14,14 @@ describe('common table expressions', () => {
     });
 
     it('should support multiple CTE', () => {
-        const expected = 'WITH "cte1" AS (SELECT 1), "cte2" AS (SELECT 2) ' +
-            'SELECT * FROM "cte1" UNION SELECT * FROM "cte2"';
+        const expected =
+            'WITH "cte1" AS (SELECT 1), "cte2" AS (SELECT 2) ' + 'SELECT * FROM "cte1" UNION SELECT * FROM "cte2"';
         const sql = `
             WITH cte1 AS (SELECT 1), cte2 AS (SELECT 2)
             SELECT * FROM cte1 UNION SELECT * FROM cte2
         `.trim();
 
-        expect(getParsedSql(sql)).to.equal(expected)
+        expect(getParsedSql(sql)).to.equal(expected);
     });
 
     it('should support CTE with column', () => {

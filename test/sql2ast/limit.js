@@ -19,8 +19,8 @@ describe('limit clause', () => {
         const ast = parser.parse('SELECT DISTINCT a FROM b WHERE c = 0 GROUP BY d ORDER BY e limit 0, 3');
 
         expect(ast.limit).to.eql([
-            {type: 'number', value: 0 },
-            {type: 'number', value: 3 }
+            { type: 'number', value: 0 },
+            { type: 'number', value: 3 }
         ]);
     });
 });

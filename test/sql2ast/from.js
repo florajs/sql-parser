@@ -38,12 +38,12 @@ describe('from clause', () => {
                     having: null,
                     orderby: null,
                     limit: null,
-                    parentheses: true,
+                    parentheses: true
                 },
                 as: 'someAlias',
                 lateral: false,
-                columns: null,
-            },
+                columns: null
+            }
         ]);
     });
 
@@ -64,18 +64,18 @@ describe('from clause', () => {
                             {
                                 type: 'row_value',
                                 keyword: false,
-                                value: [{ type: 'number', value: 1 }],
+                                value: [{ type: 'number', value: 1 }]
                             },
                             {
                                 type: 'row_value',
                                 keyword: false,
-                                value: [{ type: 'number', value: 2 }],
-                            },
-                        ],
+                                value: [{ type: 'number', value: 2 }]
+                            }
+                        ]
                     },
                     as: 't',
-                    columns: ['id'],
-                },
+                    columns: ['id']
+                }
             ]);
         });
 
@@ -92,22 +92,22 @@ describe('from clause', () => {
                                 keyword: false,
                                 value: [
                                     { type: 'number', value: 1 },
-                                    { type: 'number', value: 2 },
-                                ],
+                                    { type: 'number', value: 2 }
+                                ]
                             },
                             {
                                 type: 'row_value',
                                 keyword: false,
                                 value: [
                                     { type: 'number', value: 3 },
-                                    { type: 'number', value: 4 },
-                                ],
-                            },
-                        ],
+                                    { type: 'number', value: 4 }
+                                ]
+                            }
+                        ]
                     },
                     as: 't',
-                    columns: ['id1', 'id2'],
-                },
+                    columns: ['id1', 'id2']
+                }
             ]);
         });
 
@@ -124,22 +124,22 @@ describe('from clause', () => {
                                 keyword: true,
                                 value: [
                                     { type: 'number', value: 1 },
-                                    { type: 'number', value: 2 },
-                                ],
+                                    { type: 'number', value: 2 }
+                                ]
                             },
                             {
                                 type: 'row_value',
                                 keyword: true,
                                 value: [
                                     { type: 'number', value: 3 },
-                                    { type: 'number', value: 4 },
-                                ],
-                            },
-                        ],
+                                    { type: 'number', value: 4 }
+                                ]
+                            }
+                        ]
                     },
                     as: 't',
-                    columns: null,
-                },
+                    columns: null
+                }
             ]);
         });
     });

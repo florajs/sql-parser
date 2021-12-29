@@ -11,8 +11,9 @@ describe('select', () => {
 
     describe('union operator', () => {
         it('should combine multiple statements', () => {
-            expect(getParsedSql(`select 1 union select '1' union select a from t union (select true)`))
-                .to.equal(`SELECT 1 UNION SELECT '1' UNION SELECT "a" FROM "t" UNION SELECT TRUE`);
+            expect(getParsedSql(`select 1 union select '1' union select a from t union (select true)`)).to.equal(
+                `SELECT 1 UNION SELECT '1' UNION SELECT "a" FROM "t" UNION SELECT TRUE`
+            );
         });
 
         it('should be supported in expressions', () => {

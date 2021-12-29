@@ -9,7 +9,7 @@ describe('group by clause', () => {
     it('should parse single columns', () => {
         const ast = parser.parse('SELECT a FROM b WHERE c = 0 GROUP BY d');
 
-        expect(ast.groupby).to.eql([{ type:'column_ref', table: null, column: 'd' }])
+        expect(ast.groupby).to.eql([{ type: 'column_ref', table: null, column: 'd' }]);
     });
 
     it('should parse multiple columns', () => {

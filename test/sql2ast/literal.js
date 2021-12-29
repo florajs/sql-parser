@@ -11,7 +11,7 @@ describe('literals', () => {
             ['should parse positive number', '+1', 1],
             ['should parse negative number', '-1', -1],
             ['should parse positive numbers', '+10', 10],
-            ['should parse negative numbers', '-10', -10],
+            ['should parse negative numbers', '-10', -10]
         ].forEach(([label, expr, expectedValue]) => {
             it(label, () => {
                 const ast = parser.parse(`SELECT ${expr}`);
@@ -58,13 +58,7 @@ describe('literals', () => {
 
     describe('interval', () => {
         describe('qualifiers', () => {
-            [
-                'MINUTE',
-                'HOUR',
-                'DAY',
-                'MONTH',
-                'YEAR'
-            ].forEach(qualifier => {
+            ['MINUTE', 'HOUR', 'DAY', 'MONTH', 'YEAR'].forEach((qualifier) => {
                 it(`should support ${qualifier}`, () => {
                     const ast = parser.parse(`SELECT CURRENT_DATE + INTERVAL 10 ${qualifier} FROM dual`);
 
@@ -155,7 +149,7 @@ describe('literals', () => {
                         left: {
                             type: 'function',
                             name: 'CURRENT_DATE',
-                            args: {type: 'expr_list', value: []}
+                            args: { type: 'expr_list', value: [] }
                         },
                         right: {
                             type: 'interval',

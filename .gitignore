@@ -1,7 +1,5 @@
-node_modules/
-build/
-
-# Bamboo build output
-mocha.json
-
+.DS_Store
+.vscode
+node_modules
+build
 package-lock.json
