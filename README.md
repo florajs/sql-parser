@@ -1,8 +1,8 @@
-# flora-sql-parser
+# @florajs/sql-parser
 
 ![](https://github.com/florajs/sql-parser/workflows/ci/badge.svg)
-[![NPM version](https://img.shields.io/npm/v/flora-sql-parser.svg?style=flat)](https://www.npmjs.com/package/flora-sql-parser)
-[![NPM downloads](https://img.shields.io/npm/dm/flora-sql-parser.svg?style=flat)](https://www.npmjs.com/package/flora-sql-parser)
+[![NPM version](https://img.shields.io/npm/v/@florajs/sql-parser.svg?style=flat)](https://www.npmjs.com/package/@florajs/sql-parser)
+[![NPM downloads](https://img.shields.io/npm/dm/@florajs/sql-parser.svg?style=flat)](https://www.npmjs.com/package/@florajs/sql-parser)
 
 Parse simple SQL statements into an abstract syntax tree (AST) and convert it back to SQL.
 
@@ -11,7 +11,7 @@ Parse simple SQL statements into an abstract syntax tree (AST) and convert it ba
 ### Create AST for SQL statement
 
 ```javascript
-const { Parser } = require('flora-sql-parser');
+const { Parser } = require('@florajs/sql-parser');
 const parser = new Parser();
 const ast = parser.parse('SELECT * FROM t');
 
@@ -21,9 +21,9 @@ console.log(ast);
 ### Convert AST back to SQL
 
 ```javascript
-const { Parser } = require('flora-sql-parser');
+const { Parser } = require('@florajs/sql-parser');
 const ast = (new Parser()).parse('SELECT * FROM t');
-const toSQL = require('flora-sql-parser').util.astToSQL;
+const toSQL = require('@florajs/sql-parser').util.astToSQL;
 
 console.log(toSQL(ast));
 ```

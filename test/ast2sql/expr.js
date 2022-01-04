@@ -2,7 +2,7 @@
 
 const { expect } = require('chai');
 const { util } = require('../../');
-const { ImplementationError } = require('flora-errors');
+const { ImplementationError } = require('@florajs/errors');
 const { getParsedSql } = require('./util');
 
 describe('expressions', () => {
@@ -36,7 +36,7 @@ describe('expressions', () => {
     });
 
     it('should throw an exception for undefined values', () => {
-        // flora-mysql uses plain values instead of equivalent expressions, so expressions
+        // @florajs/datasource-mysql uses plain values instead of equivalent expressions, so expressions
         // have to be created by SQL parser
         expect(() => {
             util.createBinaryExpr('=', { type: 'column_ref', table: null, column: 'id' }, undefined);
