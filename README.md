@@ -1,4 +1,4 @@
-# flora-sql.parser
+# flora-sql-parser
 
 ![](https://github.com/florajs/sql-parser/workflows/ci/badge.svg)
 [![NPM version](https://img.shields.io/npm/v/flora-sql-parser.svg?style=flat)](https://www.npmjs.com/package/flora-sql-parser)
