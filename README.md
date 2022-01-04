@@ -1,6 +1,6 @@
-# Flora SQL Parser
+# flora-sql.parser
 
-![](https://github.com/godmodelabs/flora-sql-parser/workflows/ci/badge.svg)
+![](https://github.com/florajs/sql-parser/workflows/ci/badge.svg)
 [![NPM version](https://img.shields.io/npm/v/flora-sql-parser.svg?style=flat)](https://www.npmjs.com/package/flora-sql-parser)
 [![NPM downloads](https://img.shields.io/npm/dm/flora-sql-parser.svg?style=flat)](https://www.npmjs.com/package/flora-sql-parser)
 

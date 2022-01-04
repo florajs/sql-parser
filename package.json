@@ -41,8 +41,8 @@
     "build/pegjs-parser.js"
   ],
   "license": "GPL-2.0",
-  "repository": "godmodelabs/flora-sql-parser",
-  "homepage": "https://github.com/godmodelabs/flora-sql-parser",
+  "repository": "florajs/sql-parser",
+  "homepage": "https://github.com/florajs/sql-parser",
   "engines": {
     "node": ">=12"
   },
