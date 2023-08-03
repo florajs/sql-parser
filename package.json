@@ -45,10 +45,10 @@
   "repository": "florajs/sql-parser",
   "homepage": "https://github.com/florajs/sql-parser",
   "engines": {
-    "node": ">=12"
+    "node": ">=16"
   },
   "dependencies": {
-    "@florajs/errors": "^3.0.0",
+    "@florajs/errors": "^4.0.0",
     "has": "^1.0.3"
   },
   "devDependencies": {
