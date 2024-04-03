@@ -1,6 +1,6 @@
 'use strict';
 
-const { expect } = require('chai');
+const assert = require('node:assert/strict');
 const { Parser } = require('../../');
 
 describe('row value constructor', () => {
@@ -9,7 +9,7 @@ describe('row value constructor', () => {
     it('should parse simple values', () => {
         const ast = parser.parse(`SELECT * FROM "user" WHERE (firstname, lastname) = ('John', 'Doe')`);
 
-        expect(ast.where).to.eql({
+        assert.deepEqual(ast.where, {
             type: 'binary_expr',
             operator: '=',
             left: {

@@ -1,6 +1,6 @@
 'use strict';
 
-const { expect } = require('chai');
+const assert = require('node:assert/strict');
 const { getParsedSql } = require('./util');
 
 describe('common table expressions', () => {
@@ -10,7 +10,7 @@ describe('common table expressions', () => {
             SELECT * FROM cte
         `.trim();
 
-        expect(getParsedSql(sql)).to.equal('WITH "cte" AS (SELECT 1) SELECT * FROM "cte"');
+        assert.equal(getParsedSql(sql), 'WITH "cte" AS (SELECT 1) SELECT * FROM "cte"');
     });
 
     it('should support multiple CTE', () => {
@@ -21,7 +21,7 @@ describe('common table expressions', () => {
             SELECT * FROM cte1 UNION SELECT * FROM cte2
         `.trim();
 
-        expect(getParsedSql(sql)).to.equal(expected);
+        assert.equal(getParsedSql(sql), expected);
     });
 
     it('should support CTE with column', () => {
@@ -30,7 +30,7 @@ describe('common table expressions', () => {
             SELECT * FROM cte
         `.trim();
 
-        expect(getParsedSql(sql)).to.contain('(col1)');
+        assert.ok(getParsedSql(sql).includes('(col1)'));
     });
 
     it('should support CTE with multiple columns', () => {
@@ -39,7 +39,7 @@ describe('common table expressions', () => {
             SELECT * FROM cte
         `.trim();
 
-        expect(getParsedSql(sql)).to.contain('(col1, col2)');
+        assert.ok(getParsedSql(sql).includes('(col1, col2)'));
     });
 
     it('should support recursive CTE', () => {
@@ -53,6 +53,6 @@ describe('common table expressions', () => {
             SELECT * FROM cte
         `.trim();
 
-        expect(getParsedSql(sql)).to.match(/^WITH RECURSIVE/);
+        assert.match(getParsedSql(sql), /^WITH RECURSIVE/);
     });
 });

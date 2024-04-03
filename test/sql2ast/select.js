@@ -1,6 +1,6 @@
 'use strict';
 
-const { expect } = require('chai');
+const assert = require('node:assert/strict');
 const { Parser } = require('../../index');
 
 describe('select', () => {
@@ -9,24 +9,24 @@ describe('select', () => {
     it('should be null if empty', () => {
         const ast = parser.parse('SELECT a');
 
-        expect(ast.options).to.be.null;
-        expect(ast.distinct).to.be.null;
-        expect(ast.from).to.be.null;
-        expect(ast.where).to.be.null;
-        expect(ast.groupby).to.be.null;
-        expect(ast.orderby).to.be.null;
-        expect(ast.limit).to.be.null;
+        assert.equal(ast.options, null);
+        assert.equal(ast.distinct, null);
+        assert.equal(ast.from, null);
+        assert.equal(ast.where, null);
+        assert.equal(ast.groupby, null);
+        assert.equal(ast.orderby, null);
+        assert.equal(ast.limit, null);
     });
 
     it('should have appropriate types', () => {
         const ast = parser.parse('SELECT SQL_NO_CACHE DISTINCT a FROM b WHERE c = 0 GROUP BY d ORDER BY e limit 3');
 
-        expect(ast.options).to.be.an('array');
-        expect(ast.distinct).to.equal('DISTINCT');
-        expect(ast.from).to.be.an('array');
-        expect(ast.where).to.be.an('object');
-        expect(ast.groupby).to.be.an('array');
-        expect(ast.orderby).to.be.an('array');
-        expect(ast.limit).to.be.an('array');
+        assert.ok(Array.isArray(ast.options));
+        assert.equal(ast.distinct, 'DISTINCT');
+        assert.ok(Array.isArray(ast.from));
+        assert.ok(typeof ast.where === 'object');
+        assert.ok(Array.isArray(ast.groupby));
+        assert.ok(Array.isArray(ast.orderby));
+        assert.ok(Array.isArray(ast.limit));
     });
 });

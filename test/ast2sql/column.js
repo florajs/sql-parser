@@ -1,37 +1,37 @@
 'use strict';
 
-const { expect } = require('chai');
+const assert = require('node:assert/strict');
 const { getParsedSql } = require('./util');
 
 describe('column clause', () => {
     it('should support asterisk', () => {
-        expect(getParsedSql('SELECT * FROM t')).to.equal('SELECT * FROM "t"');
+        assert.equal(getParsedSql('SELECT * FROM t'), 'SELECT * FROM "t"');
     });
 
     it('should support asterisk prefixed by table', () => {
-        expect(getParsedSql('SELECT t.* FROM t')).to.equal('SELECT "t".* FROM "t"');
+        assert.equal(getParsedSql('SELECT t.* FROM t'), 'SELECT "t".* FROM "t"');
     });
 
     it('should parse multiple expressions', () => {
         const sql = 'SELECT col1 AS a, col2 AS b FROM t';
-        expect(getParsedSql(sql)).to.equal('SELECT "col1" AS "a", "col2" AS "b" FROM "t"');
+        assert.equal(getParsedSql(sql), 'SELECT "col1" AS "a", "col2" AS "b" FROM "t"');
     });
 
     it('should escape reserved keywords', () => {
-        expect(getParsedSql('SELECT col."select" FROM t')).to.equal('SELECT "col"."select" FROM "t"');
+        assert.equal(getParsedSql('SELECT col."select" FROM t'), 'SELECT "col"."select" FROM "t"');
     });
 
     it('should escape reserved keywords in aliases', () => {
-        expect(getParsedSql('SELECT col AS "index" FROM t')).to.equal('SELECT "col" AS "index" FROM "t"');
+        assert.equal(getParsedSql('SELECT col AS "index" FROM t'), 'SELECT "col" AS "index" FROM "t"');
     });
 
     it('should escape aliases with non-identifier chars (/a-z0-9_/i)', () => {
-        const sql = `SELECT col AS "foo bar" FROM t`;
-        expect(getParsedSql(sql)).to.contain(`"col" AS "foo bar"`);
+        assert.equal(getParsedSql(`SELECT col AS "foo bar" FROM t`), `SELECT "col" AS "foo bar" FROM "t"`);
     });
 
     it('should support subselects', () => {
-        expect(getParsedSql(`SELECT 'string', (SELECT col FROM t2) subSelect FROM t1`)).to.equal(
+        assert.equal(
+            getParsedSql(`SELECT 'string', (SELECT col FROM t2) subSelect FROM t1`),
             `SELECT 'string', (SELECT "col" FROM "t2") AS "subSelect" FROM "t1"`
         );
     });

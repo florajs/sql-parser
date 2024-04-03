@@ -1,6 +1,6 @@
 'use strict';
 
-const { expect } = require('chai');
+const assert = require('node:assert/strict');
 const { Parser } = require('../../');
 
 describe('expressions', () => {
@@ -10,7 +10,7 @@ describe('expressions', () => {
         it('should parse functions', () => {
             const ast = parser.parse('SELECT fun(d) FROM t');
 
-            expect(ast.columns).to.eql([
+            assert.deepEqual(ast.columns, [
                 {
                     expr: {
                         type: 'function',
@@ -29,7 +29,7 @@ describe('expressions', () => {
             it(`should parse ${fn} date function expression`, () => {
                 const ast = parser.parse(`SELECT ${fn}(NOW()) FROM dual`);
 
-                expect(ast.columns).to.eql([
+                assert.deepEqual(ast.columns, [
                     {
                         expr: {
                             type: 'function',
@@ -63,7 +63,7 @@ describe('expressions', () => {
             it(`should parse scalar function ${func}`, () => {
                 const ast = parser.parse(`SELECT ${func} FROM t`);
 
-                expect(ast.columns).to.eql([
+                assert.deepEqual(ast.columns, [
                     {
                         expr: {
                             type: 'function',

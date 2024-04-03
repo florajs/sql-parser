@@ -1,6 +1,6 @@
 'use strict';
 
-const { expect } = require('chai');
+const assert = require('node:assert/strict');
 const { Parser } = require('../../');
 
 describe('having clause', () => {
@@ -9,7 +9,7 @@ describe('having clause', () => {
     it('should parse single conditions', () => {
         const ast = parser.parse('SELECT col1 FROM t GROUP BY col2 HAVING COUNT(*) > 1');
 
-        expect(ast.having).to.eql({
+        assert.deepEqual(ast.having, {
             type: 'binary_expr',
             operator: '>',
             left: {
@@ -24,7 +24,7 @@ describe('having clause', () => {
     it('should parse multiple conditions', () => {
         const ast = parser.parse('SELECT col1 FROM t GROUP BY col2 HAVING SUM(col2) > 10 OR 1 = 1');
 
-        expect(ast.having).to.eql({
+        assert.deepEqual(ast.having, {
             type: 'binary_expr',
             operator: 'OR',
             left: {
@@ -50,7 +50,7 @@ describe('having clause', () => {
     it('should parse subselects', () => {
         const ast = parser.parse('SELECT col1 FROM t GROUP BY col2 HAVING SUM(col2) > (SELECT 10)');
 
-        expect(ast.having).to.eql({
+        assert.deepEqual(ast.having, {
             type: 'binary_expr',
             operator: '>',
             left: {

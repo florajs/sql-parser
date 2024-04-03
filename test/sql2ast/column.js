@@ -1,6 +1,6 @@
 'use strict';
 
-const { expect } = require('chai');
+const assert = require('node:assert/strict');
 const { Parser } = require('../../');
 
 describe('column clause', () => {
@@ -9,31 +9,31 @@ describe('column clause', () => {
 
     it('should parse "*" shorthand', () => {
         ast = parser.parse('SELECT * FROM t');
-        expect(ast.columns).to.equal('*');
+        assert.equal(ast.columns, '*');
     });
 
     it('should parse "table.*" column expressions', () => {
         ast = parser.parse('SELECT t.* FROM t');
 
-        expect(ast.columns).to.eql([{ expr: { type: 'column_ref', table: 't', column: '*' }, as: null }]);
+        assert.deepEqual(ast.columns, [{ expr: { type: 'column_ref', table: 't', column: '*' }, as: null }]);
     });
 
     it('should parse aliases w/o "AS" keyword', () => {
         ast = parser.parse('SELECT a aa FROM  t');
 
-        expect(ast.columns).to.eql([{ expr: { type: 'column_ref', table: null, column: 'a' }, as: 'aa' }]);
+        assert.deepEqual(ast.columns, [{ expr: { type: 'column_ref', table: null, column: 'a' }, as: 'aa' }]);
     });
 
     it('should parse aliases w/ "AS" keyword', () => {
         ast = parser.parse('SELECT b.c as bc FROM t');
 
-        expect(ast.columns).to.eql([{ expr: { type: 'column_ref', table: 'b', column: 'c' }, as: 'bc' }]);
+        assert.deepEqual(ast.columns, [{ expr: { type: 'column_ref', table: 'b', column: 'c' }, as: 'bc' }]);
     });
 
     it('should parse multiple columns', () => {
         ast = parser.parse('SELECT b.c as bc, 1+3 FROM t');
 
-        expect(ast.columns).to.eql([
+        assert.deepEqual(ast.columns, [
             { expr: { type: 'column_ref', table: 'b', column: 'c' }, as: 'bc' },
             {
                 expr: {
@@ -51,7 +51,7 @@ describe('column clause', () => {
         it('should parse COUNT(*)', () => {
             ast = parser.parse('SELECT COUNT(*) FROM t');
 
-            expect(ast.columns).to.eql([
+            assert.deepEqual(ast.columns, [
                 {
                     expr: {
                         type: 'aggr_func',
@@ -72,7 +72,7 @@ describe('column clause', () => {
             it(`should parse ${aggrFunction.toUpperCase()} function`, () => {
                 ast = parser.parse(`SELECT ${aggrFunction}(col) FROM t`);
 
-                expect(ast.columns).to.eql([
+                assert.deepEqual(ast.columns, [
                     {
                         expr: {
                             type: 'aggr_func',
@@ -96,7 +96,7 @@ describe('column clause', () => {
             it(`should parse ${quantifier} quantifier`, () => {
                 ast = parser.parse(`SELECT GROUP_CONCAT(${quantifier} col) FROM t`);
 
-                expect(ast.columns).to.eql([
+                assert.deepEqual(ast.columns, [
                     {
                         expr: {
                             type: 'aggr_func',

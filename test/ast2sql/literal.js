@@ -1,22 +1,22 @@
 'use strict';
 
-const { expect } = require('chai');
+const assert = require('node:assert/strict');
 const { getParsedSql } = require('./util');
 
 describe('literals', () => {
     it('should support string values', () => {
         const sql = `SELECT 'foo'`;
-        expect(getParsedSql(sql)).to.equal(`SELECT 'foo'`);
+        assert.equal(getParsedSql(sql), `SELECT 'foo'`);
     });
 
     it('should support null values', () => {
         const sql = 'SELECT null';
-        expect(getParsedSql(sql)).to.equal('SELECT NULL');
+        assert.equal(getParsedSql(sql), 'SELECT NULL');
     });
 
     it('should support trailing zeros', () => {
-        expect(getParsedSql('SELECT 042')).equal('SELECT 42');
-        expect(getParsedSql('SELECT -042')).equal('SELECT -42');
+        assert.equal(getParsedSql('SELECT 042'), 'SELECT 42');
+        assert.equal(getParsedSql('SELECT -042'), 'SELECT -42');
     });
 
     describe('datetime', () => {
@@ -27,7 +27,7 @@ describe('literals', () => {
         }).forEach(([type, value]) => {
             it(type, () => {
                 const sql = `SELECT ${type} '${value}'`;
-                expect(getParsedSql(sql)).to.equal(`SELECT ${type.toUpperCase()} '${value}'`);
+                assert.equal(getParsedSql(sql), `SELECT ${type.toUpperCase()} '${value}'`);
             });
         });
     });
@@ -35,17 +35,17 @@ describe('literals', () => {
     describe('interval', () => {
         it('should parse simple INTERVAL', () => {
             const sql = 'SELECT NOW() + INTERVAL 1 DAY FROM DUAL';
-            expect(getParsedSql(sql)).to.equal(`SELECT NOW() + INTERVAL '1' DAY FROM DUAL`);
+            assert.equal(getParsedSql(sql), `SELECT NOW() + INTERVAL '1' DAY FROM DUAL`);
         });
 
         it('should parse string INTERVAL', () => {
             const sql = `SELECT NOW() + INTERVAL '1' DAY FROM DUAL`;
-            expect(getParsedSql(sql)).to.equal(sql);
+            assert.equal(getParsedSql(sql), sql);
         });
 
         it('should parse signed INTERVAL', () => {
             const sql = `SELECT NOW() + INTERVAL - '1' DAY FROM DUAL`;
-            expect(getParsedSql(sql)).to.equal(sql);
+            assert.equal(getParsedSql(sql), sql);
         });
     });
 });

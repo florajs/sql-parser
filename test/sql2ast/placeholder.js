@@ -1,6 +1,6 @@
 'use strict';
 
-const { expect } = require('chai');
+const assert = require('node:assert/strict');
 const { Parser, util } = require('../../');
 
 describe('placeholder', () => {
@@ -11,7 +11,7 @@ describe('placeholder', () => {
         ast = parser.parse('SELECT col FROM t WHERE id = :id');
         ast = util.replaceParams(ast, { id: 1 });
 
-        expect(ast.where).to.eql({
+        assert.deepEqual(ast.where, {
             type: 'binary_expr',
             operator: '=',
             left: { type: 'column_ref', table: null, column: 'id' },
@@ -23,7 +23,7 @@ describe('placeholder', () => {
         ast = parser.parse('SELECT col FROM t WHERE id = :id AND "type" = :type');
         ast = util.replaceParams(ast, { id: 1, type: 'foobar' });
 
-        expect(ast.where).to.eql({
+        assert.deepEqual(ast.where, {
             type: 'binary_expr',
             operator: 'AND',
             left: {
@@ -45,7 +45,7 @@ describe('placeholder', () => {
         ast = parser.parse('SELECT col1 FROM t WHERE col2 = :name');
         ast = util.replaceParams(ast, { name: 'John Doe' });
 
-        expect(ast.where).to.eql({
+        assert.deepEqual(ast.where, {
             type: 'binary_expr',
             operator: '=',
             left: { type: 'column_ref', table: null, column: 'col2' },
@@ -57,7 +57,7 @@ describe('placeholder', () => {
         ast = parser.parse('SELECT col1 FROM t WHERE isMain = :main');
         ast = util.replaceParams(ast, { main: true });
 
-        expect(ast.where).to.eql({
+        assert.deepEqual(ast.where, {
             type: 'binary_expr',
             operator: '=',
             left: { type: 'column_ref', table: null, column: 'isMain' },
@@ -69,7 +69,7 @@ describe('placeholder', () => {
         ast = parser.parse('SELECT col1 FROM t WHERE col2 = :param');
         ast = util.replaceParams(ast, { param: null });
 
-        expect(ast.where).to.eql({
+        assert.deepEqual(ast.where, {
             type: 'binary_expr',
             operator: '=',
             left: { type: 'column_ref', table: null, column: 'col2' },
@@ -81,7 +81,7 @@ describe('placeholder', () => {
         ast = parser.parse('SELECT col1 FROM t WHERE id = :ids');
         ast = util.replaceParams(ast, { ids: [1, 3, 5, 7] });
 
-        expect(ast.where).to.eql({
+        assert.deepEqual(ast.where, {
             type: 'binary_expr',
             operator: '=',
             left: { type: 'column_ref', table: null, column: 'id' },
@@ -100,15 +100,16 @@ describe('placeholder', () => {
     it('should throw an exception if no value for parameter is available', () => {
         ast = parser.parse('SELECT col FROM t WHERE id = :id');
 
-        expect(() => {
-            util.replaceParams(ast, { foo: 'bar' });
-        }).to.throw('no value for parameter :id found');
+        assert.throws(() => util.replaceParams(ast, { foo: 'bar' }), {
+            name: 'Error',
+            message: 'no value for parameter :id found'
+        });
     });
 
     it('should return new AST object', () => {
         ast = parser.parse('SELECT col FROM t WHERE id = :id');
         const resolvedParamAST = util.replaceParams(ast, { id: 1 });
 
-        expect(ast).to.not.eql(resolvedParamAST);
+        assert.notDeepEqual(ast, resolvedParamAST);
     });
 });

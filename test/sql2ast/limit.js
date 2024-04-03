@@ -1,6 +1,6 @@
 'use strict';
 
-const { expect } = require('chai');
+const assert = require('node:assert/strict');
 const { Parser } = require('../../');
 
 describe('limit clause', () => {
@@ -9,7 +9,7 @@ describe('limit clause', () => {
     it('should be parsed w/o offset', () => {
         const ast = parser.parse('SELECT DISTINCT a FROM b WHERE c = 0 GROUP BY d ORDER BY e limit 3');
 
-        expect(ast.limit).eql([
+        assert.deepEqual(ast.limit, [
             { type: 'number', value: 0 },
             { type: 'number', value: 3 }
         ]);
@@ -18,7 +18,7 @@ describe('limit clause', () => {
     it('should be parsed w/ offset', () => {
         const ast = parser.parse('SELECT DISTINCT a FROM b WHERE c = 0 GROUP BY d ORDER BY e limit 0, 3');
 
-        expect(ast.limit).to.eql([
+        assert.deepEqual(ast.limit, [
             { type: 'number', value: 0 },
             { type: 'number', value: 3 }
         ]);

@@ -1,6 +1,6 @@
 'use strict';
 
-const { expect } = require('chai');
+const assert = require('node:assert/strict');
 const { Parser } = require('../../');
 
 describe('joins', () => {
@@ -9,7 +9,7 @@ describe('joins', () => {
     it('should parse implicit joins', () => {
         const ast = parser.parse('SELECT * FROM t, a.b b, c.d as cd');
 
-        expect(ast.from).to.eql([
+        assert.deepEqual(ast.from, [
             { db: null, table: 't', as: null },
             { db: 'a', table: 'b', as: 'b' },
             { db: 'c', table: 'd', as: 'cd' }
@@ -21,7 +21,7 @@ describe('joins', () => {
             it(`should parse ${join}${outer}joins`, () => {
                 const ast = parser.parse(`SELECT * FROM t ${join} ${outer} join d on t.d = d.a`);
 
-                expect(ast.from).to.eql([
+                assert.deepEqual(ast.from, [
                     { db: null, table: 't', as: null },
                     {
                         db: null,
@@ -43,7 +43,7 @@ describe('joins', () => {
     it('should parse joined subselect', () => {
         const ast = parser.parse('SELECT * FROM t1 JOIN (SELECT id, col1 FROM t2) someAlias ON t1.id = someAlias.id');
 
-        expect(ast.from).to.eql([
+        assert.deepEqual(ast.from, [
             { db: null, table: 't1', as: null },
             {
                 expr: {
@@ -80,7 +80,7 @@ describe('joins', () => {
     it('should parse joins with USING (single column)', () => {
         const ast = parser.parse('SELECT * FROM t1 JOIN t2 USING (id)');
 
-        expect(ast.from).to.eql([
+        assert.deepEqual(ast.from, [
             { db: null, table: 't1', as: null },
             { db: null, table: 't2', as: null, join: 'INNER JOIN', using: ['id'] }
         ]);
@@ -89,7 +89,7 @@ describe('joins', () => {
     it('should parse joins with USING (multiple columns)', () => {
         const ast = parser.parse('SELECT * FROM t1 JOIN t2 USING (id1, id2)');
 
-        expect(ast.from).to.eql([
+        assert.deepEqual(ast.from, [
             { db: null, table: 't1', as: null },
             { db: null, table: 't2', as: null, join: 'INNER JOIN', using: ['id1', 'id2'] }
         ]);
@@ -101,20 +101,23 @@ describe('joins', () => {
         );
         const [, lateralJoin] = ast.from;
 
-        expect(lateralJoin).to.have.property('lateral', true);
+        assert.ok(Object.hasOwn(lateralJoin, 'lateral'));
+        assert.equal(lateralJoin.lateral, true);
     });
 
     it('should parse derived column list with single column', () => {
         const ast = parser.parse('SELECT id FROM (SELECT 1) t(id)');
         const [subSelect] = ast.from;
 
-        expect(subSelect).to.have.property('columns').and.to.eql(['id']);
+        assert.ok(Object.hasOwn(subSelect, 'columns'));
+        assert.deepEqual(subSelect.columns, ['id']);
     });
 
     it('should parse derived column list with multiple columns', () => {
         const ast = parser.parse('SELECT id1, id2 FROM (SELECT 1, 2) t(id1, id2)');
         const [subSelect] = ast.from;
 
-        expect(subSelect).to.have.property('columns').and.to.eql(['id1', 'id2']);
+        assert.ok(Object.hasOwn(subSelect, 'columns'));
+        assert.deepEqual(subSelect.columns, ['id1', 'id2']);
     });
 });

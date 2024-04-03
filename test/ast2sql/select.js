@@ -1,24 +1,25 @@
 'use strict';
 
-const { expect } = require('chai');
+const assert = require('node:assert/strict');
 const { getParsedSql } = require('./util');
 
 describe('select', () => {
     it('should parse ANSI SQL compliant statements', () => {
         const sql = `SELECT "id", 'foo' AS "type" FROM "table"`;
-        expect(getParsedSql(sql)).to.equal(sql);
+        assert.equal(getParsedSql(sql), sql);
     });
 
     describe('union operator', () => {
         it('should combine multiple statements', () => {
-            expect(getParsedSql(`select 1 union select '1' union select a from t union (select true)`)).to.equal(
+            assert.equal(
+                getParsedSql(`select 1 union select '1' union select a from t union (select true)`),
                 `SELECT 1 UNION SELECT '1' UNION SELECT "a" FROM "t" UNION SELECT TRUE`
             );
         });
 
         it('should be supported in expressions', () => {
             const sql = `select * from (select 1 union select 2) t`;
-            expect(getParsedSql(sql)).to.equal(`SELECT * FROM (SELECT 1 UNION SELECT 2) AS "t"`);
+            assert.equal(getParsedSql(sql), `SELECT * FROM (SELECT 1 UNION SELECT 2) AS "t"`);
         });
     });
 
@@ -30,9 +31,10 @@ describe('select', () => {
 
         Object.keys(unsupportedStatements).forEach((stmtType) => {
             it(`should throw exception for ${stmtType} statements`, () => {
-                expect(() => {
-                    getParsedSql(unsupportedStatements[stmtType]);
-                }).to.throw(Error, 'Only SELECT statements supported at the moment');
+                assert.throws(() => getParsedSql(unsupportedStatements[stmtType]), {
+                    name: 'Error',
+                    message: 'Only SELECT statements supported at the moment'
+                });
             });
         });
     });

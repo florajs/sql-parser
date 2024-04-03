@@ -1,6 +1,6 @@
 'use strict';
 
-const { expect } = require('chai');
+const assert = require('node:assert/strict');
 const { Parser } = require('../../');
 
 describe('common table expressions', () => {
@@ -14,16 +14,25 @@ describe('common table expressions', () => {
         `.trim()
         );
 
-        expect(ast).to.have.property('with').and.to.be.an('object');
+        assert.ok(typeof ast.with === 'object');
 
-        const cte = ast.with;
-        expect(cte).to.have.property('type', 'with');
-        expect(cte).to.have.property('value').and.to.be.an('array').and.to.have.lengthOf(1);
+        const { with: cte } = ast;
+        assert.ok(Object.hasOwn(cte, 'type'));
+        assert.equal(cte.type, 'with');
+
+        assert.ok(Object.hasOwn(cte, 'value'));
+        assert.ok(Array.isArray(cte.value));
+        assert.equal(cte.value.length, 1);
 
         const [withListElement] = cte.value;
-        expect(withListElement).to.have.property('name', 'cte');
-        expect(withListElement).to.have.property('columns', null);
-        expect(withListElement).to.have.property('stmt').and.to.be.an('object').and.to.have.property('type', 'select');
+        assert.ok(Object.hasOwn(withListElement, 'name'));
+        assert.equal(withListElement.name, 'cte');
+        assert.ok(Object.hasOwn(withListElement, 'columns'));
+        assert.equal(withListElement.columns, null);
+        assert.ok(Object.hasOwn(withListElement, 'stmt'));
+        assert.ok(typeof withListElement.stmt === 'object');
+        assert.ok(Object.hasOwn(withListElement.stmt, 'type'));
+        assert.equal(withListElement.stmt.type, 'select');
     });
 
     it('should parse multiple CTEs', () => {
@@ -34,11 +43,15 @@ describe('common table expressions', () => {
         `.trim()
         );
 
-        expect(ast.with).to.have.property('value').and.to.have.lengthOf(2);
+        assert.ok(Object.hasOwn(ast.with, 'value'));
+        assert.ok(Array.isArray(ast.with.value));
+        assert.equal(ast.with.value.length, 2);
 
         const [cte1, cte2] = ast.with.value;
-        expect(cte1).to.have.property('name', 'cte1');
-        expect(cte2).to.have.property('name', 'cte2');
+        assert.ok(Object.hasOwn(cte1, 'name'));
+        assert.equal(cte1.name, 'cte1');
+        assert.ok(Object.hasOwn(cte2, 'name'));
+        assert.equal(cte2.name, 'cte2');
     });
 
     it('should parse CTE with column', () => {
@@ -50,7 +63,8 @@ describe('common table expressions', () => {
         );
 
         const [cte] = ast.with.value;
-        expect(cte).to.have.property('columns').and.to.eql(['col1']);
+        assert.ok(Object.hasOwn(cte, 'columns'));
+        assert.deepEqual(cte.columns, ['col1']);
     });
 
     it('should parse CTE with multiple columns', () => {
@@ -62,7 +76,7 @@ describe('common table expressions', () => {
         );
 
         const [cte] = ast.with.value;
-        expect(cte.columns).to.eql(['col1', 'col2']);
+        assert.deepEqual(cte.columns, ['col1', 'col2']);
     });
 
     it('should parse recursive CTE', () => {
@@ -78,6 +92,7 @@ describe('common table expressions', () => {
         `.trim()
         );
 
-        expect(ast.with).to.have.property('recursive', true);
+        assert.ok(Object.hasOwn(ast.with, 'recursive'));
+        assert.equal(ast.with.recursive, true);
     });
 });
