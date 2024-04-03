@@ -45,7 +45,7 @@
   "repository": "florajs/sql-parser",
   "homepage": "https://github.com/florajs/sql-parser",
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "dependencies": {
     "@florajs/errors": "^4.0.0",
