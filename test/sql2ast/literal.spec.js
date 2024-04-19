@@ -9,10 +9,18 @@ describe('literals', () => {
 
     describe('numbers', () => {
         [
-            ['should parse positive number', '+1', 1],
+            ['should parse positive number', '1', 1],
+            ['should parse (explicit) positive number', '+1', 1],
             ['should parse negative number', '-1', -1],
-            ['should parse positive numbers', '+10', 10],
-            ['should parse negative numbers', '-10', -10]
+            ['should parse positive numbers', '10', 10],
+            ['should parse (explicit) positive numbers', '+10', 10],
+            ['should parse negative numbers', '-10', -10],
+            ['should parse positive decimal numbers', '0.5', 0.5],
+            ['should parse (explicit) positive decimal numbers', '+0.5', 0.5],
+            ['should parse positive decimal numbers w/o integral part', '.5', 0.5],
+            ['should parse (explicit) positive decimal numbers w/o integral part', '+.5', 0.5],
+            ['should parse negative decimal numbers', '-0.5', -0.5],
+            ['should parse negative decimal numbers w/o integral part', '-.5', -0.5]
         ].forEach(([label, expr, expectedValue]) => {
             it(label, () => {
                 const ast = parser.parse(`SELECT ${expr}`);

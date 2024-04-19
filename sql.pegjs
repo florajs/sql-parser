@@ -846,6 +846,8 @@ number
   / int_:int frac:frac __         { return parseFloat(int_ + frac); }
   / int_:int exp:exp __           { return parseFloat(int_ + exp); }
   / int_:int __                   { return parseFloat(int_); }
+  / frac:frac __                  { return parseFloat(frac); }
+  / op:("-" / "+" ) frac:frac __  { return parseFloat(op + frac); }
 
 int
   = digits
