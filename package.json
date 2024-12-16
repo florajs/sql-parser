@@ -48,8 +48,7 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@florajs/errors": "^4.0.0",
-    "has": "^1.0.3"
+    "@florajs/errors": "^4.0.0"
   },
   "devDependencies": {
     "eslint": "^8.46.0",
