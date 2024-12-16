@@ -4,6 +4,7 @@
   "description": "Parse SQL (select) statements into abstract syntax tree (AST) and convert ASTs back to SQL.",
   "main": "index.js",
   "scripts": {
+    "prepare": "git config --local core.hooksPath .githooks",
     "build": "mkdir -p build && pegjs -o build/pegjs-parser.js sql.pegjs",
     "pretest": "npm run build",
     "test": "node --test test/**/*.spec.js",
@@ -11,7 +12,6 @@
     "lint-fix": "eslint --fix .",
     "prepack": "npm run build"
   },
-  "pre-commit": "test",
   "keywords": [
     "florajs",
     "sql",
@@ -56,7 +56,6 @@
     "eslint-config-prettier": "^8.10.0",
     "eslint-plugin-prettier": "^5.0.0",
     "pegjs": "^0.10.0",
-    "pre-commit": "^1.2.2",
     "prettier": "^3.0.1"
   }
 }
