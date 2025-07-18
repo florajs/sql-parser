@@ -20,3 +20,5 @@
     "scale": 2
   }
   ```
+### Added
+- Support for JSON_TABLE (new keywords `COLUMNS`, `JSON_TABLE` and `PATH`)

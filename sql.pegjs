@@ -11,6 +11,7 @@
     'CASE': true,
     'CREATE': true,
     'CONTAINS': true,
+    'COLUMNS': true,
     'CURRENT_DATE': true,
     'CURRENT_TIME': true,
     'CURRENT_TIMESTAMP': true,
@@ -46,6 +47,7 @@
 
     'JOIN': true,
     'JSON': true,
+    'JSON_TABLE': true,
 
     'LEFT': true,
     'LIKE': true,
@@ -62,6 +64,8 @@
     'OR': true,
     'ORDER': true,
     'OUTER': true,
+
+    'PATH': true,
 
     'QUARTER': true,
 
@@ -284,6 +288,7 @@ table_primary
         columns: cols
       };
     }
+  / json_table
   / t:table_name __ KW_AS? __ as:ident? {
       return { ...t, as };
     }
@@ -338,6 +343,74 @@ sub_query
   = LPAREN __ stmt:union_stmt __ RPAREN {
       return { ...stmt, parentheses: true };
     }
+
+json_table = KW_JSON_TABLE __ LPAREN __ expr:expr __ COMMA __ path:literal_string __ KW_COLUMNS __ LPAREN __ columns:json_table_column_list __ RPAREN __ RPAREN __ KW_AS? __ as:ident {
+    return {
+      type: 'json_table',
+      expr,
+      path,
+      columns,
+      as
+    };
+  }
+
+json_table_column_list
+  = head:json_table_column tail:(__ COMMA? __ json_table_column)* {
+     return createList(head, tail);
+  }
+
+json_table_column = name:ident_name __ KW_FOR __ KW_ORDINALITY {
+    return { type: 'json_table_column', name, ordinality: true };
+  }
+  / name:ident_name __ dataType:data_type __ KW_PATH __ path:literal_string __ onEmpty:json_column_on_empty? __ onError:json_column_on_error? {
+     return {
+       type: 'json_table_column',
+       name,
+       dataType,
+       path,
+       ...(onEmpty ? { onEmpty: onEmpty } : {}),
+       ...(onError ? { onError: onError } : {}),
+     };
+  }
+  / name:ident_name __ dataType:data_type __ exists:KW_EXISTS __ KW_PATH __ path:literal_string {
+     return {
+       type: 'json_table_column',
+       name,
+       dataType,
+       path,
+       exists: true,
+     };
+   }
+   / KW_NESTED __ KW_PATH? __ path:literal_string __ KW_COLUMNS __ LPAREN __ columns:json_table_column_list __ RPAREN {
+     return {
+       type: 'json_table_column',
+       nested: true,
+       path,
+       columns
+     };
+   }
+
+json_column_on_empty
+  = expr:literal_null __ KW_ON __ KW_EMPTY {
+    return { expr };
+  }
+  / KW_DEFAULT __ expr:literal_string __ KW_ON __ KW_EMPTY {
+    return { default: true, expr };
+  }
+  / KW_ERROR __ KW_ON __ KW_EMPTY {
+    return { error: true };
+  }
+
+json_column_on_error
+  = expr:literal_null __ KW_ON __ KW_ERROR {
+    return { expr };
+  }
+  / KW_DEFAULT __ expr:literal_string __ KW_ON __ KW_ERROR {
+    return { default: true, expr };
+  }
+  / KW_ERROR __ KW_ON __ KW_ERROR {
+    return { error: true };
+  }
 
 derived_col_list "derived column list"
   = LPAREN __ head:ident __ tail:(__ COMMA __ ident)* __ RPAREN {
@@ -915,6 +988,16 @@ KW_NOT      = "NOT"i        !ident_start { return 'NOT'; }
 KW_AND      = "AND"i        !ident_start { return 'AND'; }
 KW_OR       = "OR"i         !ident_start { return 'OR'; }
 
+KW_COLUMNS  = "COLUMNS"i    !ident_start { return 'COLUMNS'; }
+KW_DEFAULT  = "DEFAULT"i    !ident_start
+KW_EMPTY    = "EMPTY"i      !ident_start
+KW_ERROR    = "ERROR"i      !ident_start
+KW_FOR      = "FOR"i        !ident_start
+KW_JSON_TABLE = "JSON_TABLE" !ident_start
+KW_NESTED   = "NESTED"i     !ident_start
+KW_ORDINALITY = "ORDINALITY" !ident_start
+KW_PATH     = "PATH"i       !ident_start { return 'PATH'; }
+
 KW_COUNT    = "COUNT"i      !ident_start { return 'COUNT'; }
 KW_MAX      = "MAX"i        !ident_start { return 'MAX'; }
 KW_MIN      = "MIN"i        !ident_start { return 'MIN'; }
@@ -929,6 +1012,7 @@ KW_END      = "END"i        !ident_start
 
 KW_CAST     = "CAST"i       !ident_start
 
+KW_BOOL     = "BOOL"i       !ident_start { return 'BOOL'; };
 KW_CHAR     = "CHAR"i     !ident_start { return 'CHAR'; }
 KW_VARCHAR  = "VARCHAR"i  !ident_start { return 'VARCHAR';}
 KW_NUMERIC  = "NUMERIC"i  !ident_start { return 'NUMERIC'; }
@@ -1109,6 +1193,7 @@ data_type
   = character_string_type
   / numeric_type
   / datetime_type
+  / boolean_type
   / json_type
 
 character_string_type
@@ -1129,6 +1214,9 @@ numeric_type
 
 datetime_type
   = t:(KW_DATE / KW_TIME / KW_TIMESTAMP) { return { dataType: t }; }
+
+boolean_type
+  = t:KW_BOOL { return { dataType: t }; }
 
 json_type
   = t:KW_JSON { return { dataType: t }; }
