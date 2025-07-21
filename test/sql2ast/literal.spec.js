@@ -47,15 +47,11 @@ describe('literals', () => {
     });
 
     describe('datetime', () => {
-        const literals = {
+        Object.entries({
             time: '08:23:16',
             date: '1999-12-25',
             timestamp: '1999-12-25 08:23:16'
-        };
-
-        Object.keys(literals).forEach((type) => {
-            const value = literals[type];
-
+        }).forEach(([type, value]) => {
             [type, type.toUpperCase()].forEach((t) => {
                 it(t, () => {
                     const ast = parser.parse(`SELECT ${t} '${value}'`);
