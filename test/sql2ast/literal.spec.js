@@ -29,6 +29,15 @@ describe('literals', () => {
         });
     });
 
+    describe('booleans', () => {
+        [true, false].forEach((value) =>
+            it('should parse bool', () => {
+                const ast = parser.parse(`SELECT ${value.toString()}`);
+                assert.deepEqual(ast.columns, [{ expr: { type: 'bool', value }, as: null }]);
+            })
+        );
+    });
+
     describe('strings', () => {
         it('should parse single quoted strings', () => {
             const ast = parser.parse(`SELECT 'string'`);
