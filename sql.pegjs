@@ -729,24 +729,6 @@ cast_expr "CAST expression"
   = KW_CAST __ LPAREN __ expr:expr __ KW_AS __ target:data_type __ RPAREN {
     return { type: 'cast', expr, target };
   }
-  / KW_CAST __ LPAREN __ e:expr __ KW_AS __ KW_DECIMAL __ LPAREN __ precision:int __ RPAREN __ RPAREN {
-    return {
-      type: 'cast',
-      expr: e,
-      target: {
-        dataType: 'DECIMAL(' + precision + ')'
-      }
-    };
-  }
-  / KW_CAST __ LPAREN __ e:expr __ KW_AS __ KW_DECIMAL __ LPAREN __ precision:int __ COMMA __ scale:int __ RPAREN __ RPAREN {
-      return {
-        type: 'cast',
-        expr: e,
-        target: {
-          dataType: 'DECIMAL(' + precision + ', ' + scale + ')'
-        }
-      };
-    }
   / KW_CAST __ LPAREN __ e:expr __ KW_AS __ s:signedness __ t:KW_INTEGER? __ RPAREN { /* MySQL cast to un-/signed integer */
     return {
       type: 'cast',
@@ -1137,7 +1119,13 @@ character_string_type
   / t:KW_VARCHAR { return { dataType: t }; }
 
 numeric_type
-  = t:(KW_NUMERIC / KW_DECIMAL / KW_INT / KW_INTEGER / KW_SMALLINT) { return { dataType: t }; }
+  = t:KW_DECIMAL __ LPAREN __ precision:int __ COMMA __ scale:int __ RPAREN {
+    return { dataType: t, precision, scale };
+  }
+  / t:KW_DECIMAL __ LPAREN __ precision:int __ RPAREN {
+    return { dataType: t, precision };
+  }
+  / t:(KW_NUMERIC / KW_DECIMAL / KW_INT / KW_INTEGER / KW_SMALLINT) { return { dataType: t }; }
 
 datetime_type
   = t:(KW_DATE / KW_TIME / KW_TIMESTAMP) { return { dataType: t }; }
