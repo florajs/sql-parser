@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "prepare": "git config --local core.hooksPath .githooks",
-    "build": "mkdir -p build && pegjs -o build/pegjs-parser.js sql.pegjs",
+    "build": "mkdir -p dist && peggy -o dist/parser.js sql.pegjs",
     "pretest": "npm run build",
     "test": "node --test test/**/*.spec.js",
     "lint": "eslint .",
@@ -39,7 +39,7 @@
   "files": [
     "index.js",
     "lib/",
-    "build/pegjs-parser.js"
+    "dist/parser.js"
   ],
   "license": "GPL-2.0",
   "repository": "florajs/sql-parser",
@@ -54,7 +54,7 @@
     "eslint": "^9.17.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
-    "pegjs": "^0.10.0",
+    "peggy": "^5.0.6",
     "prettier": "^3.4.2"
   }
 }

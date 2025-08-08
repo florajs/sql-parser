@@ -2,6 +2,7 @@
 
 ## [4.0.0]
 ### Breaking Changes
+- Replaced PEG.js by Peggy
 - Removed support for Node.js 18
 - `DECIMAL` is parsed in a structured way now:
 

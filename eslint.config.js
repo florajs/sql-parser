@@ -24,6 +24,6 @@ module.exports = [
         files: ['index.js', 'lib/*.js', 'test/**/*.spec.js']
     },
     {
-        ignores: ['node_modules/', 'build/']
+        ignores: ['node_modules/', 'dist/']
     }
 ];
