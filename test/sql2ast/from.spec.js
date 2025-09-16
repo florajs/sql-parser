@@ -369,7 +369,7 @@ describe('from clause', () => {
             });
 
             describe('numbers', () => {
-                ['INT', 'INTEGER', 'DECIMAL(10, 2)'].forEach((type) =>
+                ['INT', 'INTEGER', 'DECIMAL(10, 2)', 'BIGINT'].forEach((type) =>
                     it(`should parse ${type} in COLUMNS`, () => {
                         const ast = parser.parse(
                             `SELECT jt.a FROM JSON_TABLE('[{"a":"1"}]', '$[*]' COLUMNS (a ${type} PATH '$.a')) jt`

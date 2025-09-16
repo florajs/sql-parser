@@ -6,6 +6,7 @@
     'ASC': true,
 
     'BETWEEN': true,
+    'BIGINT': true,
     'BY': true,
 
     'CASE': true,
@@ -1012,6 +1013,7 @@ KW_END      = "END"i        !ident_start
 
 KW_CAST     = "CAST"i       !ident_start
 
+KW_BIGINT   = "BIGINT"i     !ident_start { return 'BIGINT'; };
 KW_BOOL     = "BOOL"i       !ident_start { return 'BOOL'; };
 KW_CHAR     = "CHAR"i     !ident_start { return 'CHAR'; }
 KW_VARCHAR  = "VARCHAR"i  !ident_start { return 'VARCHAR';}
@@ -1210,7 +1212,7 @@ numeric_type
   / t:KW_DECIMAL __ LPAREN __ precision:int __ RPAREN {
     return { dataType: t, precision };
   }
-  / t:(KW_NUMERIC / KW_DECIMAL / KW_INT / KW_INTEGER / KW_SMALLINT) { return { dataType: t }; }
+  / t:(KW_NUMERIC / KW_DECIMAL / KW_BIGINT / KW_INT / KW_INTEGER / KW_SMALLINT) { return { dataType: t }; }
 
 datetime_type
   = t:(KW_DATE / KW_TIME / KW_TIMESTAMP) { return { dataType: t }; }
