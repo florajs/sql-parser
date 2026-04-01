@@ -668,7 +668,7 @@ additive_expr
     }
 
 additive_operator
-  = "+" / "-"
+  = "+" / "-" / "||"
 
 multiplicative_expr
   = head:primary
