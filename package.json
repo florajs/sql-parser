@@ -55,7 +55,7 @@
     "eslint": "^10.1.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
-    "peggy": "^5.0.6",
+    "peggy": "^5.1.0",
     "prettier": "^3.8.1"
   }
 }
