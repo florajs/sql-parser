@@ -51,9 +51,10 @@
     "@florajs/errors": "^4.0.0"
   },
   "devDependencies": {
-    "eslint": "^9.35.0",
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.1.0",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-prettier": "^5.5.5",
     "peggy": "^5.0.6",
     "prettier": "^3.6.2"
   }
